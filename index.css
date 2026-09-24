@@ -228,7 +228,7 @@
     pointer-events: none;
 }
 
-/* 1. DUY NHẤT MENU ĐÁY MOBILE CÓ CẢ BÔI ĐẬM VÀ GẠCH CHÂN */
+/* 1. DUY NHẤT MENU ĐÁY MOBILE CÓ CẢ BÔI ĐẬM VÀ GẠCH CHÂN KHÍ ACTIVE */
 .bottom-nav-item.active-bold {
     color: #ffffff !important;
     font-weight: 900 !important;
@@ -237,18 +237,21 @@
     text-decoration-thickness: 2px !important;
 }
 
-/* 2. CÁC NÚT KHÁC (TÌM KIẾM, LOGO, MENU ☰ & MỤC TRONG ☰): CHỈ BÔI ĐẬM, KHÔNG GẠCH CHÂN */
+/* 2. CÁC NÚT KHÁC (TÌM KIẾM, LOGO, NÚT ☰, NÚT X & MỤC TRONG ☰): CHỈ BÔI ĐẬM, KHÔNG GẠCH CHÂN */
 .btn-bold-active {
     font-weight: 900 !important;
     stroke-width: 3px !important;
     text-decoration: none !important;
 }
+
 .btn-bold-active span,
 .btn-bold-active .search-text {
     font-weight: 900 !important;
     text-decoration: none !important;
 }
+
 .btn-bold-active svg,
+.btn-bold-active i,
 .btn-bold-active .search-icon {
     stroke-width: 3px !important;
 }

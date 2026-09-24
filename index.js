@@ -33,41 +33,49 @@ let lastScrollTop = 0;
 let scrollTimeout = null;
 
 /* 1. XỬ LÝ BÔI ĐẬM LOGO INSIDE+ (KHÔNG GẠCH CHÂN) */
-function handleLogoClick() {
+function handleLogoClick(element) {
     clearAllBoldActiveStates();
-    const logo = document.getElementById('btn-logo-main');
-    if (logo) logo.classList.add('btn-bold-active');
+    if (element) element.classList.add('btn-bold-active');
 }
 
 /* 2. XỬ LÝ BÔI ĐẬM NÚT TÌM KIẾM (KHÔNG GẠCH CHÂN) */
-function handleSearchBtnClick() {
+function handleSearchBtnClick(element) {
     clearAllBoldActiveStates();
-    const btnDesktop = document.getElementById('btn-search-desktop');
-    const btnMobile = document.getElementById('btn-search-mobile');
-    if (btnDesktop) btnDesktop.classList.add('btn-bold-active');
-    if (btnMobile) btnMobile.classList.add('btn-bold-active');
+    if (element) element.classList.add('btn-bold-active');
     openSearchModal();
 }
 
 /* 3. XỬ LÝ BÔI ĐẬM NÚT MENU ☰ (KHÔNG GẠCH CHÂN) */
-function handleMenuBtnClick() {
+function handleMenuBtnClick(element) {
     clearAllBoldActiveStates();
-    const menuBtn = document.getElementById('btn-mobile-menu');
-    if (menuBtn) menuBtn.classList.add('btn-bold-active');
+    if (element) element.classList.add('btn-bold-active');
     toggleMobileNavDrawer();
 }
 
-/* 4. XỬ LÝ BÔI ĐẬM MỤC BÊN TRONG MENU ☰ (KHÔNG GẠCH CHÂN) */
+/* 4. XỬ LÝ BÔI ĐẬM CÁC NÚT X ĐÓNG (KHÔNG GẠCH CHÂN) */
+function handleCloseDrawerBtnClick(element) {
+    clearAllBoldActiveStates();
+    if (element) element.classList.add('btn-bold-active');
+    toggleMobileNavDrawer();
+}
+
+function handleCloseSearchBtnClick(element) {
+    clearAllBoldActiveStates();
+    if (element) element.classList.add('btn-bold-active');
+    closeSearchModal();
+}
+
+/* 5. XỬ LÝ BÔI ĐẬM MỤC BÊN TRONG MENU ☰ (KHÔNG GẠCH CHÂN) */
 function handleDrawerNavItemClick(element) {
     clearAllBoldActiveStates();
-    element.classList.add('btn-bold-active');
+    if (element) element.classList.add('btn-bold-active');
     toggleMobileNavDrawer();
 }
 
-/* 5. XỬ LÝ DUY NHẤT MENU DƯỚI CÙNG CÓ CẢ BÔI ĐẬM VÀ GẠCH CHÂN */
+/* 6. XỬ LÝ DUY NHẤT MENU DƯỚI CÙNG CÓ CẢ BÔI ĐẬM VÀ GẠCH CHÂN */
 function handleBottomNavItemClick(element) {
     clearAllBoldActiveStates();
-    element.classList.add('active-bold');
+    if (element) element.classList.add('active-bold');
 }
 
 /* XÓA TẤT CẢ TRẠNG THÁI ACTIVE TRƯỚC ĐÓ */
