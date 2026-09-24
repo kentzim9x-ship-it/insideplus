@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOCK - Tất Vớ Nam Cao Cấp | INSIDE+</title>
+    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3233/3233215.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="sock.css">
+</head>
+
+<body class="antialiased selection:bg-slate-900 selection:text-white">
+
+    <!-- HEADER -->
+    <header id="main-header" class="fixed top-0 left-0 w-full z-40 bg-white border-b border-slate-200 shadow-sm">
+        <div class="w-full px-4 sm:px-8 lg:px-12 xl:px-16">
+            <div class="flex items-center justify-between h-20 md:h-24">
+
+                <!-- Navigation (Bên trái) -->
+                <div class="w-1/3 flex items-center justify-start">
+                    <nav class="hidden md:flex items-center space-x-10 lg:space-x-14">
+                        <a href="../inside/inside.html" class="group nav-item">
+                            INSIDE
+                            <span class="nav-underline"></span>
+                        </a>
+                        <a href="sock.html" class="nav-item nav-item-active">
+                            SOCK
+                            <span class="nav-underline"></span>
+                        </a>
+                        <a href="../tshirt/tshirt.html" class="group nav-item">
+                            T-SHIRT
+                            <span class="nav-underline"></span>
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- Logo INSIDE+ (Căn giữa) -->
+                <div class="w-1/3 flex items-center justify-center text-center">
+                    <a href="../index.html" class="inline-flex items-center font-black text-3xl tracking-tighter uppercase group">
+                        <span class="text-slate-900">INSIDE</span>
+                        <span class="text-blue-500 font-black relative -top-2.5 left-1.5 group-hover:rotate-90 transition transform inline-block">+</span>
+                    </a>
+                </div>
+
+                <!-- Tìm kiếm (Bên phải) -->
+                <div class="w-1/3 flex items-center justify-end">
+                    <div class="hidden md:flex items-center">
+                        <button onclick="openSearchModal()" class="group relative py-2 text-sm font-extrabold uppercase tracking-[0.15em] text-slate-900 flex items-center gap-2">
+                            <span>TÌM KIẾM</span>
+                            <i data-lucide="search" class="w-4 h-4"></i>
+                            <span class="nav-underline"></span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mobile Header -->
+                <div class="flex md:hidden items-center justify-between w-full">
+                    <button onclick="openSearchModal()" class="text-slate-900"><i data-lucide="search" class="w-6 h-6"></i></button>
+                    <a href="index.html" class="inline-flex items-center font-black text-2xl tracking-tighter uppercase">
+                        <span class="text-slate-900">INSIDE</span><span class="text-blue-500 font-black relative -top-2 left-1">+</span>
+                    </a>
+                    <button onclick="toggleMobileMenu()" class="text-slate-900 p-1"><i data-lucide="menu" class="w-6 h-6"></i></button>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <div class="pt-32 md:pt-40 pb-24 min-h-screen">
+        <div class="w-full px-4 sm:px-8 lg:px-12 xl:px-16">
+            <nav class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400 mb-6">
+                <a href="index.html" class="hover:text-slate-900">Trang chủ</a><span>/</span><span class="text-slate-900">SOCK (TẤT VỚ)</span>
+            </nav>
+            <div class="border-b border-slate-200 pb-6 mb-8">
+                <h1 id="page-category-title" class="text-4xl sm:text-5xl font-black uppercase tracking-tight text-slate-900 mb-2">SOCK (TẤT VỚ)</h1>
+                <p class="text-xs text-slate-500 font-medium">Tất cổ ngắn giấu gót, cổ trung và vớ thể thao đệm xù êm ái chống hôi chân</p>
+            </div>
+
+            <!-- VISUAL IMAGE FILTER BAR -->
+            <div class="mb-12">
+                <div id="visual-filter-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
+                </div>
+            </div>
+
+            <!-- CONTROLS & CATALOG COUNTER -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-200 pb-5 mb-10">
+                <div class="flex items-center gap-6">
+                    <div class="relative">
+                        <button onclick="toggleSortDropdown()" class="btn-control-filter">
+                            <i data-lucide="sliders-horizontal" class="w-4 h-4"></i> Sắp xếp
+                        </button>
+                        <div id="sort-dropdown" class="absolute left-0 mt-2 w-56 bg-white border border-slate-200 shadow-xl hidden z-30 py-2">
+                            <button onclick="setSortOption('newest')" class="dropdown-item">Mới nhất</button>
+                            <button onclick="setSortOption('price-asc')" class="dropdown-item">Giá: từ thấp đến cao</button>
+                            <button onclick="setSortOption('price-desc')" class="dropdown-item">Giá: từ cao đến thấp</button>
+                        </div>
+                    </div>
+                    <span id="catalog-count" class="text-xs font-bold text-slate-700">0 sản phẩm</span>
+                </div>
+                <div>
+                    <button onclick="openFilterDrawer()" class="btn-control-filter">
+                        <i data-lucide="sliders-horizontal" class="w-4 h-4"></i> Lọc sản phẩm
+                    </button>
+                </div>
+            </div>
+
+            <div id="catalog-grid" class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 lg:gap-8"></div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-white text-slate-700 pt-16 pb-12 border-t border-slate-200 mt-auto">
+        <div class="w-full px-4 sm:px-8 lg:px-12 xl:px-16 grid grid-cols-1 md:grid-cols-4 gap-8 pb-12 border-b border-slate-100">
+            <div class="space-y-4">
+                <a href="index.html" class="inline-flex items-center font-black text-2xl tracking-tighter uppercase"><span>INSIDE</span><span class="text-blue-500 font-black relative -top-2 left-1">+</span></a>
+                <p class="text-xs text-slate-500 leading-relaxed font-medium">Thời trang tối giản, vớ và phục trang nam giới phong cách Minimalist.</p>
+            </div>
+            <div>
+                <h4 class="text-xs font-black uppercase text-slate-900 tracking-wider mb-4">Danh mục</h4>
+                <ul class="space-y-2 text-xs font-bold text-slate-600">
+                    <li><a href="inside.html" class="hover:text-slate-900">INSIDE (ĐỒ LÓT)</a></li>
+                    <li><a href="sock.html" class="hover:text-slate-900">SOCK (TẤT VỚ)</a></li>
+                    <li><a href="tshirt.html" class="hover:text-slate-900">T-SHIRT (ÁO PHÔNG)</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-xs font-black uppercase text-slate-900 tracking-wider mb-4">Sàn thương mại điện tử</h4>
+                <ul class="space-y-2 text-xs font-bold text-slate-600">
+                    <li><a href="https://shopee.vn" target="_blank" class="hover:text-slate-950 flex items-center gap-2 transition"><i data-lucide="shopping-bag" class="w-4 h-4 text-orange-500"></i> SHOPEE MALL</a></li>
+                    <li><a href="https://tiktok.com" target="_blank" class="hover:text-slate-950 flex items-center gap-2 transition"><i data-lucide="video" class="w-4 h-4 text-slate-900"></i> TIKTOK SHOP</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-xs font-black uppercase text-slate-900 tracking-wider mb-4">Hỗ trợ khách hàng</h4>
+                <p class="text-xs text-slate-600 leading-relaxed font-medium mb-3">Giao hàng cực nhanh và chính sách đổi trả uy tín qua TPD.</p>
+                <p class="text-xs font-black text-slate-900 uppercase">HOTLINE: 0988.XXX.XXX</p>
+            </div>
+        </div>
+        <div class="w-full px-4 sm:px-8 lg:px-12 xl:px-16 pt-8 text-center text-xs text-slate-400 font-bold uppercase">© 2026 INSIDE+. Minimalist Concept Layout.</div>
+    </footer>
+
+    <!-- WIDGETS -->
+    <div class="fixed bottom-6 right-2 sm:right-2 z-50 flex flex-col items-end gap-3">
+        <div id="social-links-group" class="hidden flex flex-col gap-3">
+            <a href="https://m.me/yourpage" target="_blank" class="floating-widget">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="#222222">
+                    <path d="M12 2C6.477 2 2 6.145 2 11.243c0 2.91 1.455 5.488 3.733 7.152V22l3.411-1.872c.907.252 1.868.385 2.856.385 5.523 0 10-4.145 10-9.243C22 6.145 17.523 2 12 2zm1.045 12.37l-2.545-2.715-4.965 2.715 5.46-5.79 2.59 2.715 4.92-2.715-5.46 5.79z" />
+                </svg>
+            </a>
+            <a href="https://zalo.me/yourphonenumber" target="_blank" class="floating-widget">
+                <span class="font-bold text-[13px] text-[#111]">Zalo</span>
+            </a>
+        </div>
+        <button onclick="toggleChatMenu()" id="main-chat-btn" class="floating-widget bg-[#222] text-white hover:bg-white hover:text-slate-900">
+            <i data-lucide="message-circle" id="chat-icon" class="w-5 h-5"></i>
+        </button>
+        <button onclick="scrollToTop()" class="floating-widget bg-white/90 border-slate-200 text-slate-700 bg-slate-950 text-black">
+            <i data-lucide="chevron-up" class="w-5 h-5"></i>
+        </button>
+    </div>
+
+    <!-- TÌM KIẾM MỚI -->
+    <div id="search-modal" class="fixed inset-0 z-[110] hidden bg-white/98 backdrop-blur-xl overflow-y-auto custom-scroll">
+        <div class="w-full max-w-5xl mx-auto px-6 pt-10 pb-8 flex items-center justify-between border-b border-slate-900/10">
+            <div class="flex-1 max-w-3xl relative flex items-center">
+                <i data-lucide="search" class="w-7 h-7 text-slate-900 mr-4 stroke-[2.5]"></i>
+                <input type="text" id="search-input" oninput="handleSearchInput(this.value)" placeholder="TÌM KIẾM SẢN PHẨM..." class="w-full bg-transparent text-xl sm:text-2xl font-black text-slate-900 placeholder:text-slate-300 uppercase tracking-tight focus:outline-none">
+            </div>
+            <button onclick="closeSearchModal()" class="p-3 -mr-3 text-slate-400 hover:text-slate-900 transition-colors">
+                <i data-lucide="x" class="w-8 h-8 text-black stroke-[1.5]"></i>
+            </button>
+        </div>
+
+        <div class="w-full max-w-5xl mx-auto px-6 py-10 space-y-12">
+            <div class="space-y-3">
+                <span class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Tìm kiếm phổ biến</span>
+                <div class="flex flex-wrap gap-2 pt-1">
+                    <button onclick="fillSearch('Bamboo')" class="btn-popular-search">Tất cổ ngắn Bamboo</button>
+                    <button onclick="fillSearch('Thể Thao')" class="btn-popular-search">Tất thể thao đệm xù</button>
+                </div>
+            </div>
+
+            <div>
+                <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+                    <h4 id="search-results-title" class="text-xs font-black uppercase text-slate-900 tracking-[0.2em] flex items-center gap-2">
+                        <i data-lucide="history" class="w-4 h-4 text-slate-400"></i> Sản phẩm đã xem
+                    </h4>
+                    <button id="btn-clear-history" onclick="clearViewedProducts()" class="text-[11px] font-bold text-slate-400 hover:text-slate-900 uppercase tracking-wider transition">Xóa lịch sử</button>
+                </div>
+                <div id="viewed-products-container" class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FILTER DRAWER -->
+    <div id="filter-drawer" class="fixed inset-0 z-[100] hidden">
+        <div id="filter-overlay" onclick="closeFilterDrawer()" class="absolute inset-0 bg-slate-950/40 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+        <div id="filter-panel" class="absolute top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl translate-x-full transition-transform duration-300 ease-out flex flex-col">
+            <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+                <h3 class="text-lg font-black uppercase text-slate-900 tracking-tight">Lọc sản phẩm</h3>
+                <button onclick="closeFilterDrawer()" class="p-2 -mr-2 text-slate-400 hover:text-slate-900 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scroll">
+                <div class="border-b border-slate-200 pb-5">
+                    <div onclick="toggleFilterAccordion('style-content')" class="flex justify-between items-center cursor-pointer">
+                        <span class="text-xs font-black uppercase tracking-widest text-slate-900">Kiểu dáng</span>
+                        <i data-lucide="chevron-up" id="style-content-icon" class="w-4 h-4 text-slate-500"></i>
+                    </div>
+                    <div id="style-content" class="mt-3 space-y-2">
+                        <label class="filter-label"><input type="checkbox" onchange="onFilterChange()" name="filter-style" value="CoNgan" class="mr-2"> Tất cổ ngắn / Giấu gót</label>
+                        <label class="filter-label"><input type="checkbox" onchange="onFilterChange()" name="filter-style" value="CoTrung" class="mr-2"> Tất cổ trung / Thể thao</label>
+                    </div>
+                </div>
+                <div class="border-b border-slate-200 pb-5">
+                    <div onclick="toggleFilterAccordion('size-content')" class="flex justify-between items-center cursor-pointer">
+                        <span class="text-xs font-black uppercase tracking-widest text-slate-900">Kích cỡ</span>
+                        <i data-lucide="chevron-up" id="size-content-icon" class="w-4 h-4 text-slate-500"></i>
+                    </div>
+                    <div id="size-content" class="grid grid-cols-2 gap-2 mt-3">
+                        <button onclick="toggleSizeSelect(this)" data-val="Freesize" class="filter-size-btn">Freesize</button>
+                    </div>
+                </div>
+                <div class="border-b border-slate-200 pb-5">
+                    <div onclick="toggleFilterAccordion('color-content')" class="flex justify-between items-center cursor-pointer">
+                        <span class="text-xs font-black uppercase tracking-widest text-slate-900">Màu sắc</span>
+                        <i data-lucide="chevron-up" id="color-content-icon" class="w-4 h-4 text-slate-500"></i>
+                    </div>
+                    <div id="color-content" class="flex flex-wrap gap-2.5 mt-3">
+                        <button onclick="toggleColorSelect(this)" data-val="#ffffff" class="filter-color-btn bg-white" title="Trắng"></button>
+                        <button onclick="toggleColorSelect(this)" data-val="#000000" class="filter-color-btn bg-black" title="Đen"></button>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-slate-200 grid grid-cols-2 gap-3 bg-white">
+                <button id="btn-apply-filter" onclick="applyFilters()" disabled class="w-full bg-slate-300 text-white py-3 font-bold text-xs uppercase tracking-widest transition cursor-not-allowed">Xem</button>
+                <button id="btn-clear-filter" onclick="clearFilters()" disabled class="w-full bg-white border border-slate-200 text-slate-400 py-3 font-bold text-xs uppercase tracking-widest transition cursor-not-allowed">Xoá bộ lọc</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRODUCT DRAWER -->
+    <div id="product-drawer" class="fixed inset-0 z-50 hidden">
+        <div id="product-drawer-overlay" onclick="closeProductDrawer()" class="absolute inset-0 bg-slate-950/40 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+        <div id="product-drawer-panel" class="absolute top-0 right-0 h-full w-full max-w-6xl bg-white shadow-2xl translate-x-full transition-transform duration-300 ease-out overflow-y-auto custom-scroll flex flex-col">
+            <div class="sticky top-0 bg-white/95 backdrop-blur-md z-20 px-8 py-5 border-b border-slate-100 flex items-center justify-between">
+                <span class="text-xs font-black tracking-widest text-slate-400 uppercase">CHI TIẾT SẢN PHẨM</span>
+                <button onclick="closeProductDrawer()" class="p-2 -mr-2 text-slate-400 hover:text-slate-900 transition"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div id="drawer-content-body" class="p-6 md:p-12 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-12"></div>
+        </div>
+    </div>
+
+    <!-- SIZE MODAL -->
+    <div id="size-modal" class="fixed inset-0 z-[120] hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="bg-white max-w-2xl w-full p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scroll rounded-none">
+            <button onclick="closeSizeModal()" class="absolute top-6 right-6 p-2 text-slate-400 hover:text-slate-900 transition"><i data-lucide="x" class="w-6 h-6"></i></button>
+            <div class="mb-6">
+                <span class="text-[10px] font-black uppercase text-blue-600 bg-blue-50 px-3 py-1 tracking-widest">INSIDE+ GUIDE</span>
+                <h3 class="text-2xl font-black uppercase text-slate-900 mt-3 tracking-tight">HƯỚNG DẪN CHỌN SIZE TẤT VỚ</h3>
+                <p class="text-xs text-slate-500 mt-2 leading-relaxed font-medium">Toàn bộ các dòng tất vớ nam INSIDE+ được thiết kế sợi co giãn 4 chiều Freesize phù hợp cho cỡ chân từ 38 đến 44.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LIGHTBOX XEM TẤT CẢ ẢNH SẢN PHẨM -->
+    <div id="gallery-modal" class="fixed inset-0 z-[150] hidden bg-[#f8f9fa]/95 backdrop-blur-md flex items-center justify-center">
+        <!-- Nút đóng X góc trên phải -->
+        <button onclick="closeGalleryModal()" class="absolute top-6 right-6 z-20 w-10 h-10 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center text-slate-600 hover:text-slate-900 transition">
+            <i data-lucide="x" class="w-8 h-8"></i>
+        </button>
+
+        <!-- Khung chứa ảnh chính -->
+        <div class="relative w-full max-w-4xl h-[75vh] flex items-center justify-center p-4">
+            <img id="gallery-modal-img" src="" class="max-w-full max-h-full object-contain transition-all duration-300">
+        </div>
+
+        <!-- Thanh điều hướng dạng viên thuốc màu trắng -->
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-20">
+            <div class="gallery-nav-pill">
+                <button onclick="prevGalleryImage()" class="text-slate-800 hover:text-black transition flex items-center">
+                    <i data-lucide="chevron-left" class="w-10 h-10 stroke-[2]"></i>
+                </button>
+                <span id="gallery-counter" class="text-xs font-medium text-slate-800 tracking-wider">1/1</span>
+                <button onclick="nextGalleryImage()" class="text-slate-800 hover:text-black transition flex items-center">
+                    <i data-lucide="chevron-right" class="w-10 h-10 stroke-[2]"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT FILE TÁCH RIÊNG -->
+    <script src="sock.js"></script>
+</body>
+
+</html>

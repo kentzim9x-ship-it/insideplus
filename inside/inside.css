@@ -1,0 +1,111 @@
+/* Custom Scrollbar */
+.custom-scroll::-webkit-scrollbar {
+    width: 5px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+}
+
+/* Color Buttons & Out of Stock Indicators */
+.color-btn-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+button.color-out-of-stock {
+    position: relative !important;
+}
+
+button.color-out-of-stock::before,
+button.color-out-of-stock::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    width: 140% !important;
+    height: 2px !important;
+    background-color: #0f0e0e !important;
+    z-index: 50 !important;
+    pointer-events: none !important;
+}
+
+button.color-out-of-stock::before {
+    transform: translate(-50%, -50%) rotate(45deg) !important;
+}
+
+button.color-out-of-stock::after {
+    transform: translate(-50%, -50%) rotate(-45deg) !important;
+}
+
+/* Visual Card Active State */
+.visual-card-active .visual-card-title {
+    color: #020617 !important;
+    font-weight: 900 !important;
+}
+
+/* KHUNG HÌNH ẢNH TRONG DRAWER VỚI CON TRỎ BÀN TAY */
+.product-detail-img-container {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer; /* Hiển thị con trỏ bàn tay chỉ chuột */
+}
+
+.product-detail-img-container img {
+    transition: transform 0.4s ease-out;
+    transform-origin: center center;
+}
+
+.product-detail-img-container:hover img {
+    transform: scale(1.35);
+}
+
+/* BIỂU TƯỢNG KÍNH LÚP Ở GÓC DƯỚI PHẢI HÌNH ẢNH */
+.zoom-icon-btn {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0.85);
+    transition: all 0.25s ease-out;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.product-detail-img-container:hover .zoom-icon-btn {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.zoom-icon-btn:hover {
+    background-color: #ffffff;
+    transform: scale(1.1) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* THANH ĐIỀU HƯỚNG CHUYỂN ẢNH VIÊN THUỐC */
+.gallery-nav-pill {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 9999px;
+    padding: 6px 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
