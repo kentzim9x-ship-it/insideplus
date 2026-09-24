@@ -38,6 +38,11 @@ window.addEventListener('scroll', () => {
     }
 });
 
+function toggleMobileNav() {
+    const navMenu = document.getElementById('mobile-nav-menu');
+    navMenu.classList.toggle('hidden');
+}
+
 function openSearchModal() {
     document.getElementById('search-modal').classList.remove('hidden');
     const input = document.getElementById('search-input');
