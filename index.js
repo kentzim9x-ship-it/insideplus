@@ -32,27 +32,28 @@ const allSampleProducts = [
 let lastScrollTop = 0;
 let scrollTimeout = null;
 
-/* 1. XỬ LÝ BÔI ĐẬM LOGO INSIDE+ (KHÔNG GẠCH CHÂN) */
+/* 1. XỬ LÝ BÔI ĐẬM LOGO INSIDE+ */
 function handleLogoClick(element) {
     clearAllBoldActiveStates();
-    if (element) element.classList.add('btn-bold-active');
+    const logoEl = element || document.getElementById('btn-logo-main');
+    if (logoEl) logoEl.classList.add('btn-bold-active');
 }
 
-/* 2. XỬ LÝ BÔI ĐẬM NÚT TÌM KIẾM (KHÔNG GẠCH CHÂN) */
+/* 2. XỬ LÝ BÔI ĐẬM NÚT TÌM KIẾM */
 function handleSearchBtnClick(element) {
     clearAllBoldActiveStates();
     if (element) element.classList.add('btn-bold-active');
     openSearchModal();
 }
 
-/* 3. XỬ LÝ BÔI ĐẬM NÚT MENU ☰ (KHÔNG GẠCH CHÂN) */
+/* 3. XỬ LÝ BÔI ĐẬM NÚT MENU ☰ */
 function handleMenuBtnClick(element) {
     clearAllBoldActiveStates();
     if (element) element.classList.add('btn-bold-active');
     toggleMobileNavDrawer();
 }
 
-/* 4. XỬ LÝ BÔI ĐẬM CÁC NÚT X ĐÓNG (KHÔNG GẠCH CHÂN) */
+/* 4. XỬ LÝ BÔI ĐẬM CÁC NÚT X ĐÓNG */
 function handleCloseDrawerBtnClick(element) {
     clearAllBoldActiveStates();
     if (element) element.classList.add('btn-bold-active');
@@ -65,14 +66,14 @@ function handleCloseSearchBtnClick(element) {
     closeSearchModal();
 }
 
-/* 5. XỬ LÝ BÔI ĐẬM MỤC BÊN TRONG MENU ☰ (KHÔNG GẠCH CHÂN) */
+/* 5. XỬ LÝ BÔI ĐẬM MỤC BÊN TRONG MENU ☰ */
 function handleDrawerNavItemClick(element) {
     clearAllBoldActiveStates();
     if (element) element.classList.add('btn-bold-active');
     toggleMobileNavDrawer();
 }
 
-/* 6. XỬ LÝ DUY NHẤT MENU DƯỚI CÙNG CÓ CẢ BÔI ĐẬM VÀ GẠCH CHÂN */
+/* 6. XỬ LÝ MENU DƯỚI CÙNG MOBILE */
 function handleBottomNavItemClick(element) {
     clearAllBoldActiveStates();
     if (element) element.classList.add('active-bold');
