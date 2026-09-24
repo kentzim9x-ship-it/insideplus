@@ -45,8 +45,6 @@ button.color-out-of-stock::after {
     transform: translate(-50%, -50%) rotate(-45deg) !important;
 }
 
-/* Các Lớp CSS Thuần (Không dùng @apply để tránh lỗi cú pháp trong VS Code) */
-
 /* Nav Items & Underline */
 .nav-item {
     position: relative;
@@ -275,4 +273,94 @@ button.color-out-of-stock::after {
     display: flex;
     align-items: center;
     gap: 24px;
+}
+
+/* =========================================================
+   THANH FILTER HÌNH ẢNH (VISUAL FILTER BAR)
+   ========================================================= */
+
+.visual-filter-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.visual-filter-scroll-container {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.visual-filter-scroll-container::-webkit-scrollbar {
+    display: none;
+}
+
+.visual-filter-card {
+    flex: 0 0 auto;
+    cursor: pointer;
+    background-color: #ffffff;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    box-sizing: border-box;
+    padding: 0;
+}
+
+.visual-filter-card.visual-card-active,
+.visual-filter-card:hover {
+    border-color: #94a3b8;
+}
+
+.visual-card-active .visual-card-title {
+    color: #020617 !important;
+    font-weight: 800 !important;
+}
+
+@media (min-width: 1024px) {
+    .visual-filter-scroll-container {
+        gap: 16px;
+    }
+    .visual-filter-card {
+        width: calc((100% - 80px) / 6);
+    }
+}
+
+@media (max-width: 1023px) {
+    .visual-filter-card {
+        width: calc((100% - 16px) / 2.3);
+    }
+}
+
+/* NÚT MŨI TÊN ĐIỀU HƯỚNG MÀU XÁM ĐẬM, VIỀN TRẮNG */
+.slider-arrow-btn {
+    position: absolute;
+    top: 40%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #6a6a6a;
+    border: 2px solid #ffffff;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.slider-arrow-btn:hover {
+    background-color: #4a4a4a;
+    transform: translateY(-50%) scale(1.08);
+}
+
+.slider-arrow-prev {
+    left: 10px;
+}
+
+.slider-arrow-next {
+    right: 10px;
 }

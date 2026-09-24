@@ -88,11 +88,25 @@ let currentSelectedSize = null;
 let currentGalleryImages = [];
 let currentGalleryIndex = 0;
 
-function toggleMobileNav() {
-    const navMenu = document.getElementById('mobile-nav-menu');
-    navMenu.classList.toggle('hidden');
+/* BẬT TẮT MOBILE MENU TOÀN MÀN HÌNH (#363636 IN NỀN TRONG SUỐT) */
+function toggleMobileNavDrawer() {
+    const drawer = document.getElementById('mobile-nav-drawer');
+    const panel = document.getElementById('mobile-nav-panel');
+
+    if (drawer.classList.contains('hidden')) {
+        drawer.classList.remove('hidden');
+        setTimeout(function () {
+            panel.classList.remove('-translate-x-full');
+        }, 10);
+    } else {
+        panel.classList.add('-translate-x-full');
+        setTimeout(function () {
+            drawer.classList.add('hidden');
+        }, 300);
+    }
 }
 
+/* RENDER THANH FILTER BẰNG HÌNH ẢNH */
 function renderVisualFilterBar() {
     const container = document.getElementById('visual-filter-grid');
     if (!container) return;
@@ -101,15 +115,65 @@ function renderVisualFilterBar() {
         const isActive = activeVisualFilter === item.styleValue;
         const activeCardClasses = isActive ? 'visual-card-active' : '';
 
-        return '<div onclick="selectVisualFilter(\'' + item.styleValue + '\')" class="group cursor-pointer flex flex-col bg-white transition-all duration-200 ' + activeCardClasses + '">' +
+        return '<div onclick="selectVisualFilter(\'' + item.styleValue + '\')" class="visual-filter-card group flex flex-col ' + activeCardClasses + '">' +
             '<div class="w-full aspect-[4/5] bg-slate-100 overflow-hidden relative">' +
-            '<img src="' + item.image + '" alt="' + item.title + '" class="w-full h-full object-cover transition-transform duration-500">' +
+            '<img src="' + item.image + '" alt="' + item.title + '" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">' +
             '</div>' +
             '<div class="pt-3.5 pb-1 text-left bg-white">' +
             '<h4 class="visual-card-title text-sm sm:text-base font-bold text-slate-900 tracking-tight transition-colors group-hover:text-black">' + item.title + '</h4>' +
             '</div>' +
             '</div>';
     }).join('');
+
+    setTimeout(checkFilterSliderArrows, 100);
+}
+
+/* DI CHUYỂN SLIDER TRÊN PC (MỖI LẦN TRƯỢT 3-4 HÌNH ẢNH) */
+function scrollFilterSlider(direction) {
+    const container = document.getElementById('visual-filter-grid');
+    if (!container) return;
+
+    const scrollAmount = container.clientWidth * 0.75;
+    if (direction === 'left') {
+        container.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    } else {
+        container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    }
+
+    setTimeout(checkFilterSliderArrows, 350);
+}
+
+/* KIỂM TRA ĐỂ ẨN/HIỆN MŨI TÊN TRƯỢT TRÊN PC */
+function checkFilterSliderArrows() {
+    const container = document.getElementById('visual-filter-grid');
+    const prevBtn = document.getElementById('slider-prev-btn');
+    const nextBtn = document.getElementById('slider-next-btn');
+
+    if (!container || !prevBtn || !nextBtn) return;
+
+    if (window.innerWidth >= 1024) {
+        const isScrollable = container.scrollWidth > container.clientWidth;
+        
+        if (isScrollable) {
+            if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 5) {
+                nextBtn.classList.add('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+            }
+
+            if (container.scrollLeft > 5) {
+                prevBtn.classList.remove('hidden');
+            } else {
+                prevBtn.classList.add('hidden');
+            }
+        } else {
+            prevBtn.classList.add('hidden');
+            nextBtn.classList.add('hidden');
+        }
+    } else {
+        prevBtn.classList.add('hidden');
+        nextBtn.classList.add('hidden');
+    }
 }
 
 function selectVisualFilter(styleVal) {
@@ -153,7 +217,11 @@ function selectVisualFilter(styleVal) {
 function renderCatalog(items) {
     const grid = document.getElementById('catalog-grid');
     if (!grid) return;
-    document.getElementById('catalog-count').innerText = items.length + ' sản phẩm';
+
+    document.querySelectorAll('.catalog-count-text').forEach(function(el) {
+        el.innerText = items.length + ' sản phẩm';
+    });
+
     if (items.length === 0) {
         grid.innerHTML = '<p class="col-span-full text-center text-xs text-slate-400 py-12 font-bold uppercase tracking-wider">Không tìm thấy sản phẩm phù hợp.</p>';
         return;
@@ -204,11 +272,26 @@ function changeCatalogThumbColor(id, colorIdx) {
 }
 
 function setSortOption(type) {
-    document.getElementById('sort-dropdown').classList.add('hidden');
+    const dropDesktop = document.getElementById('sort-dropdown-desktop');
+    const dropMobile = document.getElementById('sort-dropdown-mobile');
+
+    if (dropDesktop) dropDesktop.classList.add('hidden');
+    if (dropMobile) dropMobile.classList.add('hidden');
+
     if (type === 'price-asc') currentFilteredProducts.sort(function (a, b) { return a.price - b.price; });
     else if (type === 'price-desc') currentFilteredProducts.sort(function (a, b) { return b.price - a.price; });
     else if (type === 'newest') currentFilteredProducts.sort(function (a, b) { return b.id.localeCompare(a.id); });
     renderCatalog(currentFilteredProducts);
+}
+
+function toggleSortDropdown(device) {
+    if (device === 'mobile') {
+        const dropMobile = document.getElementById('sort-dropdown-mobile');
+        if (dropMobile) dropMobile.classList.toggle('hidden');
+    } else {
+        const dropDesktop = document.getElementById('sort-dropdown-desktop');
+        if (dropDesktop) dropDesktop.classList.toggle('hidden');
+    }
 }
 
 function openProductDrawer(id) {
@@ -223,7 +306,6 @@ function openProductDrawer(id) {
     }, 10);
 }
 
-// HÀM ĐỔI MÀU VÀ TỰ ĐỘNG CỦON MƯỢT LÊN ĐẦU BẢNG CHI TIẾT TRÊN MOBILE
 function changeDrawerColor(productId, colorIdx) {
     const p = originalProducts.find(function (x) { return x.id === productId; });
     if (!p) return;
@@ -387,7 +469,6 @@ function closeProductDrawer() {
     setTimeout(function () { document.getElementById('product-drawer').classList.add('hidden'); }, 350);
 }
 
-function toggleSortDropdown() { document.getElementById('sort-dropdown').classList.toggle('hidden'); }
 function openFilterDrawer() { document.getElementById('filter-drawer').classList.remove('hidden'); setTimeout(function () { document.getElementById('filter-overlay').classList.remove('opacity-0'); document.getElementById('filter-panel').classList.remove('translate-x-full'); }, 10); }
 function closeFilterDrawer() { document.getElementById('filter-overlay').classList.add('opacity-0'); document.getElementById('filter-panel').classList.add('translate-x-full'); setTimeout(function () { document.getElementById('filter-drawer').classList.add('hidden'); }, 300); }
 function toggleFilterAccordion(id) { document.getElementById(id).classList.toggle('hidden'); }
@@ -506,8 +587,16 @@ function toggleChatMenu() {
 
 function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
+window.addEventListener('resize', checkFilterSliderArrows);
+
 document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' || e.key === 'Esc') {
+        const mobileNav = document.getElementById('mobile-nav-drawer');
+        if (mobileNav && !mobileNav.classList.contains('hidden')) {
+            toggleMobileNavDrawer();
+            return;
+        }
+
         const galleryModal = document.getElementById('gallery-modal');
         if (galleryModal && !galleryModal.classList.contains('hidden')) {
             closeGalleryModal();

@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="index.css">
 </head>
 
-<body class="antialiased selection:bg-slate-900 selection:text-white">
+<body class="antialiased selection:bg-slate-900 selection:text-white bg-white">
 
     <!-- HEADER -->
     <header id="main-header" class="fixed top-0 left-0 w-full z-40 transition-all duration-300">
@@ -38,52 +38,83 @@
                         </a>
                     </nav>
                     
-                    <!-- Nút mở rộng Mobile (Bên trái) -->
-                    <button onclick="toggleMobileNav()" class="md:hidden text-slate-900 p-1 focus:outline-none">
+                    <!-- Nút mở Menu Mobile (Bên trái - Có hiệu ứng Bôi đậm khi active) -->
+                    <button onclick="handleMenuBtnClick()" id="btn-mobile-menu" class="md:hidden text-white p-1 focus:outline-none transition-all">
                         <i data-lucide="menu" class="w-6 h-6"></i>
                     </button>
                 </div>
 
-                <!-- Logo INSIDE+ (Căn giữa tuyệt đối) -->
+                <!-- Logo INSIDE+ (Căn giữa tuyệt đối - Có hiệu ứng Bôi đậm khi active) -->
                 <div class="w-1/3 flex items-center justify-center text-center">
-                    <a href="index.html" class="inline-flex items-center font-black text-2xl md:text-3xl tracking-tighter uppercase group">
-                        <span class="logo-main text-slate-900">INSIDE</span>
+                    <a href="index.html" onclick="handleLogoClick()" id="btn-logo-main" class="inline-flex items-center font-black text-2xl md:text-3xl tracking-tighter uppercase group transition-all">
+                        <span class="logo-main text-white">INSIDE</span>
                         <span class="text-blue-500 font-black relative -top-2 md:-top-2.5 left-1 md:left-1.5 group-hover:rotate-90 transition transform inline-block">+</span>
                     </a>
                 </div>
 
-                <!-- Tìm kiếm (Bên phải Desktop & Mobile) -->
+                <!-- Tìm kiếm (Bên phải Desktop & Mobile - Có hiệu ứng Bôi đậm khi active) -->
                 <div class="w-1/3 flex items-center justify-end">
                     <div class="hidden md:flex items-center">
-                        <button onclick="openSearchModal()" class="group relative py-2 text-sm font-extrabold uppercase tracking-[0.15em] text-slate-900 flex items-center gap-2">
-                            <span>TÌM KIẾM</span>
-                            <i data-lucide="search" class="w-4 h-4"></i>
+                        <button onclick="handleSearchBtnClick()" id="btn-search-desktop" class="group relative py-2 text-sm font-extrabold uppercase tracking-[0.15em] text-white flex items-center gap-2 transition-all">
+                            <span class="search-text">TÌM KIẾM</span>
+                            <i data-lucide="search" class="w-4 h-4 search-icon"></i>
                             <span class="nav-underline"></span>
                         </button>
                     </div>
                     <!-- Nút Tìm kiếm Mobile (Bên phải) -->
-                    <button onclick="openSearchModal()" class="md:hidden text-slate-900 p-1 focus:outline-none">
-                        <i data-lucide="search" class="w-6 h-6"></i>
+                    <button onclick="handleSearchBtnClick()" id="btn-search-mobile" class="md:hidden text-white p-1 focus:outline-none transition-all">
+                        <i data-lucide="search" class="w-6 h-6 search-icon"></i>
                     </button>
                 </div>
 
             </div>
         </div>
-
-        <!-- Menu điều hướng Mobile dạng thanh thứ 2 bên dưới -->
-        <div id="mobile-nav-menu" class="hidden md:hidden w-full border-t border-slate-200/20 py-3 transition-all duration-300">
-            <div class="w-full px-4 flex items-center justify-around">
-                <a href="INSIDE/inside.html" class="text-xs font-black uppercase tracking-wider text-slate-900 py-1">INSIDE</a>
-                <a href="SOCK/sock.html" class="text-xs font-black uppercase tracking-wider text-slate-900 py-1">SOCK</a>
-                <a href="TSHIRT/tshirt.html" class="text-xs font-black uppercase tracking-wider text-slate-900 py-1">T-SHIRT</a>
-            </div>
-        </div>
     </header>
 
+    <!-- MOBILE FULL-SCREEN NAVIGATION MENU (#363636 NỀN TRONG SUỐT) -->
+    <div id="mobile-nav-drawer" class="fixed inset-0 z-[100] hidden md:hidden">
+        <div id="mobile-nav-panel"
+            class="absolute top-0 left-0 w-full h-full bg-[#363636]/95 backdrop-blur-md text-white shadow-2xl -translate-x-full transition-transform duration-300 ease-out flex flex-col justify-between p-8 sm:p-12">
+            
+            <div>
+                <!-- Nút X góc trên bên phải đóng Menu -->
+                <div class="flex justify-end mb-12">
+                    <button onclick="toggleMobileNavDrawer()" class="text-slate-300 hover:text-white transition focus:outline-none p-2">
+                        <i data-lucide="x" class="w-9 h-9 stroke-[1.5]"></i>
+                    </button>
+                </div>
+
+                <!-- Liên kết điều hướng bên trong Menu ☰ (Chỉ BÔI ĐẬM, KHÔNG GẠCH CHÂN) -->
+                <nav class="flex flex-col space-y-8 pl-4">
+                    <a href="INSIDE/inside.html" onclick="handleDrawerNavItemClick(this)"
+                        class="drawer-nav-item flex items-center justify-between text-2xl font-black uppercase tracking-[0.2em] text-white hover:text-slate-300 transition no-underline">
+                        <span>INSIDE</span>
+                        <i data-lucide="chevron-right" class="w-6 h-6 text-slate-400"></i>
+                    </a>
+                    <a href="SOCK/sock.html" onclick="handleDrawerNavItemClick(this)"
+                        class="drawer-nav-item flex items-center justify-between text-2xl font-black uppercase tracking-[0.2em] text-white hover:text-slate-300 transition no-underline">
+                        <span>SOCK</span>
+                        <i data-lucide="chevron-right" class="w-6 h-6 text-slate-400"></i>
+                    </a>
+                    <a href="TSHIRT/tshirt.html" onclick="handleDrawerNavItemClick(this)"
+                        class="drawer-nav-item flex items-center justify-between text-2xl font-black uppercase tracking-[0.2em] text-white hover:text-slate-300 transition no-underline">
+                        <span>T-SHIRT</span>
+                        <i data-lucide="chevron-right" class="w-6 h-6 text-slate-400"></i>
+                    </a>
+                </nav>
+            </div>
+
+            <div class="pl-4 text-xs font-bold uppercase tracking-widest text-slate-400">
+                © 2026 INSIDE+ CONCEPT
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN PAGE CONTENT -->
     <div class="page-view">
         <section class="relative w-full h-screen bg-slate-950 flex items-end justify-start overflow-hidden pb-16 sm:pb-24 pt-24">
             <img src="https://images.unsplash.com/photo-1506152983158-b4a74a01c721?auto=format&fit=crop&q=80&w=2000" alt="Hero" class="absolute inset-0 w-full h-full object-cover object-top">
-            <div class="w-full px-4 sm:px-8 lg:px-12 xl:px-16 relative z-10">
+            <div class="w-full px-4 sm:px-8 lg:px-12 xl:px-16 relative z-10 pb-12 sm:pb-0">
                 <div class="max-w-xl bg-black/40 p-6 sm:p-10 border-l-4 border-blue-500 space-y-4">
                     <span class="inline-block text-xs uppercase font-black tracking-[0.35em] text-blue-400">INSIDE+ CONCEPT 2026</span>
                     <p class="text-white text-sm sm:text-base font-medium leading-relaxed">Bộ sưu tập trang phục mặc nhà & phụ kiện cao cấp.</p>
@@ -91,7 +122,7 @@
             </div>
         </section>
 
-        <section class="w-full bg-white py-12 sm:py-20">
+        <section class="w-full bg-white py-12 sm:py-20 pb-28 md:pb-20">
             <div class="w-full px-4 sm:px-8 lg:px-12 xl:px-16">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                     <div onclick="window.location.href='INSIDE/inside.html'" class="category-card group">
@@ -134,6 +165,26 @@
         </section>
     </div>
 
+    <!-- THANH MENU CỐ ĐỊNH Ở ĐÁY MÀN HÌNH MOBILE (NƠI DUY NHẤT CÓ BÔI ĐẬM VÀ GẠCH CHÂN) -->
+    <div id="mobile-bottom-nav" class="fixed bottom-0 left-0 w-full z-30 md:hidden transition-all duration-300">
+        <div class="w-full bg-gradient-to-t from-black/85 via-black/50 to-transparent pt-8 pb-5 px-6 backdrop-blur-md">
+            <div class="flex items-center justify-around text-center">
+                <a href="INSIDE/inside.html" onclick="handleBottomNavItemClick(this)"
+                   class="bottom-nav-item text-xs sm:text-sm uppercase tracking-[0.2em] text-white/80 transition-all duration-200">
+                    INSIDE
+                </a>
+                <a href="SOCK/sock.html" onclick="handleBottomNavItemClick(this)"
+                   class="bottom-nav-item text-xs sm:text-sm uppercase tracking-[0.2em] text-white/80 transition-all duration-200">
+                    SOCK
+                </a>
+                <a href="TSHIRT/tshirt.html" onclick="handleBottomNavItemClick(this)"
+                   class="bottom-nav-item text-xs sm:text-sm uppercase tracking-[0.2em] text-white/80 transition-all duration-200">
+                    T-SHIRT
+                </a>
+            </div>
+        </div>
+    </div>
+
     <!-- FOOTER -->
     <footer class="bg-white text-slate-700 pt-16 pb-12 border-t border-slate-200 mt-auto">
         <div class="w-full px-4 sm:px-8 lg:px-12 xl:px-16 grid grid-cols-1 md:grid-cols-4 gap-8 pb-12 border-b border-slate-100">
@@ -166,7 +217,7 @@
     </footer>
 
     <!-- WIDGETS -->
-    <div class="fixed bottom-6 right-2 sm:right-2 z-50 flex flex-col items-end gap-3">
+    <div class="fixed bottom-6 right-2 sm:right-2 z-50 flex flex-col items-end gap-3 mb-12 sm:mb-0">
         <div id="social-links-group" class="hidden flex flex-col gap-3">
             <a href="https://m.me/yourpage" target="_blank" class="floating-widget">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="#222222">

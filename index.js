@@ -29,18 +29,103 @@ const allSampleProducts = [
     }
 ];
 
+let lastScrollTop = 0;
+let scrollTimeout = null;
+
+/* 1. XỬ LÝ BÔI ĐẬM LOGO INSIDE+ (KHÔNG GẠCH CHÂN) */
+function handleLogoClick() {
+    clearAllBoldActiveStates();
+    const logo = document.getElementById('btn-logo-main');
+    if (logo) logo.classList.add('btn-bold-active');
+}
+
+/* 2. XỬ LÝ BÔI ĐẬM NÚT TÌM KIẾM (KHÔNG GẠCH CHÂN) */
+function handleSearchBtnClick() {
+    clearAllBoldActiveStates();
+    const btnDesktop = document.getElementById('btn-search-desktop');
+    const btnMobile = document.getElementById('btn-search-mobile');
+    if (btnDesktop) btnDesktop.classList.add('btn-bold-active');
+    if (btnMobile) btnMobile.classList.add('btn-bold-active');
+    openSearchModal();
+}
+
+/* 3. XỬ LÝ BÔI ĐẬM NÚT MENU ☰ (KHÔNG GẠCH CHÂN) */
+function handleMenuBtnClick() {
+    clearAllBoldActiveStates();
+    const menuBtn = document.getElementById('btn-mobile-menu');
+    if (menuBtn) menuBtn.classList.add('btn-bold-active');
+    toggleMobileNavDrawer();
+}
+
+/* 4. XỬ LÝ BÔI ĐẬM MỤC BÊN TRONG MENU ☰ (KHÔNG GẠCH CHÂN) */
+function handleDrawerNavItemClick(element) {
+    clearAllBoldActiveStates();
+    element.classList.add('btn-bold-active');
+    toggleMobileNavDrawer();
+}
+
+/* 5. XỬ LÝ DUY NHẤT MENU DƯỚI CÙNG CÓ CẢ BÔI ĐẬM VÀ GẠCH CHÂN */
+function handleBottomNavItemClick(element) {
+    clearAllBoldActiveStates();
+    element.classList.add('active-bold');
+}
+
+/* XÓA TẤT CẢ TRẠNG THÁI ACTIVE TRƯỚC ĐÓ */
+function clearAllBoldActiveStates() {
+    document.querySelectorAll('.btn-bold-active, .active-bold').forEach(el => {
+        el.classList.remove('btn-bold-active', 'active-bold');
+    });
+}
+
+/* XỬ LÝ ĐỔI MÀU HEADER VÀ ẨN/HIỆN BOTTOM MENU KHI SCROLL */
 window.addEventListener('scroll', () => {
     const header = document.getElementById('main-header');
-    if (window.scrollY > 50) { 
+    const bottomNav = document.getElementById('mobile-bottom-nav');
+    const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+
+    // Đổi style Header
+    if (currentScroll > 50) { 
         header.classList.add('scrolled'); 
     } else { 
         header.classList.remove('scrolled'); 
     }
+
+    // Xử lý ẩn/hiện Bottom Nav trên Mobile
+    if (bottomNav && window.innerWidth < 768) {
+        if (currentScroll < lastScrollTop) {
+            // Vuốt màn hình lên trên (Scroll Up) -> Ẩn thanh menu
+            bottomNav.classList.add('nav-hidden');
+        } else if (currentScroll > lastScrollTop) {
+            // Vuốt màn hình xuống dưới (Scroll Down) -> Hiện thanh menu
+            bottomNav.classList.remove('nav-hidden');
+        }
+
+        // Đứng yên không thao tác quá 150ms -> Hiện thanh menu
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(() => {
+            bottomNav.classList.remove('nav-hidden');
+        }, 150);
+    }
+
+    lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
 });
 
-function toggleMobileNav() {
-    const navMenu = document.getElementById('mobile-nav-menu');
-    navMenu.classList.toggle('hidden');
+/* BẬT TẮT MOBILE NAV DRAWER TOÀN MÀN HÌNH (#363636 NỀN TRONG SUỐT) */
+function toggleMobileNavDrawer() {
+    const drawer = document.getElementById('mobile-nav-drawer');
+    const panel = document.getElementById('mobile-nav-panel');
+
+    if (drawer.classList.contains('hidden')) {
+        drawer.classList.remove('hidden');
+        setTimeout(() => {
+            panel.classList.remove('-translate-x-full');
+        }, 10);
+    } else {
+        panel.classList.add('-translate-x-full');
+        setTimeout(() => {
+            drawer.classList.add('hidden');
+        }, 300);
+    }
 }
 
 function openSearchModal() {
@@ -139,4 +224,21 @@ function scrollToTop() {
 
 document.addEventListener('DOMContentLoaded', () => { 
     if (window.lucide) lucide.createIcons(); 
+});
+
+/* ĐÓNG BẰNG PHÍM ESC */
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' || e.key === 'Esc') {
+        const mobileNav = document.getElementById('mobile-nav-drawer');
+        if (mobileNav && !mobileNav.classList.contains('hidden')) {
+            toggleMobileNavDrawer();
+            return;
+        }
+
+        const searchModal = document.getElementById('search-modal');
+        if (searchModal && !searchModal.classList.contains('hidden')) {
+            closeSearchModal();
+            return;
+        }
+    }
 });

@@ -14,9 +14,9 @@
     <link rel="stylesheet" href="tshirt.css">
 </head>
 
-<body class="antialiased selection:bg-slate-900 selection:text-white">
+<body class="antialiased selection:bg-slate-900 selection:text-white bg-white">
 
-    <!-- HEADER -->
+    <!-- HEADER CHUẨN TAILWIND -->
     <header id="main-header" class="fixed top-0 left-0 w-full z-40 bg-white border-b border-slate-200 shadow-sm">
         <div class="w-full px-4 sm:px-8 lg:px-12 xl:px-16">
             <div class="flex items-center justify-between h-20 md:h-24">
@@ -37,8 +37,8 @@
                             <span class="nav-underline"></span>
                         </a>
                     </nav>
-                    <!-- Nút mở rộng Mobile (Bên trái) -->
-                    <button onclick="toggleMobileNav()" class="md:hidden text-slate-900 p-1 focus:outline-none">
+                    <!-- Nút mở Menu Mobile (Bên trái) -->
+                    <button onclick="toggleMobileNavDrawer()" class="md:hidden text-slate-900 p-1 focus:outline-none">
                         <i data-lucide="menu" class="w-6 h-6"></i>
                     </button>
                 </div>
@@ -71,18 +71,49 @@
 
             </div>
         </div>
-
-        <!-- Menu điều hướng Mobile dạng thanh thứ 2 bên dưới -->
-        <div id="mobile-nav-menu" class="hidden md:hidden w-full border-t border-slate-200/60 py-3 transition-all duration-300">
-            <div class="w-full px-4 flex items-center justify-around">
-                <a href="../inside/inside.html" class="text-xs font-black uppercase tracking-wider text-slate-900 py-1">INSIDE</a>
-                <a href="../sock/sock.html" class="text-xs font-black uppercase tracking-wider text-slate-900 py-1">SOCK</a>
-                <a href="tshirt.html" class="text-xs font-black uppercase tracking-wider text-slate-900 py-1">T-SHIRT</a>
-            </div>
-        </div>
     </header>
 
-    <div class="pt-32 md:pt-40 pb-24 min-h-screen">
+    <!-- MOBILE FULL-SCREEN NAVIGATION MENU (#363636 NỀN TRONG SUỐT, BỎ GẠCH CHÂN) -->
+    <div id="mobile-nav-drawer" class="fixed inset-0 z-[100] hidden md:hidden">
+        <div id="mobile-nav-panel"
+            class="absolute top-0 left-0 w-full h-full bg-[#363636]/95 backdrop-blur-md text-white shadow-2xl -translate-x-full transition-transform duration-300 ease-out flex flex-col justify-between p-8 sm:p-12">
+            
+            <div>
+                <!-- Nút X góc trên bên phải đóng Menu -->
+                <div class="flex justify-end mb-12">
+                    <button onclick="toggleMobileNavDrawer()" class="text-slate-300 hover:text-white transition focus:outline-none p-2">
+                        <i data-lucide="x" class="w-9 h-9 stroke-[1.5]"></i>
+                    </button>
+                </div>
+
+                <!-- Liên kết điều hướng (Bỏ gạch chân hoàn toàn) -->
+                <nav class="flex flex-col space-y-8 pl-4">
+                    <a href="../inside/inside.html" onclick="toggleMobileNavDrawer()"
+                        class="flex items-center justify-between text-2xl font-black uppercase tracking-[0.2em] text-white hover:text-slate-300 transition no-underline">
+                        <span>INSIDE</span>
+                        <i data-lucide="chevron-right" class="w-6 h-6 text-slate-400"></i>
+                    </a>
+                    <a href="../sock/sock.html" onclick="toggleMobileNavDrawer()"
+                        class="flex items-center justify-between text-2xl font-black uppercase tracking-[0.2em] text-white hover:text-slate-300 transition no-underline">
+                        <span>SOCK</span>
+                        <i data-lucide="chevron-right" class="w-6 h-6 text-slate-400"></i>
+                    </a>
+                    <a href="tshirt.html" onclick="toggleMobileNavDrawer()"
+                        class="flex items-center justify-between text-2xl font-black uppercase tracking-[0.2em] text-white hover:text-slate-300 transition no-underline">
+                        <span>T-SHIRT</span>
+                        <i data-lucide="chevron-right" class="w-6 h-6 text-slate-400"></i>
+                    </a>
+                </nav>
+            </div>
+
+            <div class="pl-4 text-xs font-bold uppercase tracking-widest text-slate-400">
+                © 2026 INSIDE+ CONCEPT
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <div class="pt-28 md:pt-36 pb-24 min-h-screen">
         <div class="w-full px-4 sm:px-8 lg:px-12 xl:px-16">
             <nav class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400 mb-6">
                 <a href="../index.html" class="hover:text-slate-900">Trang chủ</a><span>/</span><span
@@ -96,34 +127,75 @@
             </div>
 
             <!-- VISUAL IMAGE FILTER BAR -->
-            <div class="mb-12">
-                <div id="visual-filter-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 md:gap-6">
+            <div class="mb-8 md:mb-12">
+                <div class="visual-filter-wrapper">
+                    <!-- Nút Mũi Tên Trái PC -->
+                    <button id="slider-prev-btn" onclick="scrollFilterSlider('left')" class="slider-arrow-btn slider-arrow-prev hidden">
+                        <i data-lucide="arrow-left" class="w-6 h-6 stroke-[2]"></i>
+                    </button>
+
+                    <!-- Khung chứa ảnh filter -->
+                    <div id="visual-filter-grid" class="visual-filter-scroll-container" onscroll="checkFilterSliderArrows()">
+                    </div>
+
+                    <!-- Nút Mũi Tên Phải PC -->
+                    <button id="slider-next-btn" onclick="scrollFilterSlider('right')" class="slider-arrow-btn slider-arrow-next hidden">
+                        <i data-lucide="arrow-right" class="w-6 h-6 stroke-[2]"></i>
+                    </button>
                 </div>
             </div>
 
             <!-- CONTROLS & CATALOG COUNTER -->
-            <div
-                class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-200 pb-5 mb-10">
+            <!-- DESKTOP CONTROLS -->
+            <div class="hidden md:flex items-center justify-between gap-4 border-b border-slate-200 pb-5 mb-10">
                 <div class="flex items-center gap-6">
                     <div class="relative">
-                        <button onclick="toggleSortDropdown()" class="btn-control-filter">
+                        <button onclick="toggleSortDropdown('desktop')" class="btn-control-filter">
                             <i data-lucide="sliders-horizontal" class="w-4 h-4"></i> Sắp xếp
                         </button>
-                        <div id="sort-dropdown"
+                        <div id="sort-dropdown-desktop"
                             class="absolute left-0 mt-2 w-56 bg-white border border-slate-200 shadow-xl hidden z-30 py-2">
                             <button onclick="setSortOption('newest')" class="dropdown-item">Mới nhất</button>
-                            <button onclick="setSortOption('price-asc')" class="dropdown-item">Giá: từ thấp đến
-                                cao</button>
-                            <button onclick="setSortOption('price-desc')" class="dropdown-item">Giá: từ cao đến
-                                thấp</button>
+                            <button onclick="setSortOption('price-asc')" class="dropdown-item">Giá: từ thấp đến cao</button>
+                            <button onclick="setSortOption('price-desc')" class="dropdown-item">Giá: từ cao đến thấp</button>
                         </div>
                     </div>
-                    <span id="catalog-count" class="text-xs font-bold text-slate-700">0 sản phẩm</span>
+                    <span class="catalog-count-text text-xs font-bold text-slate-700">0 sản phẩm</span>
                 </div>
                 <div>
                     <button onclick="openFilterDrawer()" class="btn-control-filter">
                         <i data-lucide="sliders-horizontal" class="w-4 h-4"></i> Lọc sản phẩm
                     </button>
+                </div>
+            </div>
+
+            <!-- MOBILE CONTROLS -->
+            <div class="md:hidden flex flex-col items-center justify-center gap-4 border-b border-slate-200 pb-6 mb-8">
+                <div class="grid grid-cols-2 gap-3 w-full max-w-md">
+                    <button onclick="openFilterDrawer()"
+                        class="w-full py-3 border border-slate-300 text-xs font-bold uppercase text-slate-900 flex items-center justify-center gap-2.5 bg-white">
+                        <i data-lucide="sliders-horizontal" class="w-4 h-4"></i> Lọc sản phẩm
+                    </button>
+                    
+                    <div class="relative w-full">
+                        <button onclick="toggleSortDropdown('mobile')"
+                            class="w-full py-3 border border-slate-300 text-xs font-bold uppercase text-slate-900 flex items-center justify-center gap-2.5 bg-white">
+                            <i data-lucide="sliders-horizontal" class="w-4 h-4"></i> Sắp xếp
+                        </button>
+                        <div id="sort-dropdown-mobile"
+                            class="absolute right-0 mt-2 w-full bg-white border border-slate-200 shadow-xl hidden z-30 py-2">
+                            <button onclick="setSortOption('newest')"
+                                class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition">Mới nhất</button>
+                            <button onclick="setSortOption('price-asc')"
+                                class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition">Giá: thấp đến cao</button>
+                            <button onclick="setSortOption('price-desc')"
+                                class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition">Giá: cao đến thấp</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <span class="catalog-count-text text-sm font-bold text-slate-900">0 Sản phẩm</span>
                 </div>
             </div>
 
@@ -339,18 +411,15 @@
     <!-- MODAL LIGHTBOX XEM TẤT CẢ ẢNH SẢN PHẨM -->
     <div id="gallery-modal"
         class="fixed inset-0 z-[150] hidden bg-[#f8f9fa]/95 backdrop-blur-md flex items-center justify-center">
-        <!-- Nút đóng X góc trên phải -->
         <button onclick="closeGalleryModal()"
             class="absolute top-6 right-6 z-20 w-10 h-10 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center text-slate-600 hover:text-slate-900 transition">
             <i data-lucide="x" class="w-8 h-8"></i>
         </button>
 
-        <!-- Khung chứa ảnh chính -->
         <div class="relative w-full max-w-4xl h-[75vh] flex items-center justify-center p-4">
             <img id="gallery-modal-img" src="" class="max-w-full max-h-full object-contain transition-all duration-300">
         </div>
 
-        <!-- Thanh điều hướng dạng viên thuốc màu trắng -->
         <div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-20">
             <div class="gallery-nav-pill">
                 <button onclick="prevGalleryImage()"
