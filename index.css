@@ -241,14 +241,14 @@
 /* Hiệu ứng bôi đậm vùng xung quanh khi chạm/ấn giữ (Mobile & Desktop) */
 #btn-logo-main:active,
 #btn-logo-main.btn-bold-active {
-    background-color: rgba(142, 144, 146, 0.25) !important; /* Vùng nền bôi đậm màu xanh lam mờ */
+    background-color: rgba(246, 4, 4, 0.25) !important; /* Vùng nền bôi đậm màu xanh lam mờ */
     text-decoration: none !important;
 }
 
 /* Trường hợp Header đang dạng nền trắng (khi cuộn trang xuống hoặc hover) */
 #main-header.scrolled #btn-logo-main:active,
 #main-header:hover #btn-logo-main:active {
-    background-color: rgba(142, 144, 146, 0.25) !important; /* Vùng bôi đậm màu xanh nhạt sáng khi nền header là trắng */
+    background-color: rgba(246, 4, 4, 0.25) !important; /* Vùng bôi đậm màu xanh nhạt sáng khi nền header là trắng */
 }
 
 /* --- HIỆU ỨNG CHỈ BÔI ĐẬM KHI ĐANG BẤM (ACTIVE) - KHÔNG LƯU STATE --- */
@@ -268,14 +268,14 @@
 
 /* 1. Logo INSIDE+ */
 #btn-logo-main:active {
-    background-color: rgba(59, 130, 246, 0.25) !important;
+    background-color: rgba(246, 4, 4, 0.25) !important;
 }
 
 /* 2. Nút Menu ☰ & Nút Tìm kiếm */
 #btn-mobile-menu:active,
 #btn-search-mobile:active,
 #btn-search-desktop:active {
-    background-color: rgba(255, 255, 255, 0.2) !important;
+    background-color: rgba(246, 4, 4, 0.25) !important;
     border-radius: 6px;
 }
 
@@ -286,26 +286,26 @@
 #main-header:hover #btn-mobile-menu:active,
 #main-header:hover #btn-search-mobile:active,
 #main-header:hover #btn-search-desktop:active {
-    background-color: rgba(0, 0, 0, 0.1) !important;
+    background-color: rgba(246, 4, 4, 0.25) !important;
 }
 
 /* 3. Nút X đóng */
 #mobile-nav-drawer button:active,
 #search-modal button:active {
-    background-color: rgba(255, 255, 255, 0.2) !important;
+    background-color: rgba(246, 4, 4, 0.25) !important;
     border-radius: 9999px;
 }
 
 #search-modal button:active {
-    background-color: rgba(0, 0, 0, 0.1) !important;
+    background-color: rgba(246, 4, 4, 0.25) !important;
 }
 
 /* 4. Các mục INSIDE, SOCK, T-SHIRT trong Menu ☰ */
 .drawer-nav-item:active {
-    background-color: rgba(255, 255, 255, 0.18) !important;
+    background-color: rgba(246, 4, 4, 0.25) !important;
 }
 
 /* 5. Menu dưới đáy Mobile */
 .bottom-nav-item:active {
-    background-color: rgba(255, 255, 255, 0.25) !important;
+    background-color: rgba(246, 4, 4, 0.25) !important;
 }

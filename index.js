@@ -243,6 +243,7 @@ document.addEventListener('keydown', (e) => {
         const mobileNav = document.getElementById('mobile-nav-drawer');
         if (mobileNav && !mobileNav.classList.contains('hidden')) {
             toggleMobileNavDrawer();
+                clearAllBoldActiveStates();
             return;
         }
 
@@ -252,5 +253,4 @@ document.addEventListener('keydown', (e) => {
             return;
         }
     }
-    clearAllBoldActiveStates();
 });
