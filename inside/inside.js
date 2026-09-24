@@ -167,6 +167,11 @@ let currentSelectedSize = null;
 let currentGalleryImages = [];
 let currentGalleryIndex = 0;
 
+function toggleMobileNav() {
+    const navMenu = document.getElementById('mobile-nav-menu');
+    navMenu.classList.toggle('hidden');
+}
+
 function renderVisualFilterBar() {
     const container = document.getElementById('visual-filter-grid');
     if (!container) return;
@@ -186,7 +191,6 @@ function renderVisualFilterBar() {
     }).join('');
 }
 
-// CẬP NHẬT: KHI NHẤN "TẤT CẢ", MẶC ĐỊNH RESET MỌI LỰA CHỌN TRONG FORM LỌC SẢN PHẨM
 function selectVisualFilter(styleVal) {
     activeVisualFilter = styleVal;
 
@@ -200,12 +204,10 @@ function selectVisualFilter(styleVal) {
     }
 
     if (styleVal === 'ALL') {
-        // Tự động xoá toàn bộ lựa chọn filter trong Sidebar Drawer
         document.querySelectorAll('#filter-panel input').forEach(function (el) { el.checked = false; });
         document.querySelectorAll('.filter-size-btn').forEach(function (btn) { btn.classList.remove('border-slate-900', 'bg-slate-900', 'text-white', 'selected-size'); });
         document.querySelectorAll('.filter-color-btn').forEach(function (btn) { btn.classList.remove('ring-2', 'ring-slate-900', 'selected-color'); });
         
-        // Reset nút áp dụng/xóa bộ lọc
         const btnApply = document.getElementById('btn-apply-filter');
         const btnClear = document.getElementById('btn-clear-filter');
         if (btnApply && btnClear) {
@@ -299,6 +301,25 @@ function openProductDrawer(id) {
     }, 10);
 }
 
+// CẬP NHẬT: THÊM TÍNH NĂNG TỰ ĐỘNG CỦON MƯỢT LÊN ĐẦU DRAWER KHI BẤM ĐỔI MÀU TRÊN MOBILE
+function changeDrawerColor(productId, colorIdx) {
+    const p = originalProducts.find(function (x) { return x.id === productId; });
+    if (!p) return;
+    
+    renderDrawerContent(p, colorIdx);
+
+    // Kiểm tra nếu là thiết bị Mobile (< 1024px)
+    if (window.innerWidth < 1024) {
+        const drawerPanel = document.getElementById('product-drawer-panel');
+        if (drawerPanel) {
+            drawerPanel.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+    }
+}
+
 function renderDrawerContent(p, colorIdx) {
     const activeColor = p.colors[colorIdx];
     const availableSizes = activeColor.sizes || [];
@@ -317,7 +338,6 @@ function renderDrawerContent(p, colorIdx) {
 
     const showOutOfStockBtn = isSelectedSizeOutOfStock || isAllSizesOutOfStock;
 
-    // CẬP NHẬT: THAY NÚT GÓC DƯỚI PHẢI THÀNH HÌNH KÍNH LÚP
     var imagesHtml = activeColor.images.map(function (img, imgIdx) {
         return '<div class="product-detail-img-container aspect-[4/5] bg-slate-100 shadow-sm" onclick="openGalleryModal(' + imgIdx + ')">' +
             '<img src="' + img + '" class="w-full h-full object-cover">' +
@@ -333,7 +353,7 @@ function renderDrawerContent(p, colorIdx) {
         var activeClass = cIdx === colorIdx ? 'ring-2 ring-slate-900 ring-offset-2' : '';
 
         return '<div class="color-btn-wrapper">' +
-            '<button onclick="renderDrawerContent(originalProducts.find(function(x){ return x.id===\'' + p.id + '\'}),' + cIdx + ')" ' +
+            '<button onclick="changeDrawerColor(\'' + p.id + '\',' + cIdx + ')" ' +
             'class="w-7 h-7 rounded-full border border-slate-300 transition-all relative ' + strikeClass + ' ' + activeClass + '" ' +
             'style="background-color: ' + c.hex + ';" title="' + c.name + '">' +
             '</button>' +
@@ -564,38 +584,32 @@ function toggleChatMenu() {
 
 function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
-// CẬP NHẬT: LẮNG NGHE PHÍM ESC ĐỂ ĐÓNG BẤT KỲ FORM/MODAL NÀO ĐANG MỞ
 document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' || e.key === 'Esc') {
-        // 1. Đóng Lightbox Gallery
         const galleryModal = document.getElementById('gallery-modal');
         if (galleryModal && !galleryModal.classList.contains('hidden')) {
             closeGalleryModal();
             return;
         }
 
-        // 2. Đóng Hướng dẫn chọn Size Modal
         const sizeModal = document.getElementById('size-modal');
         if (sizeModal && !sizeModal.classList.contains('hidden')) {
             closeSizeModal();
             return;
         }
 
-        // 3. Đóng Modal Tìm kiếm
         const searchModal = document.getElementById('search-modal');
         if (searchModal && !searchModal.classList.contains('hidden')) {
             closeSearchModal();
             return;
         }
 
-        // 4. Đóng Drawer Lọc sản phẩm
         const filterDrawer = document.getElementById('filter-drawer');
         if (filterDrawer && !filterDrawer.classList.contains('hidden')) {
             closeFilterDrawer();
             return;
         }
 
-        // 5. Đóng Drawer Chi tiết sản phẩm
         const productDrawer = document.getElementById('product-drawer');
         if (productDrawer && !productDrawer.classList.contains('hidden')) {
             closeProductDrawer();
