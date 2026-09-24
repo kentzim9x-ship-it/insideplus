@@ -251,9 +251,10 @@
     background-color: rgba(142, 144, 146, 0.25) !important; /* Vùng bôi đậm màu xanh nhạt sáng khi nền header là trắng */
 }
 
-/* --- HIỆU ỨNG BÔI ĐẬM VÙNG NỀN KHI CHẠM (TAP/ACTIVE) CHO TẤT CẢ CÁC NÚT --- */
+/* --- HIỆU ỨNG CHỈ BÔI ĐẬM KHI ĐANG BẤM (ACTIVE) - KHÔNG LƯU STATE --- */
 
-/* Tắt vệt viền xám/xanh mặc định của trình duyệt di động */
+/* Tắt vệt viền tím/xám mặc định trên Mobile */
+#btn-logo-main,
 #btn-mobile-menu,
 #btn-search-desktop,
 #btn-search-mobile,
@@ -262,27 +263,23 @@
 .drawer-nav-item,
 .bottom-nav-item {
     -webkit-tap-highlight-color: transparent;
-    transition: background-color 0.15s ease, transform 0.15s ease;
+    transition: background-color 0.1s ease;
 }
 
-/* 1. Nút Menu ☰ & Nút Tìm kiếm (Header trên Mobile & Desktop) */
-#btn-mobile-menu,
-#btn-search-mobile {
-    padding: 6px 8px !important;
-    border-radius: 1px;
+/* 1. Logo INSIDE+ */
+#btn-logo-main:active {
+    background-color: rgba(59, 130, 246, 0.25) !important;
 }
 
+/* 2. Nút Menu ☰ & Nút Tìm kiếm */
 #btn-mobile-menu:active,
 #btn-search-mobile:active,
-#btn-search-desktop:active,
-#btn-mobile-menu.btn-bold-active,
-#btn-search-mobile.btn-bold-active,
-#btn-search-desktop.btn-bold-active {
-    background-color: rgba(34, 34, 34, 0.67) !important;
-    border-radius: 1px;
+#btn-search-desktop:active {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    border-radius: 6px;
 }
 
-/* Khi Header dạng nền trắng (khi cuộn trang xuống) */
+/* Khi Header nền trắng */
 #main-header.scrolled #btn-mobile-menu:active,
 #main-header.scrolled #btn-search-mobile:active,
 #main-header.scrolled #btn-search-desktop:active,
@@ -292,36 +289,23 @@
     background-color: rgba(0, 0, 0, 0.1) !important;
 }
 
-/* 2. Nút X đóng ở Form Menu ☰ & Form Tìm kiếm */
+/* 3. Nút X đóng */
 #mobile-nav-drawer button:active,
 #search-modal button:active {
     background-color: rgba(255, 255, 255, 0.2) !important;
-    border-radius: 1px;
-    padding: 4px 4px;
+    border-radius: 9999px;
 }
 
 #search-modal button:active {
-    background-color: rgba(34, 34, 34, 0.67) !important; 
+    background-color: rgba(0, 0, 0, 0.1) !important;
 }
 
-/* 3. Các mục INSIDE, SOCK, T-SHIRT bên trong Menu Drawer ☰ */
-.drawer-nav-item {
-    padding: 10px 14px;
-    border-radius: 1px;
+/* 4. Các mục INSIDE, SOCK, T-SHIRT trong Menu ☰ */
+.drawer-nav-item:active {
+    background-color: rgba(255, 255, 255, 0.18) !important;
 }
 
-.drawer-nav-item:active,
-.drawer-nav-item.btn-bold-active {
-    background-color: rgba(34, 34, 34, 0.67) !important;
-}
-
-/* 4. Các mục INSIDE, SOCK, T-SHIRT ở thanh Menu dưới đáy Mobile */
-.bottom-nav-item {
-    padding: 10px 14px;
-    border-radius: 1px;
-}
-
-.bottom-nav-item:active,
-.bottom-nav-item.active-bold {
-    background-color: rgba(34, 34, 34, 0.67) !important;
+/* 5. Menu dưới đáy Mobile */
+.bottom-nav-item:active {
+    background-color: rgba(255, 255, 255, 0.25) !important;
 }

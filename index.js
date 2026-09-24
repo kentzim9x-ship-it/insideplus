@@ -133,6 +133,7 @@ function toggleMobileNavDrawer() {
         panel.classList.add('-translate-x-full');
         setTimeout(() => {
             drawer.classList.add('hidden');
+            clearAllBoldActiveStates(); // Xóa trạng thái active khi đóng drawer
         }, 300);
     }
 }
@@ -147,6 +148,7 @@ function openSearchModal() {
 
 function closeSearchModal() { 
     document.getElementById('search-modal').classList.add('hidden'); 
+    clearAllBoldActiveStates(); // Xóa trạng thái active khi đóng search
 }
 
 function fillSearch(keyword) { 
@@ -250,4 +252,5 @@ document.addEventListener('keydown', (e) => {
             return;
         }
     }
+    clearAllBoldActiveStates();
 });
