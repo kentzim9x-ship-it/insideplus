@@ -39,32 +39,32 @@
                     </nav>
                     
                     <!-- Nút Menu Mobile -->
-<button onclick="handleMenuBtnClick(this)" id="btn-mobile-menu" class="md:hidden text-white p-1 focus:outline-none transition-all">
-    <i data-lucide="menu" class="w-6 h-6"></i>
-</button>
+                    <button onclick="handleMenuBtnClick(this)" id="btn-mobile-menu" class="md:hidden text-white p-1 focus:outline-none transition-all">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
                 </div>
 
                 <!-- Logo INSIDE+ -->
-<div class="w-1/3 flex items-center justify-center text-center">
-    <a href="index.html" onclick="handleLogoClick(this)" id="btn-logo-main" class="inline-flex items-center font-black text-2xl md:text-3xl tracking-tighter uppercase group transition-all">
-        <span class="logo-main text-white">INSIDE</span>
-        <span class="text-blue-500 font-black relative -top-2 md:-top-2.5 left-1 md:left-1.5 group-hover:rotate-90 transition transform inline-block">+</span>
-    </a>
-</div>
+                <div class="w-1/3 flex items-center justify-center text-center">
+                    <a href="index.html" onclick="handleLogoClick(this)" id="btn-logo-main" class="inline-flex items-center font-black text-2xl md:text-3xl tracking-tighter uppercase group transition-all">
+                        <span class="logo-main text-white">INSIDE</span>
+                        <span class="text-blue-500 font-black relative -top-2 md:-top-2.5 left-1 md:left-1.5 group-hover:rotate-90 transition transform inline-block">+</span>
+                    </a>
+                </div>
 
-                <!-- Tìm kiếm (Bên phải Desktop & Mobile - Có hiệu ứng Bôi đậm khi active) -->
+                <!-- Tìm kiếm (Bên phải Desktop & Mobile) -->
                 <div class="w-1/3 flex items-center justify-end">
                     <div class="hidden md:flex items-center">
                         <!-- Nút Tìm kiếm Desktop -->
-<button onclick="handleSearchBtnClick(this)" id="btn-search-desktop" class="group relative py-2 text-sm font-extrabold uppercase tracking-[0.15em] text-white flex items-center gap-2 transition-all">
-    <span class="search-text">TÌM KIẾM</span>
-    <i data-lucide="search" class="w-4 h-4 search-icon"></i>
-</button>
+                        <button onclick="handleSearchBtnClick(this)" id="btn-search-desktop" class="group relative py-2 text-sm font-extrabold uppercase tracking-[0.15em] text-white flex items-center gap-2 transition-all">
+                            <span class="search-text">TÌM KIẾM</span>
+                            <i data-lucide="search" class="w-4 h-4 search-icon"></i>
+                        </button>
                     </div>
-                   <!-- Nút Tìm kiếm Mobile -->
-<button onclick="handleSearchBtnClick(this)" id="btn-search-mobile" class="md:hidden text-white p-1 focus:outline-none transition-all">
-    <i data-lucide="search" class="w-6 h-6 search-icon"></i>
-</button>
+                    <!-- Nút Tìm kiếm Mobile -->
+                    <button onclick="handleSearchBtnClick(this)" id="btn-search-mobile" class="md:hidden text-white p-1 focus:outline-none transition-all">
+                        <i data-lucide="search" class="w-6 h-6 search-icon"></i>
+                    </button>
                 </div>
 
             </div>
@@ -80,11 +80,11 @@
                 <!-- Nút X góc trên bên phải đóng Menu -->
                 <div class="flex justify-end mb-12">
                     <button onclick="handleCloseDrawerBtnClick(this)" class="text-slate-300 hover:text-white transition focus:outline-none p-2">
-    <i data-lucide="x" class="w-9 h-9 stroke-[1.5]"></i>
-</button>
+                        <i data-lucide="x" class="w-9 h-9 stroke-[1.5]"></i>
+                    </button>
                 </div>
 
-                <!-- Liên kết điều hướng bên trong Menu ☰ (Chỉ BÔI ĐẬM, KHÔNG GẠCH CHÂN) -->
+                <!-- Liên kết điều hướng bên trong Menu ☰ -->
                 <nav class="flex flex-col space-y-8 pl-4">
                     <a href="INSIDE/inside.html" onclick="handleDrawerNavItemClick(this)"
                         class="drawer-nav-item flex items-center justify-between text-2xl font-black uppercase tracking-[0.2em] text-white hover:text-slate-300 transition no-underline">
@@ -165,7 +165,7 @@
         </section>
     </div>
 
-    <!-- THANH MENU CỐ ĐỊNH Ở ĐÁY MÀN HÌNH MOBILE (NƠI DUY NHẤT CÓ BÔI ĐẬM VÀ GẠCH CHÂN) -->
+    <!-- THANH MENU CỐ ĐỊNH Ở ĐÁY MÀN HÌNH MOBILE -->
     <div id="mobile-bottom-nav" class="fixed bottom-0 left-0 w-full z-30 md:hidden transition-all duration-300">
         <div class="w-full bg-gradient-to-t from-black/85 via-black/50 to-transparent pt-8 pb-5 px-6 backdrop-blur-md">
             <div class="flex items-center justify-around text-center">
@@ -244,8 +244,8 @@
                 <input type="text" id="search-input" oninput="handleSearchInput(this.value)" placeholder="TÌM KIẾM SẢN PHẨM..." class="w-full bg-transparent text-xl sm:text-2xl font-black text-slate-900 placeholder:text-slate-300 uppercase tracking-tight focus:outline-none">
             </div>
             <button onclick="handleCloseSearchBtnClick(this)" class="p-3 -mr-3 text-slate-400 hover:text-slate-900 transition-colors">
-    <i data-lucide="x" class="w-8 h-8 text-black stroke-[1.5]"></i>
-</button>
+                <i data-lucide="x" class="w-8 h-8 text-black stroke-[1.5]"></i>
+            </button>
         </div>
 
         <div class="w-full max-w-5xl mx-auto px-6 py-10 space-y-12">

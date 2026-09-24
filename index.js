@@ -79,12 +79,17 @@ function handleBottomNavItemClick(element) {
     if (element) element.classList.add('active-bold');
 }
 
-/* XÓA TẤT CẢ TRẠNG THÁI ACTIVE TRƯỚC ĐÓ */
+/* XÓA TẤT CẢ TRẠNG THÁI ACTIVE TRƯỚC ĐÓ VÀ KHI QUAY LẠI TRANG (BACK BUTTON) */
 function clearAllBoldActiveStates() {
     document.querySelectorAll('.btn-bold-active, .active-bold').forEach(el => {
         el.classList.remove('btn-bold-active', 'active-bold');
     });
 }
+
+// Lắng nghe sự kiện quay lại trang từ cache (PAGELOAD / BACK BUTTON) để xóa trạng thái bôi đậm cũ
+window.addEventListener('pageshow', () => {
+    clearAllBoldActiveStates();
+});
 
 /* XỬ LÝ ĐỔI MÀU HEADER VÀ ẨN/HIỆN BOTTOM MENU KHI SCROLL */
 window.addEventListener('scroll', () => {
@@ -243,7 +248,7 @@ document.addEventListener('keydown', (e) => {
         const mobileNav = document.getElementById('mobile-nav-drawer');
         if (mobileNav && !mobileNav.classList.contains('hidden')) {
             toggleMobileNavDrawer();
-                clearAllBoldActiveStates();
+            clearAllBoldActiveStates();
             return;
         }
 
