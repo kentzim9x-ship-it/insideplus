@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3233/3233215.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="index.css">
 </head>
 
@@ -37,18 +37,21 @@
                             <span class="nav-underline"></span>
                         </a>
                     </nav>
-                    
+
                     <!-- Nút Menu Mobile -->
-                    <button onclick="handleMenuBtnClick(this)" id="btn-mobile-menu" class="md:hidden text-white p-1 focus:outline-none transition-all">
+                    <button onclick="handleMenuBtnClick(this)" id="btn-mobile-menu"
+                        class="md:hidden text-white p-1 focus:outline-none transition-all">
                         <i data-lucide="menu" class="w-6 h-6"></i>
                     </button>
                 </div>
 
                 <!-- Logo INSIDE+ -->
                 <div class="w-1/3 flex items-center justify-center text-center">
-                    <a href="index.html" onclick="handleLogoClick(this)" id="btn-logo-main" class="inline-flex items-center font-black text-2xl md:text-3xl tracking-tighter uppercase group transition-all">
+                    <a href="index.html" onclick="handleLogoClick(this)" id="btn-logo-main"
+                        class="inline-flex items-center font-black text-2xl md:text-3xl tracking-tighter uppercase group transition-all">
                         <span class="logo-main text-white">INSIDE</span>
-                        <span class="text-blue-500 font-black relative -top-2 md:-top-2.5 left-1 md:left-1.5 group-hover:rotate-90 transition transform inline-block">+</span>
+                        <span
+                            class="text-blue-500 font-black relative -top-2 md:-top-2.5 left-1 md:left-1.5 group-hover:rotate-90 transition transform inline-block">+</span>
                     </a>
                 </div>
 
@@ -56,13 +59,15 @@
                 <div class="w-1/3 flex items-center justify-end">
                     <div class="hidden md:flex items-center">
                         <!-- Nút Tìm kiếm Desktop -->
-                        <button onclick="handleSearchBtnClick(this)" id="btn-search-desktop" class="group relative py-2 text-sm font-extrabold uppercase tracking-[0.15em] text-white flex items-center gap-2 transition-all">
+                        <button onclick="handleSearchBtnClick(this)" id="btn-search-desktop"
+                            class="group relative py-2 text-sm font-extrabold uppercase tracking-[0.15em] text-white flex items-center gap-2 transition-all">
                             <span class="search-text">TÌM KIẾM</span>
                             <i data-lucide="search" class="w-4 h-4 search-icon"></i>
                         </button>
                     </div>
                     <!-- Nút Tìm kiếm Mobile -->
-                    <button onclick="handleSearchBtnClick(this)" id="btn-search-mobile" class="md:hidden text-white p-1 focus:outline-none transition-all">
+                    <button onclick="handleSearchBtnClick(this)" id="btn-search-mobile"
+                        class="md:hidden text-white p-1 focus:outline-none transition-all">
                         <i data-lucide="search" class="w-6 h-6 search-icon"></i>
                     </button>
                 </div>
@@ -74,37 +79,39 @@
     <!-- MOBILE FULL-SCREEN NAVIGATION MENU (#363636 NỀN TRONG SUỐT) -->
     <div id="mobile-nav-drawer" class="fixed inset-0 z-[100] hidden md:hidden">
         <div id="mobile-nav-panel"
-            class="absolute top-0 left-0 w-full h-full bg-[#363636]/95 backdrop-blur-md text-white shadow-2xl -translate-x-full transition-transform duration-300 ease-out flex flex-col justify-between p-8 sm:p-12">
-            
+            class="absolute top-0 left-0 w-full h-full bg-[#363636]/95 backdrop-blur-md text-white shadow-2xl -translate-x-full transition-transform duration-300 ease-out flex flex-col justify-between p-5 sm:p-8">
+
             <div>
-                <!-- Nút X góc trên bên phải đóng Menu -->
-                <div class="flex justify-end mb-12">
-                    <button onclick="handleCloseDrawerBtnClick(this)" class="text-slate-300 hover:text-white transition focus:outline-none p-2">
-                        <i data-lucide="x" class="w-9 h-9 stroke-[1.5]"></i>
+                <!-- Nút X (Bỏ padding thừa để căn lề sát mép phải chuẩn xác) -->
+                <div class="flex justify-end mb-6">
+                    <button onclick="handleCloseDrawerBtnClick(this)"
+                        class="text-slate-200 hover:text-white transition focus:outline-none p-1">
+                        <i data-lucide="x" class="w-7 h-7 stroke-[1.5] -mr-0.5"></i>
                     </button>
                 </div>
 
-                <!-- Liên kết điều hướng bên trong Menu ☰ -->
-                <nav class="flex flex-col space-y-8 pl-4">
+                <!-- Các mục INSIDE, SOCK, T-SHIRT (Bỏ padding phải thừa để nút > gióng thẳng hàng với nút X) -->
+                <nav class="flex flex-col space-y-3 pl-1 pr-0">
                     <a href="INSIDE/inside.html" onclick="handleDrawerNavItemClick(this)"
-                        class="drawer-nav-item flex items-center justify-between text-2xl font-black uppercase tracking-[0.2em] text-white hover:text-slate-300 transition no-underline">
+                        class="drawer-nav-item flex items-center justify-between text-xl font-black uppercase tracking-[0.18em] text-white hover:text-slate-300 transition no-underline">
                         <span>INSIDE</span>
-                        <i data-lucide="chevron-right" class="w-6 h-6 text-slate-400"></i>
+                        <i data-lucide="chevron-right" class="w-5 h-5 text-slate-300 -mr-3"></i>
                     </a>
                     <a href="SOCK/sock.html" onclick="handleDrawerNavItemClick(this)"
-                        class="drawer-nav-item flex items-center justify-between text-2xl font-black uppercase tracking-[0.2em] text-white hover:text-slate-300 transition no-underline">
+                        class="drawer-nav-item flex items-center justify-between text-xl font-black uppercase tracking-[0.18em] text-white hover:text-slate-300 transition no-underline">
                         <span>SOCK</span>
-                        <i data-lucide="chevron-right" class="w-6 h-6 text-slate-400"></i>
+                        <i data-lucide="chevron-right" class="w-5 h-5 text-slate-300 -mr-3"></i>
                     </a>
                     <a href="TSHIRT/tshirt.html" onclick="handleDrawerNavItemClick(this)"
-                        class="drawer-nav-item flex items-center justify-between text-2xl font-black uppercase tracking-[0.2em] text-white hover:text-slate-300 transition no-underline">
+                        class="drawer-nav-item flex items-center justify-between text-xl font-black uppercase tracking-[0.18em] text-white hover:text-slate-300 transition no-underline">
                         <span>T-SHIRT</span>
-                        <i data-lucide="chevron-right" class="w-6 h-6 text-slate-400"></i>
+                        <i data-lucide="chevron-right" class="w-5 h-5 text-slate-300 -mr-3"></i>
                     </a>
                 </nav>
             </div>
 
-            <div class="pl-4 text-xs font-bold uppercase tracking-widest text-slate-400">
+            <!-- Dòng Copyright ở dưới cùng -->
+            <div class="pl-1 pb-2 text-[14px] font-bold uppercase tracking-widest text-slate-400">
                 © 2026 INSIDE+ CONCEPT
             </div>
         </div>
@@ -112,13 +119,23 @@
 
     <!-- MAIN PAGE CONTENT -->
     <div class="page-view">
-        <section class="relative w-full h-screen bg-slate-950 flex items-end justify-start overflow-hidden pb-16 sm:pb-24 pt-24">
-            <img src="https://images.unsplash.com/photo-1506152983158-b4a74a01c721?auto=format&fit=crop&q=80&w=2000" alt="Hero" class="absolute inset-0 w-full h-full object-cover object-top">
+        <!-- HERO BANNER SECTION (ẢNH KHÁC NHAU GIỮA MOBILE VÀ PC) -->
+        <section
+            class="relative w-full h-screen bg-slate-950 flex items-end justify-start overflow-hidden pb-16 sm:pb-24 pt-24">
+
+            <!-- 1. HÌNH ẢNH HIỂN THỊ TRÊN MOBILE -->
+            <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=1000"
+                alt="Hero Mobile" class="absolute inset-0 w-full h-full object-cover object-center md:hidden">
+
+            <!-- 2. HÌNH ẢNH HIỂN THỊ TRÊN PC / DESKTOP -->
+            <img src="https://images.unsplash.com/photo-1506152983158-b4a74a01c721?auto=format&fit=crop&q=80&w=2000"
+                alt="Hero Desktop" class="absolute inset-0 w-full h-full object-cover object-top hidden md:block">
+
             <div class="w-full px-4 sm:px-8 lg:px-12 xl:px-16 relative z-10 pb-12 sm:pb-0">
-                <div class="max-w-xl bg-black/40 p-6 sm:p-10 border-l-4 border-blue-500 space-y-4">
+                <!-- <div class="max-w-xl bg-black/40 p-6 sm:p-10 border-l-4 border-blue-500 space-y-4">
                     <span class="inline-block text-xs uppercase font-black tracking-[0.35em] text-blue-400">INSIDE+ CONCEPT 2026</span>
                     <p class="text-white text-sm sm:text-base font-medium leading-relaxed">Bộ sưu tập trang phục mặc nhà & phụ kiện cao cấp.</p>
-                </div>
+                </div> -->
             </div>
         </section>
 
@@ -126,11 +143,14 @@
             <div class="w-full px-4 sm:px-8 lg:px-12 xl:px-16">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                     <div onclick="window.location.href='INSIDE/inside.html'" class="category-card group">
-                        <img src="https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200" class="absolute inset-0 w-full h-full object-cover">
+                        <img src="https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"
+                            class="absolute inset-0 w-full h-full object-cover">
                         <div class="category-overlay"></div>
                         <h3 class="category-title">INSIDE</h3>
                         <div class="category-content">
-                            <p class="text-[11px] lg:text-xs text-white font-medium leading-relaxed max-w-xs text-center">Quần lót nam Seamless không đường may & sợi tre Bamboo thoáng khí tối đa.</p>
+                            <p
+                                class="text-[11px] lg:text-xs text-white font-medium leading-relaxed max-w-xs text-center">
+                                Quần lót nam Seamless không đường may & sợi tre Bamboo thoáng khí tối đa.</p>
                             <div class="category-arrow-btn">
                                 <i data-lucide="arrow-right" class="w-4 h-4 font-light"></i>
                             </div>
@@ -138,11 +158,14 @@
                     </div>
 
                     <div onclick="window.location.href='SOCK/sock.html'" class="category-card group">
-                        <img src="https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?auto=format&fit=crop&q=80&w=1200" class="absolute inset-0 w-full h-full object-cover">
+                        <img src="https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?auto=format&fit=crop&q=80&w=1200"
+                            class="absolute inset-0 w-full h-full object-cover">
                         <div class="category-overlay"></div>
                         <h3 class="category-title">SOCK</h3>
                         <div class="category-content">
-                            <p class="text-[11px] lg:text-xs text-white font-medium leading-relaxed max-w-xs text-center">Tất cổ ngắn giấu gót, cổ trung và vớ thể thao đệm xù êm ái chống hôi chân.</p>
+                            <p
+                                class="text-[11px] lg:text-xs text-white font-medium leading-relaxed max-w-xs text-center">
+                                Tất cổ ngắn giấu gót, cổ trung và vớ thể thao đệm xù êm ái chống hôi chân.</p>
                             <div class="category-arrow-btn">
                                 <i data-lucide="arrow-right" class="w-4 h-4 font-light"></i>
                             </div>
@@ -150,11 +173,14 @@
                     </div>
 
                     <div onclick="window.location.href='TSHIRT/tshirt.html'" class="category-card group">
-                        <img src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=1200" class="absolute inset-0 w-full h-full object-cover">
+                        <img src="https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=1200"
+                            class="absolute inset-0 w-full h-full object-cover">
                         <div class="category-overlay"></div>
                         <h3 class="category-title">T-SHIRT</h3>
                         <div class="category-content">
-                            <p class="text-[11px] lg:text-xs text-white font-medium leading-relaxed max-w-xs text-center">Áo phông nam Cotton Compact cao cấp không xù lông, chuẩn form Relaxed.</p>
+                            <p
+                                class="text-[11px] lg:text-xs text-white font-medium leading-relaxed max-w-xs text-center">
+                                Áo phông nam Cotton Compact cao cấp không xù lông, chuẩn form Relaxed.</p>
                             <div class="category-arrow-btn">
                                 <i data-lucide="arrow-right" class="w-4 h-4 font-light"></i>
                             </div>
@@ -165,20 +191,20 @@
         </section>
     </div>
 
-    <!-- THANH MENU CỐ ĐỊNH Ở ĐÁY MÀN HÌNH MOBILE -->
+    <!-- THANH MENU CỐ ĐỊNH ĐÁY MOBILE -->
     <div id="mobile-bottom-nav" class="fixed bottom-0 left-0 w-full z-30 md:hidden transition-all duration-300">
-        <div class="w-full bg-gradient-to-t from-black/85 via-black/50 to-transparent pt-8 pb-5 px-6 backdrop-blur-md">
+        <div class="w-full bg-gradient-to-t from-black/80 to-transparent pt-3 pb-3 px-3 backdrop-blur-md">
             <div class="flex items-center justify-around text-center">
                 <a href="INSIDE/inside.html" onclick="handleBottomNavItemClick(this)"
-                   class="bottom-nav-item text-xs sm:text-sm uppercase tracking-[0.2em] text-white/80 transition-all duration-200">
+                    class="bottom-nav-item text-[16px] font-black uppercase tracking-[0.18em] text-white transition-all">
                     INSIDE
                 </a>
                 <a href="SOCK/sock.html" onclick="handleBottomNavItemClick(this)"
-                   class="bottom-nav-item text-xs sm:text-sm uppercase tracking-[0.2em] text-white/80 transition-all duration-200">
+                    class="bottom-nav-item text-[16px] font-black uppercase tracking-[0.18em] text-white transition-all">
                     SOCK
                 </a>
                 <a href="TSHIRT/tshirt.html" onclick="handleBottomNavItemClick(this)"
-                   class="bottom-nav-item text-xs sm:text-sm uppercase tracking-[0.2em] text-white/80 transition-all duration-200">
+                    class="bottom-nav-item text-[16px] font-black uppercase tracking-[0.18em] text-white transition-all">
                     T-SHIRT
                 </a>
             </div>
@@ -187,10 +213,14 @@
 
     <!-- FOOTER -->
     <footer class="bg-white text-slate-700 pt-16 pb-12 border-t border-slate-200 mt-auto">
-        <div class="w-full px-4 sm:px-8 lg:px-12 xl:px-16 grid grid-cols-1 md:grid-cols-4 gap-8 pb-12 border-b border-slate-100">
+        <div
+            class="w-full px-4 sm:px-8 lg:px-12 xl:px-16 grid grid-cols-1 md:grid-cols-4 gap-8 pb-12 border-b border-slate-100">
             <div class="space-y-4">
-                <a href="index.html" class="inline-flex items-center font-black text-2xl tracking-tighter uppercase"><span>INSIDE</span><span class="text-blue-500 font-black relative -top-2 left-1">+</span></a>
-                <p class="text-xs text-slate-500 leading-relaxed font-medium">Thời trang tối giản, vớ và phục trang nam giới phong cách Minimalist.</p>
+                <a href="index.html"
+                    class="inline-flex items-center font-black text-2xl tracking-tighter uppercase"><span>INSIDE</span><span
+                        class="text-blue-500 font-black relative -top-2 left-1">+</span></a>
+                <p class="text-xs text-slate-500 leading-relaxed font-medium">Thời trang tối giản, vớ và phục trang nam
+                    giới phong cách Minimalist.</p>
             </div>
             <div>
                 <h4 class="text-xs font-black uppercase text-slate-900 tracking-wider mb-4">Danh mục</h4>
@@ -203,17 +233,23 @@
             <div>
                 <h4 class="text-xs font-black uppercase text-slate-900 tracking-wider mb-4">Sàn thương mại điện tử</h4>
                 <ul class="space-y-2 text-xs font-bold text-slate-600">
-                    <li><a href="https://shopee.vn" target="_blank" class="hover:text-slate-950 flex items-center gap-2 transition"><i data-lucide="shopping-bag" class="w-4 h-4 text-orange-500"></i> SHOPEE MALL</a></li>
-                    <li><a href="https://tiktok.com" target="_blank" class="hover:text-slate-950 flex items-center gap-2 transition"><i data-lucide="video" class="w-4 h-4 text-slate-900"></i> TIKTOK SHOP</a></li>
+                    <li><a href="https://shopee.vn" target="_blank"
+                            class="hover:text-slate-950 flex items-center gap-2 transition"><i
+                                data-lucide="shopping-bag" class="w-4 h-4 text-orange-500"></i> SHOPEE MALL</a></li>
+                    <li><a href="https://tiktok.com" target="_blank"
+                            class="hover:text-slate-950 flex items-center gap-2 transition"><i data-lucide="video"
+                                class="w-4 h-4 text-slate-900"></i> TIKTOK SHOP</a></li>
                 </ul>
             </div>
             <div>
                 <h4 class="text-xs font-black uppercase text-slate-900 tracking-wider mb-4">Hỗ trợ khách hàng</h4>
-                <p class="text-xs text-slate-600 leading-relaxed font-medium mb-3">Giao hàng cực nhanh và chính sách đổi trả uy tín qua TPD.</p>
+                <p class="text-xs text-slate-600 leading-relaxed font-medium mb-3">Giao hàng cực nhanh và chính sách đổi
+                    trả uy tín qua TPD.</p>
                 <p class="text-xs font-black text-slate-900 uppercase">HOTLINE: 0988.XXX.XXX</p>
             </div>
         </div>
-        <div class="w-full px-4 sm:px-8 lg:px-12 xl:px-16 pt-8 text-center text-xs text-slate-400 font-bold uppercase">© 2026 INSIDE+. Minimalist Concept Layout.</div>
+        <div class="w-full px-4 sm:px-8 lg:px-12 xl:px-16 pt-8 text-center text-xs text-slate-400 font-bold uppercase">©
+            2026 INSIDE+. Minimalist Concept Layout.</div>
     </footer>
 
     <!-- WIDGETS -->
@@ -221,29 +257,37 @@
         <div id="social-links-group" class="hidden flex flex-col gap-3">
             <a href="https://m.me/yourpage" target="_blank" class="floating-widget">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="#222222">
-                    <path d="M12 2C6.477 2 2 6.145 2 11.243c0 2.91 1.455 5.488 3.733 7.152V22l3.411-1.872c.907.252 1.868.385 2.856.385 5.523 0 10-4.145 10-9.243C22 6.145 17.523 2 12 2zm1.045 12.37l-2.545-2.715-4.965 2.715 5.46-5.79 2.59 2.715 4.92-2.715-5.46 5.79z" />
+                    <path
+                        d="M12 2C6.477 2 2 6.145 2 11.243c0 2.91 1.455 5.488 3.733 7.152V22l3.411-1.872c.907.252 1.868.385 2.856.385 5.523 0 10-4.145 10-9.243C22 6.145 17.523 2 12 2zm1.045 12.37l-2.545-2.715-4.965 2.715 5.46-5.79 2.59 2.715 4.92-2.715-5.46 5.79z" />
                 </svg>
             </a>
             <a href="https://zalo.me/yourphonenumber" target="_blank" class="floating-widget">
                 <span class="font-bold text-[13px] text-[#111]">Zalo</span>
             </a>
         </div>
-        <button onclick="toggleChatMenu()" id="main-chat-btn" class="floating-widget bg-[#222] text-white hover:bg-white hover:text-slate-900">
+        <button onclick="toggleChatMenu()" id="main-chat-btn"
+            class="floating-widget bg-[#222] text-white hover:bg-white hover:text-slate-900">
             <i data-lucide="message-circle" id="chat-icon" class="w-5 h-5"></i>
         </button>
-        <button onclick="scrollToTop()" class="floating-widget bg-white/90 border-slate-200 text-slate-700 bg-slate-950 text-black">
+        <button onclick="scrollToTop()"
+            class="floating-widget bg-white/90 border-slate-200 text-slate-700 bg-slate-950 text-black">
             <i data-lucide="chevron-up" class="w-5 h-5"></i>
         </button>
     </div>
 
-    <!-- TÌM KIẾM MỚI -->
-    <div id="search-modal" class="fixed inset-0 z-[110] hidden bg-white/98 backdrop-blur-xl overflow-y-auto custom-scroll">
-        <div class="w-full max-w-5xl mx-auto px-6 pt-10 pb-8 flex items-center justify-between border-b border-slate-900/10">
+    <!-- TÌM KIẾM MODAL -->
+    <div id="search-modal"
+        class="fixed inset-0 z-[110] hidden bg-white/98 backdrop-blur-xl overflow-y-auto custom-scroll">
+        <div
+            class="w-full max-w-5xl mx-auto px-5 pt-3 pb-5 md:px-6 md:pt-10 md:pb-8 flex items-center justify-between border-b border-slate-900/10">
             <div class="flex-1 max-w-3xl relative flex items-center">
                 <i data-lucide="search" class="w-7 h-7 text-slate-900 mr-4 stroke-[2.5]"></i>
-                <input type="text" id="search-input" oninput="handleSearchInput(this.value)" placeholder="TÌM KIẾM SẢN PHẨM..." class="w-full bg-transparent text-xl sm:text-2xl font-black text-slate-900 placeholder:text-slate-300 uppercase tracking-tight focus:outline-none">
+                <input type="text" id="search-input" oninput="handleSearchInput(this.value)"
+                    placeholder="TÌM KIẾM SẢN PHẨM..."
+                    class="w-full bg-transparent text-xl sm:text-2xl font-black text-slate-900 placeholder:text-slate-300 uppercase tracking-tight focus:outline-none">
             </div>
-            <button onclick="handleCloseSearchBtnClick(this)" class="p-3 -mr-3 text-slate-400 hover:text-slate-900 transition-colors">
+            <button onclick="handleCloseSearchBtnClick(this)"
+                class="p-3 -mr-3 text-slate-400 hover:text-slate-900 transition-colors">
                 <i data-lucide="x" class="w-8 h-8 text-black stroke-[1.5]"></i>
             </button>
         </div>
@@ -252,19 +296,27 @@
             <div class="space-y-3">
                 <span class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Tìm kiếm phổ biến</span>
                 <div class="flex flex-wrap gap-2 pt-1">
-                    <button onclick="fillSearch('Boxer')" class="btn-popular-search">Boxer Seamless</button>
-                    <button onclick="fillSearch('Brief')" class="btn-popular-search">Quần Brief</button>
-                    <button onclick="fillSearch('Bamboo')" class="btn-popular-search">Tất cổ ngắn Bamboo</button>
-                    <button onclick="fillSearch('Compact')" class="btn-popular-search">Áo T-Shirt Compact</button>
+                    <button onclick="fillSearch('Boxer')"
+                        class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-900 hover:text-white text-xs font-bold text-slate-700 transition">Boxer
+                        Seamless</button>
+                    <button onclick="fillSearch('Brief')"
+                        class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-900 hover:text-white text-xs font-bold text-slate-700 transition">Quần
+                        Brief</button>
+                    <button onclick="fillSearch('Trunk')"
+                        class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-900 hover:text-white text-xs font-bold text-slate-700 transition">Quần
+                        Trunk</button>
                 </div>
             </div>
 
             <div>
                 <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
-                    <h4 id="search-results-title" class="text-xs font-black uppercase text-slate-900 tracking-[0.2em] flex items-center gap-2">
+                    <h4 id="search-results-title"
+                        class="text-xs font-black uppercase text-slate-900 tracking-[0.2em] flex items-center gap-2">
                         <i data-lucide="history" class="w-4 h-4 text-slate-400"></i> Sản phẩm đã xem
                     </h4>
-                    <button id="btn-clear-history" onclick="clearViewedProducts()" class="text-[11px] font-bold text-slate-400 hover:text-slate-900 uppercase tracking-wider transition">Xóa lịch sử</button>
+                    <button id="btn-clear-history" onclick="clearViewedProducts()"
+                        class="text-[11px] font-bold text-slate-400 hover:text-slate-900 uppercase tracking-wider transition">Xóa
+                        lịch sử</button>
                 </div>
                 <div id="viewed-products-container" class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6"></div>
             </div>

@@ -98,6 +98,54 @@ let currentSelectedSize = null;
 let currentGalleryImages = [];
 let currentGalleryIndex = 0;
 
+/* XÓA TRẠNG THÁI ACTIVE TRƯỚC ĐÓ VÀ KHI QUAY LẠI TRANG (BACK BUTTON) */
+function clearAllBoldActiveStates() {
+    document.querySelectorAll('.btn-bold-active, .active-bold').forEach(el => {
+        el.classList.remove('btn-bold-active', 'active-bold');
+    });
+}
+
+window.addEventListener('pageshow', () => {
+    clearAllBoldActiveStates();
+});
+
+/* XỬ LÝ BÔI ĐẬM CÁC NÚT */
+function handleMenuBtnClick(element) {
+    clearAllBoldActiveStates();
+    if (element) element.classList.add('btn-bold-active');
+    toggleMobileNavDrawer();
+}
+
+function handleSearchBtnClick(element) {
+    clearAllBoldActiveStates();
+    if (element) element.classList.add('btn-bold-active');
+    openSearchModal();
+}
+
+function handleCloseDrawerBtnClick(element) {
+    clearAllBoldActiveStates();
+    if (element) element.classList.add('btn-bold-active');
+    toggleMobileNavDrawer();
+}
+
+function handleCloseSearchBtnClick(element) {
+    clearAllBoldActiveStates();
+    if (element) element.classList.add('btn-bold-active');
+    closeSearchModal();
+}
+
+function handleDrawerNavItemClick(element) {
+    clearAllBoldActiveStates();
+    if (element) element.classList.add('btn-bold-active');
+    toggleMobileNavDrawer();
+}
+
+/* Xử lý bôi đậm Logo INSIDE+ khi bấm */
+function handleLogoClick(element) {
+    clearAllBoldActiveStates();
+    if (element) element.classList.add('btn-bold-active');
+}
+
 /* BẬT TẮT MOBILE MENU TOÀN MÀN HÌNH (#363636 NỀN TRONG SUỐT) */
 function toggleMobileNavDrawer() {
     const drawer = document.getElementById('mobile-nav-drawer');
@@ -112,6 +160,7 @@ function toggleMobileNavDrawer() {
         panel.classList.add('-translate-x-full');
         setTimeout(function () {
             drawer.classList.add('hidden');
+            clearAllBoldActiveStates();
         }, 300);
     }
 }
@@ -523,7 +572,11 @@ function openSearchModal() {
     if (window.lucide) lucide.createIcons();
 }
 
-function closeSearchModal() { document.getElementById('search-modal').classList.add('hidden'); }
+function closeSearchModal() { 
+    document.getElementById('search-modal').classList.add('hidden'); 
+    clearAllBoldActiveStates();
+}
+
 function fillSearch(keyword) { const input = document.getElementById('search-input'); input.value = keyword; handleSearchInput(keyword); }
 function clearViewedProducts() { localStorage.removeItem('viewed_products'); renderViewedProducts(); }
 
@@ -604,6 +657,7 @@ document.addEventListener('keydown', function (e) {
         const mobileNav = document.getElementById('mobile-nav-drawer');
         if (mobileNav && !mobileNav.classList.contains('hidden')) {
             toggleMobileNavDrawer();
+            clearAllBoldActiveStates();
             return;
         }
 
@@ -638,6 +692,36 @@ document.addEventListener('keydown', function (e) {
         }
     }
 });
+
+/* XỬ LÝ SỰ KIỆN VUỐT TỪ TRÁI SANG PHẢI ĐỂ THOÁT KHỎI CHI TIẾT SẢN PHẨM (PRODUCT DRAWER) */
+let touchStartX = 0;
+let touchStartY = 0;
+let touchEndX = 0;
+let touchEndY = 0;
+
+document.addEventListener('touchstart', function (e) {
+    const productDrawer = document.getElementById('product-drawer');
+    if (productDrawer && !productDrawer.classList.contains('hidden')) {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    }
+}, { passive: true });
+
+document.addEventListener('touchend', function (e) {
+    const productDrawer = document.getElementById('product-drawer');
+    if (productDrawer && !productDrawer.classList.contains('hidden')) {
+        touchEndX = e.changedTouches[0].screenX;
+        touchEndY = e.changedTouches[0].screenY;
+        
+        const deltaX = touchEndX - touchStartX;
+        const deltaY = Math.abs(touchEndY - touchStartY);
+
+        // Vuốt từ trái sang phải: khoảng cách vuốt ngang > 50px và lớn hơn độ lệch dọc
+        if (deltaX > 50 && deltaX > deltaY) {
+            closeProductDrawer();
+        }
+    }
+}, { passive: true });
 
 document.addEventListener('DOMContentLoaded', function () {
     renderVisualFilterBar();
