@@ -47,7 +47,7 @@ button.color-out-of-stock::after {
     width: 140% !important;
     height: 2px !important;
     background-color: #0f0e0e !important;
-    z-index: 50 !important;
+    z-index: 5 !important; /* ĐÃ SỬA: Hạ z-index từ 50 xuống 5 để nằm dưới Header (z-index: 40) */
     pointer-events: none !important;
 }
 
