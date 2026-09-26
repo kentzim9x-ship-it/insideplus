@@ -426,10 +426,24 @@ function openProductDrawer(id) {
     if (!p) return;
     currentSelectedSize = null;
     renderDrawerContent(p, 0);
+
+    const drawerPanel = document.getElementById('product-drawer-panel');
+    if (drawerPanel) {
+        drawerPanel.scrollTop = 0;
+    }
+
     document.getElementById('product-drawer').classList.remove('hidden');
     setTimeout(function () {
         document.getElementById('product-drawer-overlay').classList.remove('opacity-0');
         document.getElementById('product-drawer-panel').classList.remove('translate-x-full');
+
+        // Đảm bảo cuộn lên đầu ngay cả sau khi hiệu ứng slide-in hoàn tất
+        if (drawerPanel) {
+            drawerPanel.scrollTop = 0;
+            requestAnimationFrame(function () {
+                drawerPanel.scrollTop = 0;
+            });
+        }
     }, 10);
 }
 
@@ -593,7 +607,12 @@ function nextGalleryImage() {
 function closeProductDrawer() {
     document.getElementById('product-drawer-overlay').classList.add('opacity-0');
     document.getElementById('product-drawer-panel').classList.add('translate-x-full');
-    setTimeout(function () { document.getElementById('product-drawer').classList.add('hidden'); }, 350);
+    setTimeout(function () { 
+        document.getElementById('product-drawer').classList.add('hidden'); 
+        // Đặt lại vị trí cuộn về 0 khi ẩn drawer hoàn toàn
+        const drawerPanel = document.getElementById('product-drawer-panel');
+        if (drawerPanel) drawerPanel.scrollTop = 0;
+    }, 350);
 }
 
 function openFilterDrawer() { document.getElementById('filter-drawer').classList.remove('hidden'); setTimeout(function () { document.getElementById('filter-overlay').classList.remove('opacity-0'); document.getElementById('filter-panel').classList.remove('translate-x-full'); }, 10); }

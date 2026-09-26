@@ -328,7 +328,7 @@ html, body, *, ::before, ::after, input, button, select, textarea {
 /* 3. NÚT MENU ☰ VÀ NÚT TÌM KIẾM KÍNH LÚP */
 #btn-mobile-menu,
 #btn-search-mobile {
-    padding: 8px !important;
+    padding: 1px !important;
     border-radius: 1px !important;
 }
 
@@ -387,9 +387,10 @@ html, body, *, ::before, ::after, input, button, select, textarea {
 
 /* 6. THANH MENU DƯỚI ĐÁY MÀN HÌNH MOBILE */
 .bottom-nav-item {
-    padding: 8px 16px !important;
-    border-radius: 1px !important;
+    padding: 6px 12px !important; /* Khoảng đệm nhỏ gọn ôm sát chữ */
+    border-radius: 1px !important;  /* Bo góc nhẹ giúp hiệu ứng nhấn đẹp mắt hơn */
     display: inline-block !important;
+    width: auto !important;
 }
 
 .bottom-nav-item:active,
