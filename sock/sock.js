@@ -166,7 +166,7 @@ function renderVisualFilterBar() {
 
         return '<div onclick="selectVisualFilter(\'' + item.styleValue + '\')" class="visual-filter-card group flex flex-col ' + activeCardClasses + '">' +
             '<div class="w-full aspect-[4/5] bg-slate-100 overflow-hidden relative">' +
-            '<img src="' + item.image + '" alt="' + item.title + '" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">' +
+            '<img src="' + item.image + '" alt="' + item.title + '" class="w-full h-full object-cover transition-transform duration-500">' +
             '</div>' +
             '<div class="pt-3.5 pb-1 text-left bg-white">' +
             '<h4 class="visual-card-title text-sm sm:text-base font-bold text-slate-900 tracking-tight transition-colors group-hover:text-black">' + item.title + '</h4>' +

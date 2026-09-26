@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SOCK - Tất Vớ Nam Cao Cấp | INSIDE+</title>
-    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/3233/3233215.png">
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/puyb3jyd/image/upload/v1790447212/insideplus_logo_icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -22,17 +22,23 @@
                 <!-- Navigation Desktop / Mobile Menu Button (Bên trái) -->
                 <div class="w-1/3 flex items-center justify-start">
                     <nav class="hidden md:flex items-center space-x-10 lg:space-x-14">
-                        <a href="../inside/inside.html" class="group nav-item">
+                        <a href="../inside/inside.html"
+                            class="group relative py-2 text-sm font-extrabold uppercase tracking-[0.15em] text-slate-900 transition-colors">
                             INSIDE
-                            <span class="nav-underline"></span>
+                            <span
+                                class="absolute bottom-0 left-0 w-0 h-[2px] bg-slate-900 transition-all duration-300 group-hover:w-full"></span>
                         </a>
-                        <a href="sock.html" class="nav-item nav-item-active">
+                        <a href="sock.html"
+                            class="relative py-2 text-sm font-extrabold uppercase tracking-[0.15em] text-slate-900 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px] after:bg-slate-900">
                             SOCK
-                            <span class="nav-underline"></span>
+                            <span
+                                class="absolute bottom-0 left-0 w-0 h-[2px] bg-slate-900 transition-all duration-300 group-hover:w-full"></span>
                         </a>
-                        <a href="../tshirt/tshirt.html" class="group nav-item">
+                        <a href="../tshirt/tshirt.html"
+                            class="group relative py-2 text-sm font-extrabold uppercase tracking-[0.15em] text-slate-900 transition-colors">
                             T-SHIRT
-                            <span class="nav-underline"></span>
+                            <span
+                                class="absolute bottom-0 left-0 w-0 h-[2px] bg-slate-900 transition-all duration-300 group-hover:w-full"></span>
                         </a>
                     </nav>
                     <!-- Nút mở Menu Mobile (Bên trái) -->
@@ -59,7 +65,8 @@
                             class="group relative py-2 text-sm font-extrabold uppercase tracking-[0.15em] text-slate-900 flex items-center gap-2">
                             <span>TÌM KIẾM</span>
                             <i data-lucide="search" class="w-4 h-4"></i>
-                            <span class="nav-underline"></span>
+                            <span
+                                class="absolute bottom-0 left-0 w-0 h-[2px] bg-slate-900 transition-all duration-300 group-hover:w-full"></span>
                         </button>
                     </div>
                     <!-- Nút Tìm kiếm Mobile (Bên phải) -->
@@ -156,22 +163,28 @@
             <div class="hidden md:flex items-center justify-between gap-4 border-b border-slate-200 pb-5 mb-10">
                 <div class="flex items-center gap-6">
                     <div class="relative">
-                        <button onclick="toggleSortDropdown('desktop')" class="btn-control-filter">
+                        <button onclick="toggleSortDropdown('desktop')"
+                            class="px-4 py-2.5 border border-slate-200 text-xs font-bold uppercase text-slate-800 flex items-center gap-2.5 hover:border-slate-900 transition bg-white">
                             <i data-lucide="sliders-horizontal" class="w-4 h-4"></i> Sắp xếp
                         </button>
                         <div id="sort-dropdown-desktop"
                             class="absolute left-0 mt-2 w-56 bg-white border border-slate-200 shadow-xl hidden z-30 py-2">
-                            <button onclick="setSortOption('newest')" class="dropdown-item">Mới nhất</button>
-                            <button onclick="setSortOption('price-asc')" class="dropdown-item">Giá: từ thấp đến
-                                cao</button>
-                            <button onclick="setSortOption('price-desc')" class="dropdown-item">Giá: từ cao đến
-                                thấp</button>
+                            <button onclick="setSortOption('newest')"
+                                class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition">Mới
+                                nhất</button>
+                            <button onclick="setSortOption('price-asc')"
+                                class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition">Giá:
+                                từ thấp đến cao</button>
+                            <button onclick="setSortOption('price-desc')"
+                                class="w-full text-left px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition">Giá:
+                                từ cao đến thấp</button>
                         </div>
                     </div>
                     <span class="catalog-count-text text-xs font-bold text-slate-700">0 sản phẩm</span>
                 </div>
                 <div>
-                    <button onclick="openFilterDrawer()" class="btn-control-filter">
+                    <button onclick="openFilterDrawer()"
+                        class="px-4 py-2.5 border border-slate-200 text-xs font-bold uppercase text-slate-800 flex items-center gap-2.5 hover:border-slate-900 transition bg-white">
                         <i data-lucide="sliders-horizontal" class="w-4 h-4"></i> Lọc sản phẩm
                     </button>
                 </div>
@@ -346,10 +359,12 @@
                         <i data-lucide="chevron-up" id="style-content-icon" class="w-4 h-4 text-slate-500"></i>
                     </div>
                     <div id="style-content" class="mt-3 space-y-2">
-                        <label class="filter-label"><input type="checkbox" onchange="onFilterChange()"
-                                name="filter-style" value="CoNgan" class="mr-2"> Tất cổ ngắn / Giấu gót</label>
-                        <label class="filter-label"><input type="checkbox" onchange="onFilterChange()"
-                                name="filter-style" value="CoTrung" class="mr-2"> Tất cổ trung / Thể thao</label>
+                        <label class="flex items-center text-xs font-bold text-slate-700 cursor-pointer"><input
+                                type="checkbox" onchange="onFilterChange()" name="filter-style" value="CoNgan"
+                                class="mr-2"> Tất cổ ngắn / Giấu gót</label>
+                        <label class="flex items-center text-xs font-bold text-slate-700 cursor-pointer"><input
+                                type="checkbox" onchange="onFilterChange()" name="filter-style" value="CoTrung"
+                                class="mr-2"> Tất cổ trung / Thể thao</label>
                     </div>
                 </div>
                 <div class="border-b border-slate-200 pb-5">
@@ -360,7 +375,7 @@
                     </div>
                     <div id="size-content" class="grid grid-cols-2 gap-2 mt-3">
                         <button onclick="toggleSizeSelect(this)" data-val="Freesize"
-                            class="filter-size-btn">Freesize</button>
+                            class="filter-size-btn border border-slate-300 py-2 text-center text-xs font-bold hover:border-slate-900 transition">Freesize</button>
                     </div>
                 </div>
                 <div class="border-b border-slate-200 pb-5">
@@ -370,9 +385,11 @@
                         <i data-lucide="chevron-up" id="color-content-icon" class="w-4 h-4 text-slate-500"></i>
                     </div>
                     <div id="color-content" class="flex flex-wrap gap-2.5 mt-3">
-                        <button onclick="toggleColorSelect(this)" data-val="#ffffff" class="filter-color-btn bg-white"
+                        <button onclick="toggleColorSelect(this)" data-val="#ffffff"
+                            class="filter-color-btn w-7 h-7 rounded-full border-2 border-slate-300 bg-white transition"
                             title="Trắng"></button>
-                        <button onclick="toggleColorSelect(this)" data-val="#000000" class="filter-color-btn bg-black"
+                        <button onclick="toggleColorSelect(this)" data-val="#000000"
+                            class="filter-color-btn w-7 h-7 rounded-full border-2 border-slate-300 bg-black transition"
                             title="Đen"></button>
                     </div>
                 </div>
