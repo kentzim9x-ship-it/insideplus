@@ -399,4 +399,11 @@ html, body, *, ::before, ::after, input, button, select, textarea {
         font-weight: 900 !important;
         transform: scale(0.95) !important;
     }
+
+    /* ẨN NÚT CUỘN LÊN ĐẦU TRANG TRÊN MOBILE & TỰ ĐỘNG ĐẨY NÚT CHAT XUỐNG DƯỚI CÙNG */
+@media (max-width: 767px) {
+    div.fixed.bottom-6.right-2 > button[onclick="scrollToTop()"] {
+        display: none !important;
+    }
+}
 }

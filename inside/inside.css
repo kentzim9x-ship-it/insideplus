@@ -2,13 +2,21 @@
 @font-face {
     font-family: 'Montserrat';
     src: url('../fonts/Montserrat-Medium.ttf') format('truetype');
-    font-weight: 100 900; /* Tự động hỗ trợ toàn bộ độ đậm từ Light 100 đến Black 900 */
+    font-weight: 100 900;
     font-style: normal;
-    font-display: block; /* Ép hiển thị mượt mà, triệt tiêu hoàn toàn nhấp nháy */
+    font-display: block;
 }
 
 /* Ép tất cả phần tử trong website chỉ dùng Montserrat local */
-html, body, *, ::before, ::after, input, button, select, textarea {
+html,
+body,
+*,
+::before,
+::after,
+input,
+button,
+select,
+textarea {
     font-family: 'Montserrat', sans-serif !important;
 }
 
@@ -24,6 +32,24 @@ html, body, *, ::before, ::after, input, button, select, textarea {
 .custom-scroll::-webkit-scrollbar-thumb {
     background: #cbd5e1;
     border-radius: 2px;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* KHÓA SCROLLBAR BÊN DƯỚI KHI MỞ CÁC LỚP OVERLAY / DRAWER / SIDEBAR (ÁP DỤNG CHO CẢ PC VÀ MOBILE) */
+body.drawer-open {
+    overflow: hidden !important;
+}
+
+#product-drawer.drawer-open {
+    overflow: hidden !important;
 }
 
 /* Color Buttons & Out of Stock Indicators */
@@ -124,10 +150,7 @@ button.color-out-of-stock::after {
     gap: 24px;
 }
 
-/* =========================================================
-   THANH FILTER HÌNH ẢNH (VISUAL FILTER BAR)
-   ========================================================= */
-
+/* THANH FILTER HÌNH ẢNH (VISUAL FILTER BAR) */
 .visual-filter-wrapper {
     position: relative;
     width: 100%;
@@ -165,6 +188,7 @@ button.color-out-of-stock::after {
     .visual-filter-scroll-container {
         gap: 16px;
     }
+
     .visual-filter-card {
         width: calc((100% - 80px) / 6);
     }
@@ -176,7 +200,7 @@ button.color-out-of-stock::after {
     }
 }
 
-/* NÚT MŨI TÊN ĐIỀU HƯỚNG THEO THIẾT KẾ MỚI (MÀU XÁM ĐẬM, VIỀN TRẮNG) */
+/* NÚT MŨI TÊN ĐIỀU HƯỚNG THEO THIẾT KẾ MỚI */
 .slider-arrow-btn {
     position: absolute;
     top: 40%;
@@ -209,18 +233,17 @@ button.color-out-of-stock::after {
     right: 10px;
 }
 
-#main-header {
+#main-header,
+#drawer-header-container header {
     height: 4.5rem !important;
     display: inline-flex !important;
     align-items: center !important;
     line-height: 1 !important;
 }
 
-/* ==========================================================================
-   HIỆU ỨNG TẠO VÙNG BÔI ĐẬM (TAP ACTIVE HIGHLIGHT) - CHỈ ÁP DỤNG TRÊN MOBILE
-   ========================================================================== */
-
+/* HIỆU ỨNG TAP ACTIVE HIGHLIGHT - CHỈ ÁP DỤNG TRÊN MOBILE */
 @media (max-width: 767px) {
+
     #btn-mobile-menu,
     #btn-search-mobile,
     #header-logo-link,
@@ -230,8 +253,8 @@ button.color-out-of-stock::after {
         -webkit-tap-highlight-color: transparent !important;
         user-select: none;
         -webkit-user-select: none;
-        transition: background-color 0.12s cubic-bezier(0, 0, 0.2, 1), 
-                    transform 0.12s cubic-bezier(0, 0, 0.2, 1) !important;
+        transition: background-color 0.12s cubic-bezier(0, 0, 0.2, 1),
+            transform 0.12s cubic-bezier(0, 0, 0.2, 1) !important;
     }
 
     #header-logo-link {
@@ -287,5 +310,28 @@ button.color-out-of-stock::after {
     .drawer-nav-item.btn-bold-active {
         background-color: rgba(255, 255, 255, 0.16) !important;
         transform: translateX(4px) scale(0.99) !important;
+    }
+
+    /* SỬA LỖI THANH CUỘN LỆCH NHỊP / ĐỨNG YÊN KHI VUỐT ẢNH */
+    #info-drawer-content,
+    #intro-drawer-content {
+        contain: content;
+        overscroll-behavior-y: contain;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
+        will-change: scroll-position;
+    }
+
+    /* Đảm bảo khung ảnh con không chiếm luồng bắt sự kiện vuốt riêng */
+    #intro-drawer-content img,
+    #intro-drawer-content div {
+        pointer-events: none;
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    /* ẨN NÚT CUỘN LÊN ĐẦU TRANG TRÊN MOBILE & TỰ ĐỘNG ĐẨY NÚT CHAT XUỐNG DƯỚI CÙNG */
+    div.fixed.bottom-6.right-2>button[onclick="scrollToTop()"] {
+        display: none !important;
     }
 }
