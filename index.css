@@ -2,13 +2,23 @@
 @font-face {
     font-family: 'Montserrat';
     src: url('fonts/Montserrat-Medium.ttf') format('truetype');
-    font-weight: 100 900; /* Tự động hỗ trợ toàn bộ độ đậm từ Light 100 đến Black 900 */
+    font-weight: 100 900;
+    /* Tự động hỗ trợ toàn bộ độ đậm từ Light 100 đến Black 900 */
     font-style: normal;
-    font-display: block; /* Ép hiển thị mượt mà, triệt tiêu hoàn toàn nhấp nháy */
+    font-display: block;
+    /* Ép hiển thị mượt mà, triệt tiêu hoàn toàn nhấp nháy */
 }
 
 /* Ép tất cả phần tử trong website chỉ dùng Montserrat local */
-html, body, *, ::before, ::after, input, button, select, textarea {
+html,
+body,
+*,
+::before,
+::after,
+input,
+button,
+select,
+textarea {
     font-family: 'Montserrat', sans-serif !important;
 }
 
@@ -222,6 +232,7 @@ html, body, *, ::before, ::after, input, button, select, textarea {
         color: #ffffff;
     }
 }
+
 .category-card:hover .category-content {
     opacity: 1;
     transform: translateY(0);
@@ -298,6 +309,7 @@ html, body, *, ::before, ::after, input, button, select, textarea {
    ========================================================================== */
 
 @media (max-width: 767px) {
+
     /* 1. Tắt vệt viền xám mặc định của trình duyệt di động & đặt hiệu ứng chuyển đổi mượt */
     #btn-logo-main,
     #btn-mobile-menu,
@@ -309,8 +321,8 @@ html, body, *, ::before, ::after, input, button, select, textarea {
         -webkit-tap-highlight-color: transparent !important;
         user-select: none;
         -webkit-user-select: none;
-        transition: background-color 0.12s cubic-bezier(0, 0, 0.2, 1), 
-                    transform 0.12s cubic-bezier(0, 0, 0.2, 1) !important;
+        transition: background-color 0.12s cubic-bezier(0, 0, 0.2, 1),
+            transform 0.12s cubic-bezier(0, 0, 0.2, 1) !important;
     }
 
     /* 2. LOGO INSIDE+ */
@@ -401,9 +413,29 @@ html, body, *, ::before, ::after, input, button, select, textarea {
     }
 
     /* ẨN NÚT CUỘN LÊN ĐẦU TRANG TRÊN MOBILE & TỰ ĐỘNG ĐẨY NÚT CHAT XUỐNG DƯỚI CÙNG */
-@media (max-width: 767px) {
-    div.fixed.bottom-6.right-2 > button[onclick="scrollToTop()"] {
-        display: none !important;
+    @media (max-width: 767px) {
+        div.fixed.bottom-6.right-2>button[onclick="scrollToTop()"] {
+            display: none !important;
+        }
     }
-}
+
+    /* KHÓA SCROLLBAR BÊN DƯỚI KHI MỞ CÁC LỚP OVERLAY / DRAWER / MODAL (ÁP DỤNG CHUẨN CẢ MOBILE) */
+    body.drawer-open {
+        overflow: hidden !important;
+        position: fixed !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    #product-drawer.drawer-open {
+        overflow: hidden !important;
+    }
+
+    /* Color Buttons & Out of Stock Indicators */
+    .color-btn-wrapper {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
 }

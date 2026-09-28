@@ -43,9 +43,12 @@ textarea {
     scrollbar-width: none;
 }
 
-/* KHÓA SCROLLBAR BÊN DƯỚI KHI MỞ CÁC LỚP OVERLAY / DRAWER / SIDEBAR (ÁP DỤNG CHO CẢ PC VÀ MOBILE) */
+/* KHÓA SCROLLBAR BÊN DƯỚI KHI MỞ CÁC LỚP OVERLAY / DRAWER / MODAL (ÁP DỤNG CHUẨN CẢ MOBILE) */
 body.drawer-open {
     overflow: hidden !important;
+    position: fixed !important;
+    width: 100% !important;
+    height: 100% !important;
 }
 
 #product-drawer.drawer-open {

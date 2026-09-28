@@ -1023,16 +1023,42 @@ function clearFilters() {
     selectVisualFilter('ALL');
 }
 
+let savedScrollPositionY = 0;
+
 function openSearchModal() {
-    document.getElementById('search-modal').classList.remove('hidden');
+    const searchModal = document.getElementById('search-modal');
+    if (!searchModal) return;
+
+    // Lưu lại vị trí cuộn trang hiện tại
+    savedScrollPositionY = window.scrollY;
+
+    searchModal.classList.remove('hidden');
+    searchModal.scrollTop = 0; // Cuộn ô tìm kiếm lên đầu
+
+    // Khóa cuộn trang nền bên dưới (danh mục)
+    document.body.classList.add('drawer-open');
+    document.body.style.top = `-${savedScrollPositionY}px`;
+
     const input = document.getElementById('search-input');
-    input.value = '';
-    handleSearchInput('');
-    if (window.lucide) lucide.createIcons({ root: document.getElementById('search-modal') });
+    if (input) {
+        input.value = '';
+        handleSearchInput('');
+    }
+
+    if (window.lucide) lucide.createIcons({ root: searchModal });
 }
 
 function closeSearchModal() {
-    document.getElementById('search-modal').classList.add('hidden');
+    const searchModal = document.getElementById('search-modal');
+    if (searchModal) {
+        searchModal.classList.add('hidden');
+    }
+
+    // Mở lại cuộn cho trang nền và giữ nguyên vị trí xem cũ
+    document.body.classList.remove('drawer-open');
+    document.body.style.top = '';
+    window.scrollTo(0, savedScrollPositionY);
+
     clearAllBoldActiveStates();
 }
 

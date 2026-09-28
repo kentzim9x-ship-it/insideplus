@@ -1,31 +1,31 @@
 const allSampleProducts = [
-    { 
-        id: "inside-1", 
-        name: "Quần Lót Nam Seamless Không Đường May Brief", 
-        category: "INSIDE", 
-        path: "INSIDE/inside.html", 
-        image: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200" 
+    {
+        id: "inside-1",
+        name: "Quần Lót Nam Seamless Không Đường May Brief",
+        category: "INSIDE",
+        path: "INSIDE/inside.html",
+        image: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"
     },
-    { 
-        id: "inside-2", 
-        name: "Quần Lót Nam Sợi Tre Bamboo Premium Boxer", 
-        category: "INSIDE", 
-        path: "INSIDE/inside.html", 
-        image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200" 
+    {
+        id: "inside-2",
+        name: "Quần Lót Nam Sợi Tre Bamboo Premium Boxer",
+        category: "INSIDE",
+        path: "INSIDE/inside.html",
+        image: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
     },
-    { 
-        id: "sock-1", 
-        name: "Tất Cổ Ngắn Bamboo Kháng Khuẩn SlimFit", 
-        category: "SOCK", 
-        path: "SOCK/sock.html", 
-        image: "https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?auto=format&fit=crop&q=80&w=1200" 
+    {
+        id: "sock-1",
+        name: "Tất Cổ Ngắn Bamboo Kháng Khuẩn SlimFit",
+        category: "SOCK",
+        path: "SOCK/sock.html",
+        image: "https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?auto=format&fit=crop&q=80&w=1200"
     },
-    { 
-        id: "tshirt-1", 
-        name: "Áo Phông Nam Cotton Compact Premium T-Shirt", 
-        category: "TSHIRT", 
-        path: "TSHIRT/tshirt.html", 
-        image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=1200" 
+    {
+        id: "tshirt-1",
+        name: "Áo Phông Nam Cotton Compact Premium T-Shirt",
+        category: "TSHIRT",
+        path: "TSHIRT/tshirt.html",
+        image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=1200"
     }
 ];
 
@@ -98,10 +98,10 @@ window.addEventListener('scroll', () => {
     const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
 
     // Đổi style Header
-    if (currentScroll > 50) { 
-        header.classList.add('scrolled'); 
-    } else { 
-        header.classList.remove('scrolled'); 
+    if (currentScroll > 50) {
+        header.classList.add('scrolled');
+    } else {
+        header.classList.remove('scrolled');
     }
 
     // Xử lý ẩn/hiện Bottom Nav trên Mobile
@@ -143,28 +143,54 @@ function toggleMobileNavDrawer() {
     }
 }
 
+let savedScrollPositionY = 0;
+
 function openSearchModal() {
-    document.getElementById('search-modal').classList.remove('hidden');
+    const searchModal = document.getElementById('search-modal');
+    if (!searchModal) return;
+
+    // Lưu lại vị trí cuộn trang hiện tại
+    savedScrollPositionY = window.scrollY;
+
+    searchModal.classList.remove('hidden');
+    searchModal.scrollTop = 0; // Cuộn ô tìm kiếm lên đầu
+
+    // Khóa cuộn trang nền bên dưới (danh mục)
+    document.body.classList.add('drawer-open');
+    document.body.style.top = `-${savedScrollPositionY}px`;
+
     const input = document.getElementById('search-input');
-    input.value = '';
-    handleSearchInput('');
-    if (window.lucide) lucide.createIcons();
+    if (input) {
+        input.value = '';
+        handleSearchInput('');
+    }
+
+    if (window.lucide) lucide.createIcons({ root: searchModal });
 }
 
-function closeSearchModal() { 
-    document.getElementById('search-modal').classList.add('hidden'); 
-    clearAllBoldActiveStates(); // Xóa trạng thái active khi đóng search
+function closeSearchModal() {
+    const searchModal = document.getElementById('search-modal');
+    if (searchModal) {
+        searchModal.classList.add('hidden');
+    }
+
+    // Mở lại cuộn cho trang nền và giữ nguyên vị trí xem cũ
+    document.body.classList.remove('drawer-open');
+    document.body.style.top = '';
+    window.scrollTo(0, savedScrollPositionY);
+
+    clearAllBoldActiveStates();
 }
 
-function fillSearch(keyword) { 
-    const input = document.getElementById('search-input'); 
-    input.value = keyword; 
-    handleSearchInput(keyword); 
+function fillSearch(keyword) {
+    const input = document.getElementById('search-input');
+    input.value = keyword;
+    handleSearchInput(keyword);
 }
 
-function clearViewedProducts() { 
-    localStorage.removeItem('viewed_products'); 
-    renderViewedProducts(); 
+function clearViewedProducts() {
+    localStorage.removeItem('viewed_products');
+    renderViewedProducts();
 }
 
 function handleSearchInput(query) {
@@ -234,12 +260,12 @@ function toggleChatMenu() {
     if (window.lucide) lucide.createIcons();
 }
 
-function scrollToTop() { 
-    window.scrollTo({ top: 0, behavior: 'smooth' }); 
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-document.addEventListener('DOMContentLoaded', () => { 
-    if (window.lucide) lucide.createIcons(); 
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.lucide) lucide.createIcons();
 });
 
 /* ĐÓNG BẰNG PHÍM ESC */
