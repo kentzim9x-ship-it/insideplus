@@ -1018,9 +1018,12 @@ function openInfoDrawer() {
     const contentEl = document.getElementById('info-drawer-content');
     if (contentEl) {
         contentEl.innerHTML = `
-        <div class="space-y-3 pb-4 border-b border-slate-100">
-            <div class="flex"><span class="w-24 font-bold text-slate-900">SKU</span><span class="text-slate-600">${p.id.toUpperCase()}</span></div>
-            <div class="flex"><span class="w-24 font-bold text-slate-900">Chất liệu</span><span class="text-slate-600">${p.materialText}</span></div>
+        <div class="grid grid-cols-[70px_1fr] gap-x-4 gap-y-3 pb-4 border-b border-slate-100">
+            <span class="font-bold text-slate-900">Mã SP</span>
+            <span class="text-slate-600">${p.id.toUpperCase()}</span>
+    
+            <span class="font-bold text-slate-900">Chất liệu</span>
+            <span class="text-slate-600">${p.materialText}</span>
         </div>
         <div class="pt-4 space-y-3">
             <h4 class="font-bold text-slate-900 text-sm">Mô tả sản phẩm</h4>
