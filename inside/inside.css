@@ -7,7 +7,6 @@
     font-display: block;
 }
 
-/* Ép tất cả phần tử trong website chỉ dùng Montserrat local */
 html,
 body,
 *,
@@ -20,7 +19,6 @@ textarea {
     font-family: 'Montserrat', sans-serif !important;
 }
 
-/* Custom Scrollbar */
 .custom-scroll::-webkit-scrollbar {
     width: 5px;
 }
@@ -43,7 +41,6 @@ textarea {
     scrollbar-width: none;
 }
 
-/* KHÓA SCROLLBAR BÊN DƯỚI KHI MỞ CÁC LỚP OVERLAY / DRAWER / MODAL (ÁP DỤNG CHUẨN CẢ MOBILE) */
 body.drawer-open {
     overflow: hidden !important;
     position: fixed !important;
@@ -55,7 +52,6 @@ body.drawer-open {
     overflow: hidden !important;
 }
 
-/* Color Buttons & Out of Stock Indicators */
 .color-btn-wrapper {
     position: relative;
     display: inline-flex;
@@ -88,13 +84,11 @@ button.color-out-of-stock::after {
     transform: translate(-50%, -50%) rotate(-45deg) !important;
 }
 
-/* Visual Card Active State */
 .visual-card-active .visual-card-title {
     color: #020617 !important;
     font-weight: 900 !important;
 }
 
-/* KHUNG HÌNH ẢNH TRONG DRAWER VỚI CON TRỎ BÀN TAY */
 .product-detail-img-container {
     position: relative;
     overflow: hidden;
@@ -110,7 +104,6 @@ button.color-out-of-stock::after {
     transform: scale(1.35);
 }
 
-/* BIỂU TƯỢNG KÍNH LÚP Ở GÓC DƯỚI PHẢI HÌNH ẢNH */
 .zoom-icon-btn {
     position: absolute;
     bottom: 12px;
@@ -141,7 +134,6 @@ button.color-out-of-stock::after {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* THANH ĐIỀU HƯỚNG CHUYỂN ẢNH VIÊN THUỐC */
 .gallery-nav-pill {
     background-color: #ffffff;
     border: 1px solid #e2e8f0;
@@ -153,7 +145,6 @@ button.color-out-of-stock::after {
     gap: 24px;
 }
 
-/* THANH FILTER HÌNH ẢNH (VISUAL FILTER BAR) */
 .visual-filter-wrapper {
     position: relative;
     width: 100%;
@@ -203,7 +194,6 @@ button.color-out-of-stock::after {
     }
 }
 
-/* NÚT MŨI TÊN ĐIỀU HƯỚNG THEO THIẾT KẾ MỚI */
 .slider-arrow-btn {
     position: absolute;
     top: 40%;
@@ -244,7 +234,6 @@ button.color-out-of-stock::after {
     line-height: 1 !important;
 }
 
-/* HIỆU ỨNG TAP ACTIVE HIGHLIGHT - CHỈ ÁP DỤNG TRÊN MOBILE */
 @media (max-width: 767px) {
 
     #btn-mobile-menu,
@@ -274,16 +263,13 @@ button.color-out-of-stock::after {
         transform: scale(0.96) !important;
     }
 
-    #btn-mobile-menu,
-    #btn-search-mobile {
+    #btn-mobile-menu {
         padding: 1px !important;
         border-radius: 1px !important;
     }
 
     #btn-mobile-menu:active,
-    #btn-search-mobile:active,
-    #btn-mobile-menu.btn-bold-active,
-    #btn-search-mobile.btn-bold-active {
+    #btn-mobile-menu.btn-bold-active {
         background-color: rgba(15, 23, 42, 0.08) !important;
         transform: scale(0.95) !important;
     }
@@ -315,7 +301,6 @@ button.color-out-of-stock::after {
         transform: translateX(4px) scale(0.99) !important;
     }
 
-    /* SỬA LỖI THANH CUỘN LỆCH NHỊP / ĐỨNG YÊN KHI VUỐT ẢNH */
     #info-drawer-content,
     #intro-drawer-content {
         contain: content;
@@ -325,7 +310,6 @@ button.color-out-of-stock::after {
         will-change: scroll-position;
     }
 
-    /* Đảm bảo khung ảnh con không chiếm luồng bắt sự kiện vuốt riêng */
     #intro-drawer-content img,
     #intro-drawer-content div {
         pointer-events: none;
@@ -333,8 +317,24 @@ button.color-out-of-stock::after {
         -webkit-user-drag: none;
     }
 
-    /* ẨN NÚT CUỘN LÊN ĐẦU TRANG TRÊN MOBILE & TỰ ĐỘNG ĐẨY NÚT CHAT XUỐNG DƯỚI CÙNG */
     div.fixed.bottom-6.right-2>button[onclick="scrollToTop()"] {
         display: none !important;
+    }
+
+    /* Đường gạch ngang/chéo rõ và đậm cho nút hết size */
+    .line-through-thick {
+        text-decoration: line-through;
+        text-decoration-thickness: 2px;
+        text-decoration-color: #64748b;
+    }
+
+    /* Căn giữa tuyệt đối cho badge số giỏ hàng */
+    .badge-centered {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        padding-top: 1px;
+        /* Căn chỉnh tâm chữ số */
     }
 }

@@ -22,6 +22,13 @@ textarea {
     font-family: 'Montserrat', sans-serif !important;
 }
 
+/* Khóa cuộn tuyệt đối cho cả HTML và BODY */
+html.drawer-open,
+body.drawer-open {
+    overflow: hidden !important;
+    height: 100vh !important;
+}
+
 /* --- TRẠNG THÁI MẶC ĐỊNH (Ở TRÊN CÙNG): Nền trong suốt, chữ & logo màu trắng --- */
 #main-header {
     background-color: transparent !important;
@@ -437,5 +444,22 @@ textarea {
         display: inline-flex;
         align-items: center;
         justify-content: center;
+    }
+
+    /* Đường gạch ngang/chéo rõ và đậm cho nút hết size */
+    .line-through-thick {
+        text-decoration: line-through;
+        text-decoration-thickness: 2px;
+        text-decoration-color: #64748b;
+    }
+
+    /* Căn giữa tuyệt đối cho badge số giỏ hàng */
+    .badge-centered {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        padding-top: 1px;
+        /* Căn chỉnh tâm chữ số */
     }
 }

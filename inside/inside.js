@@ -39,7 +39,6 @@ const visualFilterCategories = [
 
 let activeVisualFilter = "ALL";
 
-/* Khai báo link Shopee/TikTok chi tiết theo từng màu sắc của sản phẩm */
 const originalProducts = [
     {
         id: "inside-1", name: "Quần Lót Nam Seamless Không Đường May Brief", category: "inside", price: 89000, originalPrice: 120000,
@@ -57,10 +56,6 @@ const originalProducts = [
         ],
         introImages: [
             "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200",
-            "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200",
-            "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200",
-            "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200",
-            "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200",
             "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
         ],
         colors: [
@@ -68,7 +63,7 @@ const originalProducts = [
                 name: "Đen", hex: "#000000",
                 shopeeUrl: "https://shopee.vn/product/inside-1-den",
                 tiktokUrl: "https://tiktok.com/product/inside-1-den",
-                images: ["https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200", "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200", "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200", "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200", "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200", "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200", "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200", "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"],
+                images: ["https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"],
                 sizes: [
                     { name: "S", outOfStock: true },
                     { name: "M", outOfStock: true },
@@ -81,9 +76,10 @@ const originalProducts = [
                 tiktokUrl: "https://tiktok.com/product/inside-1-xam",
                 images: ["https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"],
                 sizes: [
-                    { name: "S", outOfStock: false },
+                    { name: "S", outOfStock: true },
                     { name: "M", outOfStock: false },
-                    { name: "L", outOfStock: true }
+                    { name: "L", outOfStock: false },
+                    { name: "XL", outOfStock: true }
                 ]
             }
         ]
@@ -93,36 +89,14 @@ const originalProducts = [
         style: "Boxer",
         descriptionText: "Quần lót dáng đùi Boxer ôm nhẹ thoáng mát, cạp chun thêu tinh tế không gây hằn bụng.",
         materialText: "95% Bamboo Sợi Tre nhập khẩu, 5% Elastane thoáng khí chống nhăn.",
-        usageGuideText: [
-            "Giặt máy ở chế độ nhẹ, nhiệt độ thường (30°C).",
-            "Không sử dụng hóa chất tẩy có chứa clo.",
-            "Phơi trong bóng mát.",
-            "Sấy khô ở nhiệt độ thấp.",
-            "Là ở nhiệt độ thấp (tối đa 110°C).",
-            "Giặt với sản phẩm cùng màu.",
-            "Không là lên chi tiết trang trí."
-        ],
-        introImages: [
-            "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200",
-            "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
-        ],
+        usageGuideText: ["Giặt máy ở chế độ nhẹ, nhiệt độ thường (30°C)."],
+        introImages: ["https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"],
         colors: [
             {
                 name: "Trắng", hex: "#ffffff",
                 shopeeUrl: "https://shopee.vn/product/inside-2-trang",
                 tiktokUrl: "https://tiktok.com/product/inside-2-trang",
-                images: ["https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200", "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"],
-                sizes: [
-                    { name: "M", outOfStock: false },
-                    { name: "L", outOfStock: false },
-                    { name: "XL", outOfStock: true }
-                ]
-            },
-            {
-                name: "Đen", hex: "#000000",
-                shopeeUrl: "https://shopee.vn/product/inside-2-den",
-                tiktokUrl: "https://tiktok.com/product/inside-2-den",
-                images: ["https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"],
+                images: ["https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"],
                 sizes: [
                     { name: "M", outOfStock: false },
                     { name: "L", outOfStock: false },
@@ -134,21 +108,10 @@ const originalProducts = [
     {
         id: "inside-3", name: "Quần Lót Nam Modal Air Brief Siêu Nhẹ", category: "inside", price: 75000, originalPrice: 99000,
         style: "Brief",
-        descriptionText: "Sợi Gỗ Sồi Modal siêu mềm mại, tạo cảm giác mặc như không mặc cả ngày dài.",
+        descriptionText: "Sợi Gỗ Sồi Modal siêu mềm mại.",
         materialText: "90% Modal Micro, 10% Spandex cao cấp.",
-        usageGuideText: [
-            "Giặt máy ở chế độ nhẹ, nhiệt độ thường (30°C).",
-            "Không sử dụng hóa chất tẩy có chứa clo.",
-            "Phơi trong bóng mát.",
-            "Sấy khô ở nhiệt độ thấp.",
-            "Là ở nhiệt độ thấp (tối đa 110°C).",
-            "Giặt với sản phẩm cùng màu.",
-            "Không là lên chi tiết trang trí."
-        ],
-        introImages: [
-            "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200",
-            "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
-        ],
+        usageGuideText: ["Giặt máy."],
+        introImages: ["https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"],
         colors: [
             {
                 name: "Be", hex: "#e3c4a8",
@@ -156,22 +119,8 @@ const originalProducts = [
                 tiktokUrl: "https://tiktok.com/product/inside-3-be",
                 images: ["https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"],
                 sizes: [
-                    { name: "S", outOfStock: true },
-                    { name: "M", outOfStock: true },
-                    { name: "L", outOfStock: true },
-                    { name: "XL", outOfStock: true }
-                ]
-            },
-            {
-                name: "Trắng", hex: "#ffffff",
-                shopeeUrl: "https://shopee.vn/product/inside-3-trang",
-                tiktokUrl: "https://tiktok.com/product/inside-3-trang",
-                images: ["https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"],
-                sizes: [
-                    { name: "S", outOfStock: true },
-                    { name: "M", outOfStock: true },
-                    { name: "L", outOfStock: true },
-                    { name: "XL", outOfStock: true }
+                    { name: "S", outOfStock: false },
+                    { name: "M", outOfStock: false }
                 ]
             }
         ]
@@ -179,27 +128,16 @@ const originalProducts = [
     {
         id: "inside-4", name: "Quần Lót Nam Thể Thao Pro-Dry Trunk Boxer", category: "inside", price: 135000, originalPrice: 180000,
         style: "Trunk",
-        descriptionText: "Chuyên dụng vận động thể thao cường độ cao với hệ thống dệt lưới tản nhiệt ở vùng hông.",
-        materialText: "88% Polyester Quick-Dry khô nhanh, 12% Spandex.",
-        usageGuideText: [
-            "Giặt máy ở chế độ nhẹ, nhiệt độ thường (30°C).",
-            "Không sử dụng hóa chất tẩy có chứa clo.",
-            "Phơi trong bóng mát.",
-            "Sấy khô ở nhiệt độ thấp.",
-            "Là ở nhiệt độ thấp (tối đa 110°C).",
-            "Giặt với sản phẩm cùng màu.",
-            "Không là lên chi tiết trang trí."
-        ],
-        introImages: [
-            "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200",
-            "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
-        ],
+        descriptionText: "Chuyên dụng vận động thể thao.",
+        materialText: "88% Polyester, 12% Spandex.",
+        usageGuideText: ["Giặt máy."],
+        introImages: ["https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"],
         colors: [
             {
                 name: "Đen", hex: "#000000",
                 shopeeUrl: "https://shopee.vn/product/inside-4-den",
                 tiktokUrl: "https://tiktok.com/product/inside-4-den",
-                images: ["https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"],
+                images: ["https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"],
                 sizes: [
                     { name: "L", outOfStock: false },
                     { name: "XL", outOfStock: false }
@@ -210,21 +148,10 @@ const originalProducts = [
     {
         id: "inside-5", name: "Quần Lót Nam Boxer Brief Modern Fit", category: "inside", price: 129000, originalPrice: 165000,
         style: "Boxer Brief",
-        descriptionText: "Chiều dài ống trung bình chống cọ xát đùi, thiết kế cạp cao vừa ôm gọn hông nam tính.",
-        materialText: "95% Cotton Combed, 5% Elastane.",
-        usageGuideText: [
-            "Giặt máy ở chế độ nhẹ, nhiệt độ thường (30°C).",
-            "Không sử dụng hóa chất tẩy có chứa clo.",
-            "Phơi trong bóng mát.",
-            "Sấy khô ở nhiệt độ thấp.",
-            "Là ở nhiệt độ thấp (tối đa 110°C).",
-            "Giặt với sản phẩm cùng màu.",
-            "Không là lên chi tiết trang trí."
-        ],
-        introImages: [
-            "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200",
-            "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
-        ],
+        descriptionText: "Chiều dài ống trung bình.",
+        materialText: "95% Cotton, 5% Elastane.",
+        usageGuideText: ["Giặt máy."],
+        introImages: ["https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"],
         colors: [
             {
                 name: "Đen", hex: "#000000",
@@ -241,21 +168,10 @@ const originalProducts = [
     {
         id: "inside-6", name: "Quần Lót Nam Seamless Ultra Flex Air", category: "inside", price: 99000, originalPrice: 139000,
         style: "Seamless",
-        descriptionText: "Siêu mỏng nhẹ không viền may, mang lại sự tự tin tuyệt đối khi kết hợp cùng quần âu trang trọng.",
+        descriptionText: "Siêu mỏng nhẹ.",
         materialText: "85% Polyamide, 15% Spandex.",
-        usageGuideText: [
-            "Giặt máy ở chế độ nhẹ, nhiệt độ thường (30°C).",
-            "Không sử dụng hóa chất tẩy có chứa clo.",
-            "Phơi trong bóng mát.",
-            "Sấy khô ở nhiệt độ thấp.",
-            "Là ở nhiệt độ thấp (tối đa 110°C).",
-            "Giặt với sản phẩm cùng màu.",
-            "Không là lên chi tiết trang trí."
-        ],
-        introImages: [
-            "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200",
-            "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
-        ],
+        usageGuideText: ["Giặt nhẹ."],
+        introImages: ["https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"],
         colors: [
             {
                 name: "Be", hex: "#e3c4a8",
@@ -271,33 +187,737 @@ const originalProducts = [
     }
 ];
 
+const SHIPPING_CONFIG = {
+    freeShippingThreshold: 499000,
+    freeShippingMessage: "Bạn đã được miễn phí vận chuyển"
+};
+
+const availableVouchers = [
+    { code: "EXTRA10", title: "Voucher 10%", desc: "[Voucher Extra] Giảm thêm 10% sản phẩm cho đơn từ 599K", discountType: "percent", discountValue: 10, minOrder: 599000, expiry: "2026-10-31" },
+    { code: "GIAM50", title: "Voucher 50K", desc: "[Online] Voucher giảm 50K cho đơn hàng từ 599K", discountType: "fixed", discountValue: 50000, minOrder: 599000, expiry: "2026-10-31" },
+    { code: "GIAM25", title: "Voucher 25K", desc: "[Online] Voucher giảm 25K cho đơn hàng từ 349K", discountType: "fixed", discountValue: 25000, minOrder: 349000, expiry: "2026-10-31" },
+    { code: "GIAM100", title: "Voucher 100K", desc: "[Online] Voucher giảm 100K cho đơn hàng từ 549K", discountType: "fixed", discountValue: 100000, minOrder: 49000, expiry: "2026-10-31" }
+];
+
 let currentFilteredProducts = [...originalProducts];
 let currentSelectedSize = null;
 let currentGalleryImages = [];
 let currentGalleryIndex = 0;
+let cartItems = JSON.parse(localStorage.getItem('inside_cart') || '[]');
+let currentQuantity = 1;
+let editingCartItemIndex = null;
+let quickEditSelectedSize = null;
+let quickEditColorIdx = 0;
+// ĐOẠN CODE ĐÃ THÊM/SỬA: Khởi tạo activeVoucher từ localStorage để lưu trạng thái giữa các trang
+let activeVoucher = JSON.parse(localStorage.getItem('inside_active_voucher') || 'null');
+let isSubtotalExpanded = false;
 
-/* HÀM HỖ TRỢ XÁC ĐỊNH ĐƯỜNG DẪN TRANG DỰA VÀO CATEGORY */
+function updateCartBadge() {
+    const totalCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+    const desktopBadges = document.querySelectorAll('#cart-badge-desktop');
+    const mobileBadges = document.querySelectorAll('#cart-badge-mobile');
+    const modalBadges = document.querySelectorAll('#cart-modal-title-badge');
+
+    [...desktopBadges, ...mobileBadges, ...modalBadges].forEach(badge => {
+        if (!badge) return;
+        if (totalCount > 0) {
+            badge.innerText = totalCount;
+            badge.classList.remove('hidden');
+        } else {
+            badge.classList.add('hidden');
+        }
+    });
+    // ĐOẠN CODE ĐÃ THÊM: Lưu giỏ hàng và voucher vào localStorage
+    localStorage.setItem('inside_cart', JSON.stringify(cartItems));
+    localStorage.setItem('inside_active_voucher', JSON.stringify(activeVoucher));
+}
+
+function openCartModal() {
+    renderCartModalContent();
+    const modal = document.getElementById('cart-modal');
+    if (modal) {
+        modal.classList.remove('hidden');
+        document.body.classList.add('drawer-open'); // Thêm dòng này để khóa cuộn nền
+        setTimeout(() => {
+            document.getElementById('cart-overlay').classList.remove('opacity-0');
+            document.getElementById('cart-panel').classList.remove('translate-x-full');
+        }, 10);
+    }
+}
+
+function closeCartModal() {
+    const overlay = document.getElementById('cart-overlay');
+    const panel = document.getElementById('cart-panel');
+    const modal = document.getElementById('cart-modal');
+    if (overlay && panel && modal) {
+        overlay.classList.add('opacity-0');
+        panel.classList.add('translate-x-full');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            document.body.classList.remove('drawer-open'); // Thêm dòng này để cho phép cuộn lại
+        }, 300);
+    }
+}
+
+function renderCartModalContent() {
+    const container = document.getElementById('cart-content-body');
+    const totalPriceEl = document.getElementById('cart-total-price');
+    const freeShipBanner = document.getElementById('free-ship-banner');
+    const freeShipText = document.getElementById('free-ship-text');
+    const subtotalEl = document.getElementById('summary-subtotal');
+    const voucherDiscountRow = document.getElementById('voucher-discount-row');
+    const voucherDiscountTitle = document.getElementById('voucher-discount-title');
+    const summaryVoucherDiscount = document.getElementById('summary-voucher-discount');
+    const voucherLabel = document.getElementById('selected-voucher-label');
+
+    if (!container) return;
+
+    if (cartItems.length === 0) {
+        container.innerHTML = '<p class="text-center text-sm text-slate-400 font-bold uppercase tracking-wider py-16">Giỏ hàng của bạn đang trống.</p>';
+        if (totalPriceEl) totalPriceEl.innerText = '0đ';
+        if (freeShipBanner) freeShipBanner.classList.add('hidden');
+        if (subtotalEl) subtotalEl.innerText = '0 đ';
+        if (voucherDiscountRow) voucherDiscountRow.classList.add('hidden');
+        return;
+    }
+
+    let rawSubtotal = 0;
+    container.innerHTML = cartItems.map((item, idx) => {
+        rawSubtotal += item.price * item.quantity;
+        const codePrefix = formatProductCode(item.productId, item.category);
+        const origPriceFormatted = (item.originalPrice ? item.originalPrice : Math.round(item.price * 1.2)).toLocaleString('vi-VN');
+        const discountPercent = item.originalPrice ? Math.round((1 - item.price / item.originalPrice) * 100) : 17;
+
+        // ĐÃ ĐIỀU CHỈNH: Ảnh w-24 h-28, Chữ tiêu đề text-base, chữ chi tiết text-sm
+        return `<div class="flex gap-5 p-5 border border-slate-100 bg-slate-50 items-center relative group">
+            <img src="${item.image}" class="w-24 h-28 object-cover bg-slate-200 cursor-pointer shrink-0" onclick="openProductDrawerFromCart('${item.productId}', '${item.colorName}', '${item.category}')">
+            <div class="flex-1 min-w-0 pr-6">
+                <span class="text-[10px] font-black uppercase bg-slate-200 text-slate-800 px-2 py-0.5 tracking-wider">INSIDE+</span>
+                <h4 class="font-black text-base uppercase text-slate-900 mt-1.5 cursor-pointer hover:underline truncate" onclick="openProductDrawerFromCart('${item.productId}', '${item.colorName}', '${item.category}')">${item.name}</h4>
+                <p class="text-sm font-semibold text-slate-600 mt-1">${item.colorName} - ${codePrefix} | Size: <span class="font-black text-slate-900">${item.size}</span></p>
+                
+                <div class="flex items-baseline gap-2.5 mt-2">
+                    <span class="text-sm text-slate-400 line-through">${origPriceFormatted} đ</span>
+                    <span class="text-xs bg-blue-50 text-blue-600 px-1.5 py-0.5 font-black">-${discountPercent}%</span>
+                </div>
+                
+                <div class="flex items-center justify-between mt-4">
+                    <span class="text-base font-black text-slate-900">${(item.price * item.quantity).toLocaleString('vi-VN')} đ</span>
+                    <div class="flex items-center border border-slate-300 bg-white shadow-sm">
+                        <button onclick="updateCartItemQty(${idx}, -1)" class="px-3 py-1.5 text-sm font-black text-slate-700 hover:bg-slate-100">-</button>
+                        <span class="px-3 text-sm font-black text-slate-900">${item.quantity}</span>
+                        <button onclick="updateCartItemQty(${idx}, 1)" class="px-3 py-1.5 text-sm font-black text-slate-700 hover:bg-slate-100">+</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="absolute top-4 right-4">
+                <button onclick="toggleItemMenu(${idx})" class="p-1.5 text-slate-500 hover:text-black focus:outline-none">
+                    <i data-lucide="more-vertical" class="w-5 h-5"></i>
+                </button>
+                <div id="item-menu-${idx}" class="absolute right-0 top-8 w-56 bg-white border border-slate-200 shadow-xl hidden z-20 py-2">
+                    <button onclick="openQuickEdit(${idx})" class="w-full text-left px-4 py-3 text-xs font-bold text-slate-800 hover:bg-slate-50 flex items-center gap-2.5">
+                        <i data-lucide="sliders-horizontal" class="w-4 h-4"></i> Điều chỉnh màu sắc, kích cỡ
+                    </button>
+                    <button onclick="removeCartItem(${idx})" class="w-full text-left px-4 py-3 text-xs font-bold text-red-600 hover:bg-slate-50 flex items-center gap-2.5">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i> Xóa khỏi giỏ hàng
+                    </button>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+
+    if (rawSubtotal >= SHIPPING_CONFIG.freeShippingThreshold) {
+        if (freeShipBanner && freeShipText) {
+            freeShipText.innerHTML = `<i data-lucide="truck" class="w-4 h-4 text-blue-800 inline mr-1"></i> ${SHIPPING_CONFIG.freeShippingMessage}`;
+            freeShipBanner.classList.remove('hidden');
+        }
+    } else if (freeShipBanner) {
+        freeShipBanner.classList.add('hidden');
+    }
+
+    let discountAmount = 0;
+    if (activeVoucher) {
+        if (rawSubtotal >= activeVoucher.minOrder) {
+            discountAmount = activeVoucher.discountType === 'percent'
+                ? Math.round((rawSubtotal * activeVoucher.discountValue) / 100)
+                : activeVoucher.discountValue;
+            if (voucherLabel) voucherLabel.innerText = activeVoucher.code;
+        } else {
+            activeVoucher = null;
+            if (voucherLabel) voucherLabel.innerText = 'Chọn hoặc nhập mã';
+        }
+    } else if (voucherLabel) {
+        voucherLabel.innerText = 'Chọn hoặc nhập mã';
+    }
+
+    const finalTotal = Math.max(0, rawSubtotal - discountAmount);
+    if (subtotalEl) subtotalEl.innerText = rawSubtotal.toLocaleString('vi-VN') + ' đ';
+
+    if (voucherDiscountRow && summaryVoucherDiscount && voucherDiscountTitle) {
+        if (activeVoucher && discountAmount > 0) {
+            voucherDiscountTitle.innerText = `${activeVoucher.code} đơn từ ${activeVoucher.minOrder.toLocaleString('vi-VN')}đ`;
+            summaryVoucherDiscount.innerText = '-' + discountAmount.toLocaleString('vi-VN') + ' đ';
+            voucherDiscountRow.classList.remove('hidden');
+        } else {
+            voucherDiscountRow.classList.add('hidden');
+        }
+    }
+
+    if (totalPriceEl) totalPriceEl.innerText = finalTotal.toLocaleString('vi-VN') + 'đ';
+    updateCartBadge();
+    if (window.lucide) lucide.createIcons({ root: container });
+}
+
+function toggleSubtotalDetails() {
+    isSubtotalExpanded = !isSubtotalExpanded;
+    const box = document.getElementById('subtotal-details-box');
+    const chevron = document.getElementById('subtotal-chevron-icon');
+    if (box && chevron) {
+        if (isSubtotalExpanded) {
+            box.classList.remove('hidden');
+            chevron.style.transform = 'rotate(180deg)';
+        } else {
+            box.classList.add('hidden');
+            chevron.style.transform = 'rotate(0deg)';
+        }
+    }
+}
+
+function openVoucherDrawer() {
+    renderVoucherList();
+    const drawer = document.getElementById('voucher-drawer');
+    if (drawer) {
+        drawer.classList.remove('hidden');
+        setTimeout(() => {
+            document.getElementById('voucher-overlay').classList.remove('opacity-0');
+            document.getElementById('voucher-panel').classList.remove('translate-x-full');
+        }, 10);
+    }
+}
+
+function closeVoucherDrawer() {
+    const overlay = document.getElementById('voucher-overlay');
+    const panel = document.getElementById('voucher-panel');
+    const drawer = document.getElementById('voucher-drawer');
+    if (overlay && panel && drawer) {
+        overlay.classList.add('opacity-0');
+        panel.classList.add('translate-x-full');
+        setTimeout(() => drawer.classList.add('hidden'), 300);
+    }
+}
+
+function renderVoucherList() {
+    const container = document.getElementById('voucher-list-container');
+    if (!container) return;
+
+    let currentSubtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+    container.innerHTML = availableVouchers.map(v => {
+        const isSelected = activeVoucher && activeVoucher.code === v.code;
+        const canApply = currentSubtotal >= v.minOrder;
+
+        // Cấu hình Nút bấm
+        let btnHtml = '';
+        if (isSelected) {
+            btnHtml = `<button onclick="selectVoucher('${v.code}')" class="px-4 py-2 bg-emerald-600 text-white text-xs font-black uppercase tracking-wider hover:bg-emerald-700 transition shadow">ĐÃ CHỌN ✓</button>`;
+        } else if (canApply) {
+            btnHtml = `<button onclick="selectVoucher('${v.code}')" class="px-4 py-2 bg-slate-950 text-white text-xs font-black uppercase tracking-wider hover:bg-slate-800 transition">CHỌN MÃ</button>`;
+        } else {
+            btnHtml = `<button disabled class="px-3 py-2 bg-slate-100 text-slate-400 text-[11px] font-bold uppercase tracking-wider cursor-not-allowed">CHƯA ĐỦ ĐIỀU KIỆN</button>`;
+        }
+
+        // Cấu hình Khung nền & Viền khi được chọn vs chưa chọn
+        const cardStyle = isSelected
+            ? 'bg-emerald-50/60 border-2 border-emerald-600 shadow-md ring-2 ring-emerald-600/20'
+            : 'bg-white border border-slate-300 shadow-sm hover:border-slate-400';
+
+        const tagStyle = isSelected 
+            ? 'bg-emerald-600 text-white' 
+            : 'bg-slate-100 text-slate-800';
+
+        return `<div class="relative my-4 mx-1">
+            <!-- Thẻ Voucher -->
+            <div class="${cardStyle} p-4 transition-all duration-200">
+                
+                <!-- Hàng trên: Thông tin chi tiết -->
+                <div class="flex items-start justify-between gap-3 mb-3">
+                    <div class="space-y-1">
+                        <span class="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-sm ${tagStyle}">VOUCHER CHÍNH HÃNG</span>
+                        <h4 class="font-black text-sm uppercase text-slate-900 pt-1">${v.title}</h4>
+                        <p class="text-xs text-slate-500 font-medium">${v.desc}</p>
+                    </div>
+                </div>
+                
+                <!-- Đường gạch đứt nét kiểu vé xem phim/coupon -->
+                <div class="border-t-2 border-dashed border-slate-300 my-3 relative">
+                    <!-- Vết bấm lỗ (Hình bán cầu) bên trái & phải -->
+                    <div class="absolute -left-6 -top-2 w-4 h-4 bg-[#f8fafc] border-r border-slate-300 rounded-full"></div>
+                    <div class="absolute -right-6 -top-2 w-4 h-4 bg-[#f8fafc] border-l border-slate-300 rounded-full"></div>
+                </div>
+                
+                <!-- Hàng dưới: Mã & Nút hành động -->
+                <div class="flex items-center justify-between pt-1">
+                    <div>
+                        <span class="block text-[9px] font-bold uppercase text-slate-400">MÃ GIẢM GIÁ</span>
+                        <span class="text-sm font-mono font-black ${isSelected ? 'text-emerald-700' : 'text-slate-900'}">${v.code}</span>
+                    </div>
+                    <div>${btnHtml}</div>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function selectVoucher(code) {
+    const v = availableVouchers.find(item => item.code === code);
+    if (!v) return;
+
+    let currentSubtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    if (activeVoucher && activeVoucher.code === code) {
+        activeVoucher = null;
+    } else {
+        if (currentSubtotal >= v.minOrder) {
+            activeVoucher = v;
+        } else {
+            alert('Đơn hàng chưa đạt mức tối thiểu để áp dụng mã này!');
+            return;
+        }
+    }
+    renderVoucherList();
+    renderCartModalContent();
+}
+
+// Bắt sự kiện gõ chữ vào ô input để mở khóa nút "ÁP DỤNG"
+function handleManualVoucherInput() {
+    const input = document.getElementById('manual-voucher-input');
+    const btn = document.getElementById('btn-apply-manual-voucher');
+    if (!input || !btn) return;
+
+    if (input.value.trim().length > 0) {
+        btn.disabled = false;
+        btn.className = "px-6 py-3.5 bg-slate-950 text-white font-black text-xs uppercase tracking-widest hover:bg-slate-800 transition cursor-pointer";
+    } else {
+        btn.disabled = true;
+        btn.className = "px-6 py-3.5 bg-slate-200 text-slate-400 font-black text-xs uppercase tracking-widest cursor-not-allowed transition";
+    }
+}
+
+// Áp dụng voucher khi nhấn nút
+function applyManualVoucher() {
+    const input = document.getElementById('manual-voucher-input');
+    if (!input) return;
+    const code = input.value.trim().toUpperCase();
+    if (!code) return;
+
+    const v = availableVouchers.find(item => item.code === code);
+    let currentSubtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+    if (v) {
+        if (currentSubtotal >= v.minOrder) {
+            activeVoucher = v;
+            renderCartModalContent();
+            renderVoucherList();
+            closeVoucherDrawer();
+        } else {
+            alert(`Đơn hàng cần tối thiểu ${v.minOrder.toLocaleString('vi-VN')}đ để áp dụng mã này!`);
+        }
+    } else {
+        alert('Mã ưu đãi không hợp lệ hoặc đã hết hạn!');
+    }
+}
+
+function toggleItemMenu(idx) {
+    document.querySelectorAll('[id^="item-menu-"]').forEach((el, i) => {
+        if (i !== idx) el.classList.add('hidden');
+    });
+    const menu = document.getElementById(`item-menu-${idx}`);
+    if (menu) menu.classList.toggle('hidden');
+}
+
+// ĐOẠN CODE ĐÃ THÊM/SỬA: Xử lý điều hướng khi bấm vào sản phẩm trong giỏ hàng
+function openProductDrawerFromCart(productId, colorName, category) {
+    const cat = (category || 'inside').toLowerCase();
+    const targetPage = getCategoryPageUrl(cat);
+
+    // Lấy tên file HTML hiện tại (ví dụ: inside.html, sock.html, tshirt.html)
+    const currentFileName = window.location.pathname.split('/').pop().toLowerCase();
+    const targetFileName = targetPage.split('/').pop().toLowerCase();
+
+    // 1. Kiểm tra nếu sản phẩm nằm ở TRANG KHÁC trang hiện tại
+    if (currentFileName !== targetFileName) {
+        // Tự động mở lại giỏ hàng sau khi chuyển trang
+        sessionStorage.setItem('auto_open_cart', 'true');
+
+        // Tạo mã URL chính xác (Product Code & Color Code)
+        const pCode = formatProductCode(productId, cat);
+
+        // Tìm colorIdx nếu sản phẩm có trong originalProducts, nếu không mặc định 0
+        const p = originalProducts.find(x => x.id === productId);
+        let colorIdx = 0;
+        if (p) {
+            colorIdx = p.colors.findIndex(c => c.name === colorName);
+            if (colorIdx === -1) colorIdx = 0;
+        }
+
+        const cCode = formatColorCode(colorIdx, cat);
+
+        // Chuyển hướng sang trang tương ứng (SOCK hoặc TSHIRT)
+        window.location.href = `${targetPage}?product=${pCode}&color=${cCode}`;
+        return;
+    }
+
+    // 2. Nếu sản phẩm NẰM CÙNG TRANG hiện tại
+    const p = originalProducts.find(x => x.id === productId);
+    if (!p) return;
+
+    let colorIdx = p.colors.findIndex(c => c.name === colorName);
+    if (colorIdx === -1) colorIdx = 0;
+
+    // Hiển thị sản phẩm ở nền đằng sau mà không đóng giỏ hàng
+    openProductDrawer(productId, colorIdx, true);
+}
+
+// Hàm tìm sản phẩm trên toàn bộ dữ liệu (nếu có lưu trong localStorage hoặc từ cartItem)
+function findProductAnywhere(productId) {
+    // 1. Tìm trong danh sách trang hiện tại
+    if (typeof originalProducts !== 'undefined') {
+        const found = originalProducts.find(x => x.id === productId);
+        if (found) return found;
+    }
+
+    // 2. Tìm trong danh sách cartItems (lấy từ colorsData đã lưu)
+    const cartItem = cartItems.find(x => x.productId === productId);
+    if (cartItem && cartItem.colorsData) {
+        return {
+            id: cartItem.productId,
+            name: cartItem.name,
+            price: cartItem.price,
+            colors: cartItem.colorsData
+        };
+    }
+
+    // 3. Fallback: Dùng dữ liệu cơ bản từ item trong giỏ hàng để khởi tạo khung Quick Edit
+    if (cartItem) {
+        return {
+            id: cartItem.productId,
+            name: cartItem.name,
+            price: cartItem.price,
+            colors: [
+                {
+                    name: cartItem.colorName,
+                    hex: "#000000",
+                    images: [cartItem.image],
+                    sizes: [
+                        { name: "S", outOfStock: false },
+                        { name: "M", outOfStock: false },
+                        { name: "L", outOfStock: false },
+                        { name: "XL", outOfStock: false }
+                    ]
+                }
+            ]
+        };
+    }
+
+    return null;
+}
+
+function openQuickEdit(idx) {
+    toggleItemMenu(idx);
+    editingCartItemIndex = idx;
+    const item = cartItems[idx];
+    if (!item) return;
+
+    // Tìm sản phẩm từ bất kỳ nguồn dữ liệu nào (không phụ thuộc vào trang hiện tại)
+    const p = findProductAnywhere(item.productId);
+    if (!p) return;
+
+    quickEditColorIdx = p.colors.findIndex(c => c.name === item.colorName);
+    if (quickEditColorIdx === -1) quickEditColorIdx = 0;
+    quickEditSelectedSize = item.size;
+
+    renderQuickEditPanel(p, quickEditColorIdx);
+
+    const drawer = document.getElementById('quick-edit-drawer');
+    if (drawer) {
+        drawer.classList.remove('hidden');
+        setTimeout(() => {
+            document.getElementById('quick-edit-overlay').classList.remove('opacity-0');
+            document.getElementById('quick-edit-panel').classList.remove('translate-x-full');
+        }, 10);
+    }
+}
+
+function selectQuickEditSize(sizeName, productId, colorIdx) {
+    quickEditSelectedSize = sizeName;
+    const p = findProductAnywhere(productId);
+    if (p) {
+        renderQuickEditPanel(p, colorIdx);
+    }
+}
+
+function renderQuickEditPanel(p, colorIdx) {
+    quickEditColorIdx = colorIdx;
+    const activeColor = p.colors[colorIdx] || p.colors[0];
+    const availableSizes = activeColor.sizes || [];
+
+    // Tự động chọn size đầu tiên còn hàng nếu chưa có size được chọn
+    if (!quickEditSelectedSize || !availableSizes.some(s => s.name === quickEditSelectedSize)) {
+        const firstAvail = availableSizes.find(s => !s.outOfStock);
+        if (firstAvail) {
+            quickEditSelectedSize = firstAvail.name;
+        } else if (availableSizes.length > 0) {
+            quickEditSelectedSize = availableSizes[0].name;
+        }
+    }
+
+    // Kiểm tra xem size hiện tại đang chọn có hết hàng hay không
+    const selectedSizeObj = availableSizes.find(s => s.name === quickEditSelectedSize);
+    const isOutOfStock = selectedSizeObj ? selectedSizeObj.outOfStock : false;
+
+    // Render nút danh sách màu sắc
+    const colorsHtml = p.colors.map((c, cIdx) => {
+        const activeClass = cIdx === colorIdx ? 'ring-2 ring-slate-900 ring-offset-2' : '';
+        return `<button type="button" onclick="renderQuickEditPanel(findProductAnywhere('${p.id}'), ${cIdx})" class="w-7 h-7 rounded-full border border-slate-300 relative ${activeClass}" style="background-color: ${c.hex};" title="${c.name}"></button>`;
+    }).join('');
+
+    // Render danh sách nút size (Đổi sang gọi selectQuickEditSize để luôn bấm linh hoạt)
+    const sizesHtml = availableSizes.map(s => {
+        const isSelected = quickEditSelectedSize === s.name;
+
+        // Đã chỉnh: Nâng text-xs -> text-sm font-black, đổi ring-red-400 -> ring-2 ring-slate-900 (viền đen)
+        const btnStyle = s.outOfStock
+            ? (isSelected
+                ? 'bg-slate-100 text-slate-400 border-slate-900 ring-2 ring-slate-900 line-through-thick'
+                : 'bg-slate-100 text-slate-300 border-slate-200 line-through-thick')
+            : (isSelected
+                ? 'bg-slate-950 text-white border-slate-950'
+                : 'bg-white text-slate-800 border-slate-200 hover:border-slate-900');
+
+        return `<button type="button" onclick="selectQuickEditSize('${s.name}', '${p.id}', ${colorIdx})" class="w-12 h-12 border text-sm font-black transition flex items-center justify-center cursor-pointer ${btnStyle}">${s.name}</button>`;
+    }).join('');
+
+    // Render thông tin vào thân drawer
+    const body = document.getElementById('quick-edit-body');
+    if (body) {
+        body.innerHTML = `
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div class="aspect-[4/5] bg-slate-100 overflow-hidden">
+                <img src="${activeColor.images[0]}" class="w-full h-full object-cover">
+            </div>
+            <div class="space-y-4">
+                <span class="text-[10px] font-bold uppercase bg-slate-100 px-2 py-0.5 text-slate-700">ONOFF</span>
+                <h4 class="text-xl font-black uppercase text-slate-900">${p.name}</h4>
+                <div class="flex items-baseline gap-3">
+                    <span class="text-xl font-black text-slate-900">${p.price.toLocaleString('vi-VN')} đ</span>
+                </div>
+                <div class="space-y-1.5 pt-2">
+                    <span class="text-xs font-bold uppercase text-slate-700">Màu sắc: <span class="font-black">${activeColor.name}</span></span>
+                    <div class="flex gap-2">${colorsHtml}</div>
+                </div>
+                <div class="space-y-1.5 pt-2">
+                    <span class="text-xs font-bold uppercase text-slate-700">Kích cỡ: <span class="font-black">${quickEditSelectedSize}</span></span>
+                    <div class="flex gap-2 flex-wrap">${sizesHtml}</div>
+                </div>
+            </div>
+        </div>`;
+        if (window.lucide) lucide.createIcons({ root: body });
+    }
+
+    // ĐIỀU KHIỂN TRỰC TIẾP NÚT "CẬP NHẬT GIỎ HÀNG" CÓ SẴN Ở FOOTER CỦA HTML
+    const btnSubmit = document.querySelector('#quick-edit-panel .border-t button');
+    if (btnSubmit) {
+        if (isOutOfStock) {
+            btnSubmit.disabled = true;
+            btnSubmit.className = "w-full bg-slate-300 text-slate-500 py-4 font-bold text-xs uppercase tracking-widest cursor-not-allowed transition";
+        } else {
+            btnSubmit.disabled = false;
+            btnSubmit.className = "w-full bg-slate-950 text-white py-4 font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition cursor-pointer";
+        }
+    }
+}
+
+function closeQuickEditDrawer() {
+    const overlay = document.getElementById('quick-edit-overlay');
+    const panel = document.getElementById('quick-edit-panel');
+    const drawer = document.getElementById('quick-edit-drawer');
+    if (overlay && panel && drawer) {
+        overlay.classList.add('opacity-0');
+        panel.classList.add('translate-x-full');
+        setTimeout(() => drawer.classList.add('hidden'), 300);
+    }
+}
+
+// Bổ sung hàm hỗ trợ lấy dữ liệu sản phẩm chuẩn cho QuickEdit
+function getQuickEditProductData(productId) {
+    let p = originalProducts.find(x => x.id === productId);
+    if (!p && editingCartItemIndex !== null && cartItems[editingCartItemIndex]) {
+        const item = cartItems[editingCartItemIndex];
+        p = {
+            id: item.productId,
+            name: item.name,
+            price: item.price,
+            colors: item.colorsData
+        };
+    }
+    return p;
+}
+
+function saveQuickEdit() {
+    if (editingCartItemIndex !== null && cartItems[editingCartItemIndex]) {
+        const item = cartItems[editingCartItemIndex];
+        const p = findProductAnywhere(item.productId);
+        if (p) {
+            const activeColor = p.colors[quickEditColorIdx] || p.colors[0];
+            item.colorName = activeColor.name;
+            item.image = activeColor.images[0];
+            item.size = quickEditSelectedSize;
+        }
+    }
+    closeQuickEditDrawer();
+    updateCartBadge();
+    renderCartModalContent();
+    openCartModal();
+}
+
+function updateCartItemQty(index, delta) {
+    cartItems[index].quantity += delta;
+    if (cartItems[index].quantity <= 0) {
+        cartItems.splice(index, 1);
+    }
+    updateCartBadge(); // Cập nhật ngay lập tức lên header
+    renderCartModalContent();
+}
+
+function removeCartItem(index) {
+    cartItems.splice(index, 1);
+    updateCartBadge(); // Cập nhật ngay lập tức lên header
+    renderCartModalContent();
+}
+
+function changeQty(delta) {
+    currentQuantity = Math.max(1, currentQuantity + delta);
+    const qtyInput = document.getElementById('qty-input-val');
+    if (qtyInput) qtyInput.innerText = currentQuantity;
+}
+
+function addToCart(productId, colorIdx) {
+    const p = originalProducts.find(x => x.id === productId);
+    if (!p) return;
+    const activeColor = p.colors[colorIdx];
+
+    if (!currentSelectedSize) {
+        const sizeBox = document.getElementById('size-selection-container');
+        if (sizeBox) {
+            let errorTip = document.getElementById('size-error-tooltip');
+            if (!errorTip) {
+                errorTip = document.createElement('div');
+                errorTip.id = 'size-error-tooltip';
+                errorTip.className = 'absolute -top-10 left-0 bg-[#222] text-white text-[11px] font-bold px-3 py-1.5 shadow-lg tracking-wide z-20 flex items-center gap-1 animate-bounce';
+                errorTip.innerHTML = `Vui lòng chọn kích cỡ`;
+                sizeBox.style.position = 'relative';
+                sizeBox.appendChild(errorTip);
+                setTimeout(() => errorTip.remove(), 2500);
+            }
+        }
+        return;
+    }
+
+    const newItem = {
+        productId: p.id,
+        name: p.name,
+        category: p.category,
+        price: p.price,
+        image: activeColor.images[0],
+        colorName: activeColor.name,
+        size: currentSelectedSize,
+        quantity: currentQuantity,
+        colorsData: p.colors // Lưu dữ liệu đầy đủ của màu sắc & kích cỡ
+    };
+
+    const existingIndex = cartItems.findIndex(i => i.productId === newItem.productId && i.colorName === newItem.colorName && i.size === newItem.size);
+    if (existingIndex > -1) {
+        cartItems[existingIndex].quantity += currentQuantity;
+    } else {
+        cartItems.push(newItem);
+    }
+
+    updateCartBadge();
+    showAddedNotification(newItem);
+}
+
+function showAddedNotification(item) {
+    const existingPopup = document.getElementById('added-toast-popup');
+    if (existingPopup) existingPopup.remove();
+
+    const codePrefix = formatProductCode(item.productId, item.category);
+    const toast = document.createElement('div');
+    toast.id = 'added-toast-popup';
+    toast.className = 'fixed top-24 right-6 z-[200] bg-white border border-slate-200 shadow-2xl p-4 w-80 animate-fade-in';
+    toast.innerHTML = `
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
+            <span class="text-xs font-black uppercase text-slate-900 tracking-wider">Đã thêm vào giỏ hàng</span>
+            <button onclick="document.getElementById('added-toast-popup').remove(); updateCartBadge();" class="text-slate-400 hover:text-slate-900"><i data-lucide="x" class="w-4 h-4"></i></button>
+        </div>
+        <div class="flex gap-3 items-center mb-4">
+            <img src="${item.image}" class="w-14 h-16 object-cover bg-slate-100">
+            <div>
+                <h4 class="font-bold text-xs uppercase text-slate-900 line-clamp-1">${item.name}</h4>
+                <p class="text-[11px] text-slate-500 mt-0.5">${item.colorName} - ${codePrefix} | S: ${item.size} | SL: ${item.quantity}</p>
+            </div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+            <button onclick="document.getElementById('added-toast-popup').remove(); updateCartBadge();" class="w-full bg-white border border-slate-300 text-slate-800 py-2.5 font-bold text-[11px] uppercase tracking-wider hover:border-slate-900 transition">Đóng</button>
+            <button onclick="document.getElementById('added-toast-popup').remove(); updateCartBadge(); openCartModal();" class="w-full bg-slate-900 text-white py-2.5 font-bold text-[11px] uppercase tracking-wider hover:bg-slate-800 transition">Xem giỏ hàng</button>
+        </div>
+    `;
+    document.body.appendChild(toast);
+    if (window.lucide) lucide.createIcons({ root: toast });
+}
+
+function handleCheckoutRedirect() {
+    if (cartItems.length === 0) {
+        alert('Giỏ hàng của bạn đang trống!');
+        return;
+    }
+    window.location.href = 'https://checkout.example.com';
+}
+
 function getCategoryPageUrl(category) {
-    if (category === 'sock') return '../sock/sock.html';
-    if (category === 'tshirt') return '../tshirt/tshirt.html';
-    return '../inside/inside.html';
+    const cat = (category || 'inside').toLowerCase();
+
+    // Kiểm tra xem trang hiện tại có đang nằm trong thư mục con (INSIDE, SOCK, TSHIRT) hay không
+    const isInSubFolder = window.location.pathname.includes('/INSIDE/') ||
+        window.location.pathname.includes('/SOCK/') ||
+        window.location.pathname.includes('/TSHIRT/') ||
+        window.location.pathname.includes('/inside/') ||
+        window.location.pathname.includes('/sock/') ||
+        window.location.pathname.includes('/tshirt/');
+
+    const prefix = isInSubFolder ? '../' : '';
+
+    if (cat === 'sock') return prefix + 'SOCK/sock.html';
+    if (cat === 'tshirt') return prefix + 'TSHIRT/tshirt.html';
+    return prefix + 'INSIDE/inside.html';
 }
 
 function getCategoryPrefix(category) {
-    if (category === 'sock') return 'SPS';
-    if (category === 'tshirt') return 'SPT';
+    const cat = (category || 'inside').toLowerCase();
+    if (cat === 'sock') return 'SPS';
+    if (cat === 'tshirt') return 'SPT';
     return 'SPI';
 }
 
 function getColorPrefix(category) {
-    if (category === 'sock') return 'CS';
-    if (category === 'tshirt') return 'CT';
+    const cat = (category || 'inside').toLowerCase();
+    if (cat === 'sock') return 'CS';
+    if (cat === 'tshirt') return 'CT';
     return 'CI';
 }
 
 function formatProductCode(productId, category) {
     const prefix = getCategoryPrefix(category);
-    const numMatch = productId.match(/\d+/);
+    const numMatch = (productId || '').match(/\d+/);
     const num = numMatch ? parseInt(numMatch[0], 10) : 1;
     return prefix + String(num).padStart(3, '0');
 }
@@ -360,7 +980,6 @@ function checkAndOpenProductFromUrl() {
     }
 }
 
-/* TỐI ƯU VÀ LƯU TRỮ LIÊN TRANG VÀO LOCALSTORAGE (TỐI ĐA 8 SẢN PHẨM, TỰ ĐỘNG BỎ SẢN PHẨM CŨ NHẤT) */
 function addProductToViewed(product) {
     let viewed = JSON.parse(localStorage.getItem('viewed_products') || '[]');
     viewed = viewed.filter(p => p.id !== product.id);
@@ -380,7 +999,6 @@ function addProductToViewed(product) {
     localStorage.setItem('viewed_products', JSON.stringify(viewed));
 }
 
-/* RENDER SLIDER "ĐÃ XEM" (LOẠI BỎ SẢN PHẨM ĐANG XEM) */
 function renderRecentViewedSlider(currentProductId) {
     const viewed = JSON.parse(localStorage.getItem('viewed_products') || '[]');
     const container = document.getElementById('recent-viewed-slider');
@@ -473,7 +1091,6 @@ function clearAllBoldActiveStates() {
 window.addEventListener('pageshow', clearAllBoldActiveStates);
 
 window.addEventListener('popstate', function () {
-    // 1. Ẩn ngay lập tức Sidebar Thông tin sản phẩm
     const infoDrawer = document.getElementById('info-drawer');
     if (infoDrawer) {
         infoDrawer.classList.add('hidden');
@@ -483,7 +1100,6 @@ window.addEventListener('popstate', function () {
         if (infoPanel) infoPanel.classList.add('translate-x-full');
     }
 
-    // 2. Ẩn ngay lập tức Sidebar Giới thiệu sản phẩm
     const introDrawer = document.getElementById('intro-drawer');
     if (introDrawer) {
         introDrawer.classList.add('hidden');
@@ -493,20 +1109,17 @@ window.addEventListener('popstate', function () {
         if (introPanel) introPanel.classList.add('translate-x-full');
     }
 
-    // 3. Đóng Modal Lightbox xem ảnh (nếu đang mở)
     const galleryModal = document.getElementById('gallery-modal');
     if (galleryModal) {
         galleryModal.classList.add('hidden');
     }
 
-    // 4. MỞ LẠI THANH CUỘN (SCROLLBAR) CHO CẢ PRODUCT DRAWER VÀ BODY
     const productDrawer = document.getElementById('product-drawer');
     if (productDrawer) {
         productDrawer.classList.remove('drawer-open');
     }
     document.body.classList.remove('drawer-open');
 
-    // 5. Kiểm tra URL và đóng Product Drawer để thoát về trang Category
     checkAndOpenProductFromUrl();
 });
 
@@ -717,7 +1330,6 @@ function toggleSortDropdown(device) {
     if (drop) drop.classList.toggle('hidden');
 }
 
-/* MỞ CHI TIẾT SẢN PHẨM: ẨN SCROLLBAR CỦA CATEGORY (BODY) */
 function openProductDrawer(id, colorIdx, shouldUpdateUrl) {
     const p = originalProducts.find(item => item.id === id);
     if (!p) return;
@@ -725,6 +1337,7 @@ function openProductDrawer(id, colorIdx, shouldUpdateUrl) {
     window.currentActiveProductId = p.id;
     const initialColorIdx = (typeof colorIdx === 'number') ? colorIdx : 0;
     currentSelectedSize = null;
+    currentQuantity = 1;
 
     addProductToViewed(p);
     renderDrawerContent(p, initialColorIdx);
@@ -747,7 +1360,6 @@ function openProductDrawer(id, colorIdx, shouldUpdateUrl) {
         drawer.classList.remove('hidden');
     }
 
-    // ẨN THANH CUỘN CỦA CATEGORY (BODY) TRÊN CẢ PC VÀ MOBILE
     document.body.classList.add('drawer-open');
 
     if (shouldUpdateUrl !== false) {
@@ -757,7 +1369,6 @@ function openProductDrawer(id, colorIdx, shouldUpdateUrl) {
     }
 }
 
-/* ĐÓNG CHI TIẾT SẢN PHẨM: HIỆN LẠI SCROLLBAR CỦA CATEGORY (BODY) */
 function closeProductDrawer(shouldUpdateUrl) {
     const drawer = document.getElementById('product-drawer');
     if (drawer) {
@@ -766,7 +1377,6 @@ function closeProductDrawer(shouldUpdateUrl) {
         drawer.classList.remove('drawer-open');
     }
 
-    // BẬT LẠI THANH CUỘN CỦA TRANG CATEGORY (BODY)
     document.body.classList.remove('drawer-open');
 
     if (shouldUpdateUrl !== false) {
@@ -850,17 +1460,38 @@ function renderDrawerContent(p, colorIdx) {
         </div>`;
     }).join('');
 
+    // Render danh sách nút Size trong Xem chi tiết sản phẩm (Đã nâng size chữ & bỏ gạch chéo)
     const sizesHtml = availableSizes.map(s => {
         const isSelected = currentSelectedSize === s.name;
-        const btnStyle = s.outOfStock ? 'bg-slate-100/80 text-slate-300 border-slate-200 line-through' : (isSelected ? 'bg-slate-950 text-white border-slate-950' : 'bg-white text-slate-800 border-slate-200 hover:border-slate-900');
+
+        // s.outOfStock: Màu xám nhạt, viền nhạt, KHÔNG gạch chéo chữ
+        // isSelected: Màu đen, chữ trắng
+        const btnStyle = s.outOfStock
+            ? (isSelected
+                ? 'bg-slate-100 text-slate-400 border-slate-900 ring-2 ring-slate-900'
+                : 'bg-slate-100 text-slate-300 border-slate-200')
+            : (isSelected
+                ? 'bg-slate-950 text-white border-slate-950'
+                : 'bg-white text-slate-800 border-slate-200 hover:border-slate-900');
+
         return `<button onclick="currentSelectedSize='${s.name}'; renderDrawerContent(originalProducts.find(x => x.id==='${p.id}'), ${colorIdx})" 
-            class="flex-1 py-3 border text-xs font-bold transition relative ${btnStyle}">${s.name}</button>`;
+            class="w-12 h-12 border text-sm font-black transition flex items-center justify-center ${btnStyle}">${s.name}</button>`;
     }).join('');
 
     const actionBtnHtml = showOutOfStockBtn ?
         '<button disabled class="w-full bg-[#e2e8f0] text-[#64748b] py-4 px-6 font-bold text-xs uppercase tracking-widest pointer-events-none cursor-not-allowed text-center">HẾT HÀNG!</button>' :
-        `<a href="${activeShopeeUrl}" target="_blank" class="w-full bg-[#EE4D2D] text-white py-3.5 px-6 font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:opacity-90 transition">MUA TRÊN SHOPEE MALL</a>
-        <a href="${activeTiktokUrl}" target="_blank" class="w-full bg-slate-950 text-white py-3.5 px-6 font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-slate-800 transition">MUA TRÊN TIKTOK SHOP</a>`;
+        `<div class="flex items-center gap-3">
+            <div class="flex items-center border border-slate-300 bg-white px-3 py-2.5">
+                <button onclick="changeQty(-1)" class="px-2 text-sm font-bold text-slate-700 hover:text-black">-</button>
+                <span id="qty-input-val" class="px-3 text-sm font-bold text-slate-900">${currentQuantity}</span>
+                <button onclick="changeQty(1)" class="px-2 text-sm font-bold text-slate-700 hover:text-black">+</button>
+            </div>
+            <button onclick="addToCart('${p.id}', ${colorIdx})" class="flex-1 bg-slate-950 text-white py-3.5 px-6 font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition text-center">Thêm vào giỏ hàng</button>
+        </div>
+        <div class="space-y-2 pt-1">
+            <a href="${activeShopeeUrl}" target="_blank" class="w-full bg-[#EE4D2D] text-white py-3.5 px-6 font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:opacity-90 transition">MUA TRÊN SHOPEE MALL</a>
+            <a href="${activeTiktokUrl}" target="_blank" class="w-full bg-slate-950 text-white py-3.5 px-6 font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-slate-800 transition">MUA TRÊN TIKTOK SHOP</a>
+        </div>`;
 
     const policyHtml = `
     <div class="bg-slate-50 border border-slate-100 rounded-none p-4 my-6 space-y-3.5">
@@ -908,14 +1539,14 @@ function renderDrawerContent(p, colorIdx) {
                 <span class="text-xs font-bold uppercase text-slate-700">MÀU: <span class="font-black">${activeColor.name.toUpperCase()}</span></span>
                 <div class="flex gap-2 items-center">${colorsHtml}</div>
             </div>
-            <div class="space-y-2">
+            <div class="space-y-2" id="size-selection-container">
                 <div class="flex justify-between items-center">
                     <span class="text-xs font-bold uppercase text-slate-700">KÍCH CỠ</span>
                     <button onclick="openSizeModal()" class="text-xs font-bold text-blue-600 hover:underline">Hướng dẫn chọn size</button>
                 </div>
-                <div class="flex gap-2">${sizesHtml}</div>
+                <div class="flex gap-2 flex-wrap">${sizesHtml}</div>
             </div>
-            <div class="space-y-2 pt-2">${actionBtnHtml}</div>
+            <div class="space-y-3 pt-2">${actionBtnHtml}</div>
             ${policyHtml}
             ${infoMenuHtml}
         </div>`;
@@ -1029,13 +1660,11 @@ function openSearchModal() {
     const searchModal = document.getElementById('search-modal');
     if (!searchModal) return;
 
-    // Lưu lại vị trí cuộn trang hiện tại
     savedScrollPositionY = window.scrollY;
 
     searchModal.classList.remove('hidden');
-    searchModal.scrollTop = 0; // Cuộn ô tìm kiếm lên đầu
+    searchModal.scrollTop = 0;
 
-    // Khóa cuộn trang nền bên dưới (danh mục)
     document.body.classList.add('drawer-open');
     document.body.style.top = `-${savedScrollPositionY}px`;
 
@@ -1054,7 +1683,6 @@ function closeSearchModal() {
         searchModal.classList.add('hidden');
     }
 
-    // Mở lại cuộn cho trang nền và giữ nguyên vị trí xem cũ
     document.body.classList.remove('drawer-open');
     document.body.style.top = '';
     window.scrollTo(0, savedScrollPositionY);
@@ -1157,8 +1785,6 @@ function scrollToTop() {
     }
 }
 
-/* MỞ THÔNG TIN SẢN PHẨM */
-/* MỞ THẺ THÔNG TIN SẢN PHẨM */
 function openInfoDrawer() {
     const p = originalProducts.find(x => x.id === window.currentActiveProductId);
     if (!p) return;
@@ -1203,17 +1829,13 @@ function openInfoDrawer() {
             document.getElementById('info-panel').classList.remove('translate-x-full');
         }, 10);
 
-        // ẨN SCROLLBAR CỦA CHI TIẾT SẢN PHẨM (#product-drawer)
         const productDrawer = document.getElementById('product-drawer');
         if (productDrawer) productDrawer.classList.add('drawer-open');
 
         if (window.lucide) lucide.createIcons({ root: drawer });
-
-        // KHÔNG dùng window.history.pushState ở đây nữa để khi Back sẽ nhảy về thẳng Category
     }
 }
 
-/* ĐÓNG SIDEBAR THÔNG TIN SẢN PHẨM */
 function closeInfoDrawer() {
     const overlay = document.getElementById('info-overlay');
     const panel = document.getElementById('info-panel');
@@ -1224,20 +1846,16 @@ function closeInfoDrawer() {
         panel.classList.add('translate-x-full');
         setTimeout(() => {
             drawer.classList.add('hidden');
-
-            // MỞ LẠI SCROLLBAR CHO PRODUCT DRAWER
             const productDrawer = document.getElementById('product-drawer');
             if (productDrawer) productDrawer.classList.remove('drawer-open');
         }, 300);
     }
 }
 
-/* MỞ THẺ GIỚI THIỆU SẢN PHẨM (ẢNH DỌC GHÉP LIỀN NHAU) */
 function openIntroDrawer() {
     const p = originalProducts.find(x => x.id === window.currentActiveProductId);
     if (!p) return;
 
-    // Lấy mảng ảnh giới thiệu chung của sản phẩm (nếu không khai báo thì lấy mảng ảnh màu đầu tiên làm mặc định)
     const imagesToDisplay = p.introImages || (p.colors[0] ? p.colors[0].images : []);
 
     const contentEl = document.getElementById('intro-drawer-content');
@@ -1255,7 +1873,6 @@ function openIntroDrawer() {
             document.getElementById('intro-panel').classList.remove('translate-x-full');
         }, 10);
 
-        // ẨN SCROLLBAR CỦA CHI TIẾT SẢN PHẨM (#product-drawer)
         const productDrawer = document.getElementById('product-drawer');
         if (productDrawer) productDrawer.classList.add('drawer-open');
 
@@ -1263,7 +1880,6 @@ function openIntroDrawer() {
     }
 }
 
-/* ĐÓNG SIDEBAR GIỚI THIỆU SẢN PHẨM */
 function closeIntroDrawer() {
     const overlay = document.getElementById('intro-overlay');
     const panel = document.getElementById('intro-panel');
@@ -1274,8 +1890,6 @@ function closeIntroDrawer() {
         panel.classList.add('translate-x-full');
         setTimeout(() => {
             drawer.classList.add('hidden');
-
-            // MỞ LẠI SCROLLBAR CHO PRODUCT DRAWER
             const productDrawer = document.getElementById('product-drawer');
             if (productDrawer) productDrawer.classList.remove('drawer-open');
         }, 300);
@@ -1284,7 +1898,6 @@ function closeIntroDrawer() {
 
 window.addEventListener('resize', checkFilterSliderArrows);
 
-/* BẮT SỰ KIỆN BÀN PHÍM ĐIỀU HƯỚNG VÀ ĐÓNG CÁC CỬA SỔ */
 document.addEventListener('keydown', function (e) {
     const galleryModal = document.getElementById('gallery-modal');
     const isGalleryOpen = galleryModal && !galleryModal.classList.contains('hidden');
@@ -1301,6 +1914,27 @@ document.addEventListener('keydown', function (e) {
     }
 
     if (e.key === 'Escape' || e.key === 'Esc') {
+        // 1. Kiểm tra nếu Quick Edit đang mở -> Đóng Quick Edit, giữ nguyên giỏ hàng
+        const quickEditDrawer = document.getElementById('quick-edit-drawer');
+        if (quickEditDrawer && !quickEditDrawer.classList.contains('hidden')) {
+            closeQuickEditDrawer();
+            return;
+        }
+
+        // 2. Nếu Voucher Drawer đang mở -> Đóng Voucher
+        const voucherDrawer = document.getElementById('voucher-drawer');
+        if (voucherDrawer && !voucherDrawer.classList.contains('hidden')) {
+            closeVoucherDrawer();
+            return;
+        }
+
+        // 3. Nếu Cart Modal đang mở -> Đóng Cart Modal
+        const cartModal = document.getElementById('cart-modal');
+        if (cartModal && !cartModal.classList.contains('hidden')) {
+            closeCartModal();
+            return;
+        }
+
         const infoDrawer = document.getElementById('info-drawer');
         if (infoDrawer && !infoDrawer.classList.contains('hidden')) {
             closeInfoDrawer();
@@ -1351,7 +1985,6 @@ document.addEventListener('keydown', function (e) {
     }
 });
 
-/* BẮT SỰ KIỆN VUỐT CẢM ỨNG TRÊN MOBILE */
 let touchStartX = 0;
 let touchStartY = 0;
 
@@ -1369,6 +2002,30 @@ document.addEventListener('touchend', function (e) {
 
     const galleryModal = document.getElementById('gallery-modal');
     const isGalleryOpen = galleryModal && !galleryModal.classList.contains('hidden');
+
+    // Vuốt từ trái sang phải (deltaX > 60)
+    if (deltaX > 60 && deltaX > deltaY) {
+        // 1. Ưu tiên đóng Quick Edit Drawer trước nếu đang mở
+        const quickEditDrawer = document.getElementById('quick-edit-drawer');
+        if (quickEditDrawer && !quickEditDrawer.classList.contains('hidden')) {
+            closeQuickEditDrawer();
+            return;
+        }
+
+        // 2. Đóng Voucher Drawer nếu đang mở
+        const voucherDrawer = document.getElementById('voucher-drawer');
+        if (voucherDrawer && !voucherDrawer.classList.contains('hidden')) {
+            closeVoucherDrawer();
+            return;
+        }
+
+        // 3. Đóng Giỏ hàng nếu đang mở
+        const cartModal = document.getElementById('cart-modal');
+        if (cartModal && !cartModal.classList.contains('hidden')) {
+            closeCartModal();
+            return;
+        }
+    }
 
     if (isGalleryOpen) {
         if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > deltaY) {
@@ -1402,7 +2059,24 @@ document.addEventListener('touchend', function (e) {
 }, { passive: true });
 
 document.addEventListener('DOMContentLoaded', function () {
+    // Thêm đoạn này vào cuối DOMContentLoaded của tất cả các file JS:
+    if (sessionStorage.getItem('auto_open_cart') === 'true') {
+        sessionStorage.removeItem('auto_open_cart');
+        openCartModal(); // Tự động mở lại form giỏ hàng ngay khi tải trang mới!
+
+        // Tự động mở lại bảng Điều chỉnh màu sắc, kích cỡ (Quick Edit) nếu có
+        const pendingQuickEditIdx = sessionStorage.getItem('auto_open_quick_edit');
+        if (pendingQuickEditIdx !== null) {
+            sessionStorage.removeItem('auto_open_quick_edit');
+            const idx = parseInt(pendingQuickEditIdx, 10);
+            setTimeout(() => {
+                openQuickEdit(idx);
+            }, 350); // Chờ giỏ hàng render xong rồi mở panel chỉnh sửa
+        }
+    }
+
     renderVisualFilterBar();
     renderCatalog(originalProducts);
+    updateCartBadge();
     checkAndOpenProductFromUrl();
 });

@@ -327,4 +327,21 @@ button.color-out-of-stock::after {
     div.fixed.bottom-6.right-2>button[onclick="scrollToTop()"] {
         display: none !important;
     }
+
+    /* Đường gạch ngang/chéo rõ và đậm cho nút hết size */
+    .line-through-thick {
+        text-decoration: line-through;
+        text-decoration-thickness: 2px;
+        text-decoration-color: #64748b;
+    }
+
+    /* Căn giữa tuyệt đối cho badge số giỏ hàng */
+    .badge-centered {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        padding-top: 1px;
+        /* Căn chỉnh tâm chữ số */
+    }
 }
