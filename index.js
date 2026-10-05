@@ -268,19 +268,70 @@ document.addEventListener('DOMContentLoaded', () => {
 // CẬP NHẬT LẮNG NGHE SỰ KIỆN ESC VÀ VUỐT MOBILE
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' || e.key === 'Esc') {
+         const quickAddModal = document.getElementById('quick-add-cart-modal');
+        if (quickAddModal && !quickAddModal.classList.contains('hidden')) {
+            if (typeof closeQuickAddToCartModal === 'function') closeQuickAddToCartModal();
+            return;
+        }
+
         const quickEditDrawer = document.getElementById('quick-edit-drawer');
         if (quickEditDrawer && !quickEditDrawer.classList.contains('hidden')) {
-            closeQuickEditDrawer();
+            if (typeof closeQuickEditDrawer === 'function') closeQuickEditDrawer();
             return;
         }
+
         const voucherDrawer = document.getElementById('voucher-drawer');
         if (voucherDrawer && !voucherDrawer.classList.contains('hidden')) {
-            closeVoucherDrawer();
+            if (typeof closeVoucherDrawer === 'function') closeVoucherDrawer();
             return;
         }
+
         const cartModal = document.getElementById('cart-modal');
         if (cartModal && !cartModal.classList.contains('hidden')) {
-            closeCartModal();
+            if (typeof closeCartModal === 'function') closeCartModal();
+            return;
+        }
+
+        const infoDrawer = document.getElementById('info-drawer');
+        if (infoDrawer && !infoDrawer.classList.contains('hidden')) {
+            closeInfoDrawer();
+            return;
+        }
+
+        const introDrawer = document.getElementById('intro-drawer');
+        if (introDrawer && !introDrawer.classList.contains('hidden')) {
+            closeIntroDrawer();
+            return;
+        }
+
+        const sizeModal = document.getElementById('size-modal');
+        if (sizeModal && !sizeModal.classList.contains('hidden')) {
+            closeSizeModal();
+            return;
+        }
+
+        const searchModal = document.getElementById('search-modal');
+        if (searchModal && !searchModal.classList.contains('hidden')) {
+            closeSearchModal();
+            return;
+        }
+
+        const filterDrawer = document.getElementById('filter-drawer');
+        if (filterDrawer && !filterDrawer.classList.contains('hidden')) {
+            closeFilterDrawer();
+            return;
+        }
+
+        const mobileNav = document.getElementById('mobile-nav-drawer');
+        if (mobileNav && !mobileNav.classList.contains('hidden')) {
+            toggleMobileNavDrawer();
+            clearAllBoldActiveStates();
+            return;
+        }
+
+        const productDrawer = document.getElementById('product-drawer');
+        if (productDrawer && !productDrawer.classList.contains('hidden')) {
+            closeProductDrawer(true);
             return;
         }
     }

@@ -649,10 +649,10 @@ function openProductDrawer(id, colorIdx, shouldUpdateUrl) {
     const p = originalProducts.find(item => item.id === id);
     if (!p) return;
 
-    // LƯU VỊ TRÍ CUỘN TRANG CATEGORY HIỆN TẠI (Nếu drawer chưa mở)
+    // Luôn lưu vị trí cuộn màn hình hiện tại nếu drawer chưa mở
     const drawer = document.getElementById('product-drawer');
     if (drawer && drawer.classList.contains('hidden')) {
-        savedCategoryScrollY = window.scrollY || window.pageYOffset;
+        savedCategoryScrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
     }
 
     window.currentActiveProductId = p.id;
@@ -678,13 +678,12 @@ function openProductDrawer(id, colorIdx, shouldUpdateUrl) {
 
     if (drawer) {
         drawer.classList.remove('hidden');
-        drawer.scrollTop = 0; // Cuộn riêng nội dung của Drawer lên đầu
+        drawer.scrollTop = 0; // Cuộn nội dung bên trong drawer lên đầu
     }
 
     document.body.classList.add('drawer-open');
 
     if (shouldUpdateUrl !== false) {
-        // BỎ window.scrollTo(0, 0) ở đây để không làm nhảy trang bên dưới
         updateProductUrlParam(p.id, initialColorIdx);
     }
 }
@@ -1308,8 +1307,10 @@ document.addEventListener('keydown', function (e) {
     }
 });
 
+// Khai báo các biến tọa độ Touch
 let touchStartX = 0;
 let touchStartY = 0;
+let quickModalTouchStartY = 0; // <-- Khai báo thêm biến này
 
 document.addEventListener('touchstart', function (e) {
     touchStartX = e.changedTouches[0].screenX;
@@ -1327,6 +1328,21 @@ document.addEventListener('touchend', function (e) {
 
     const deltaX = touchEndX - touchStartX;
     const deltaY = Math.abs(touchEndY - touchStartY);
+
+    // 1. XỬ LÝ VUỐT XUỐNG (SWIPE DOWN) ĐỂ ĐÓNG FORM THÊM NHANH VÀO GIỎ
+    const quickModal = document.getElementById('quick-add-cart-modal');
+    if (quickModal && !quickModal.classList.contains('hidden')) {
+        const currentTouchEndY = e.changedTouches[0].clientY;
+        const swipeDownDistance = currentTouchEndY - quickModalTouchStartY;
+
+        // Vuốt từ trên xuống hơn 50px
+        if (swipeDownDistance > 50) {
+            if (typeof closeQuickAddToCartModal === 'function') {
+                closeQuickAddToCartModal();
+            }
+            return;
+        }
+    }
 
     // 1. XỬ LÝ VUỐT TỪ PHẢI SANG TRÁI (Swipe Left: deltaX < -50) ĐỂ ĐÓNG MENU MOBILE NAV
     const mobileNav = document.getElementById('mobile-nav-drawer');
