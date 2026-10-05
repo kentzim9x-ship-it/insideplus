@@ -1382,13 +1382,6 @@ document.addEventListener('touchend', function (e) {
         if (deltaX > 60 && deltaX > deltaY) closeIntroDrawer();
         return;
     }
-
-    if (touchStartX < 50 && deltaX > 60 && deltaX > deltaY) {
-        window.history.back();
-    }
-    else if (touchStartX > (window.innerWidth - 50) && deltaX < -60 && deltaX > deltaY) {
-        window.history.forward();
-    }
 }, { passive: true });
 
 document.addEventListener('DOMContentLoaded', function () {

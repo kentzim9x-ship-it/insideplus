@@ -330,8 +330,11 @@ button,
     #search-modal button[onclick*="closeSearchModal"]:active,
     #cart-modal button[onclick*="closeCartModal"]:active,
     
-    /* 6. 3 nút điều hướng bên trong Menu Mobile */
-    .drawer-nav-item:active {
+    /* 6. 3 nút điều hướng bên trong Menu Mobile trượt */
+    .drawer-nav-item:active,
+
+    /* 7. 3 nút INSIDE, SOCK, T-SHIRT ở thanh Menu bên dưới Mobile */
+    .bottom-nav-item:active {
         opacity: 0.5 !important;
         transition: opacity 0.1s ease !important;
     }

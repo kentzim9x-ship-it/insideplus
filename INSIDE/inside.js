@@ -605,9 +605,9 @@ function renderCatalog(items) {
             </div>
             <div class="flex items-center gap-1.5 mb-2" onclick="event.stopPropagation()">
                 ${p.colors.map((c, cIdx) => {
-                    const isColorOutOfStock = c.sizes && c.sizes.length > 0 && c.sizes.every(s => s.outOfStock);
-                    return `<button onclick="changeCatalogThumbColor('${p.id}',${cIdx})" class="w-4 h-4 rounded-full border border-slate-300 ${isColorOutOfStock ? 'color-out-of-stock' : ''}" style="background-color: ${c.hex};" title="${c.name}"></button>`;
-                }).join('')}
+            const isColorOutOfStock = c.sizes && c.sizes.length > 0 && c.sizes.every(s => s.outOfStock);
+            return `<button onclick="changeCatalogThumbColor('${p.id}',${cIdx})" class="w-4 h-4 rounded-full border border-slate-300 ${isColorOutOfStock ? 'color-out-of-stock' : ''}" style="background-color: ${c.hex};" title="${c.name}"></button>`;
+        }).join('')}
             </div>
             <h3 class="font-bold text-slate-900 text-sm uppercase tracking-tight mb-1.5">${p.name}</h3>
             <div class="flex items-baseline gap-2.5">
@@ -1382,13 +1382,6 @@ document.addEventListener('touchend', function (e) {
     if (introDrawer && !introDrawer.classList.contains('hidden')) {
         if (deltaX > 60 && deltaX > deltaY) closeIntroDrawer();
         return;
-    }
-
-    if (touchStartX < 50 && deltaX > 60 && deltaX > deltaY) {
-        window.history.back();
-    }
-    else if (touchStartX > (window.innerWidth - 50) && deltaX < -60 && deltaX > deltaY) {
-        window.history.forward();
     }
 }, { passive: true });
 
