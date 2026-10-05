@@ -278,7 +278,7 @@ button.color-out-of-stock::after {
 
     #header-logo-link:active,
     #header-logo-link.btn-bold-active {
-        background-color: rgba(15, 23, 42, 0.08) !important;
+        background-color: transparent !important;
         transform: scale(0.96) !important;
     }
 
@@ -292,20 +292,20 @@ button.color-out-of-stock::after {
     #btn-search-mobile:active,
     #btn-mobile-menu.btn-bold-active,
     #btn-search-mobile.btn-bold-active {
-        background-color: rgba(15, 23, 42, 0.08) !important;
+        background-color: transparent !important;
         transform: scale(0.95) !important;
     }
 
     #mobile-nav-drawer button:active,
     #mobile-nav-drawer button.btn-bold-active {
-        background-color: rgba(255, 255, 255, 0.2) !important;
+        background-color: transparent !important;
         border-radius: 1px !important;
         transform: scale(0.92) !important;
     }
 
     #search-modal button:active,
     #search-modal button.btn-bold-active {
-        background-color: rgba(15, 23, 42, 0.08) !important;
+        background-color: transparent !important;
         border-radius: 1px !important;
         transform: scale(0.92) !important;
     }
@@ -319,11 +319,10 @@ button.color-out-of-stock::after {
 
     .drawer-nav-item:active,
     .drawer-nav-item.btn-bold-active {
-        background-color: rgba(255, 255, 255, 0.16) !important;
+        background-color: transparent !important;
         transform: translateX(4px) scale(0.99) !important;
     }
 
-    /* ẨN NÚT CUỘN LÊN ĐẦU TRANG TRÊN MOBILE & TỰ ĐỘNG ĐẨY NÚT CHAT XUỐNG DƯỚI CÙNG */
     div.fixed.bottom-6.right-2>button[onclick="scrollToTop()"] {
         display: none !important;
     }
@@ -342,6 +341,26 @@ button.color-out-of-stock::after {
         justify-content: center;
         line-height: 1;
         padding-top: 1px;
-        /* Căn chỉnh tâm chữ số */
+    }
+}
+
+@media (max-width: 767px) {
+    /* Hiệu ứng mờ nhẹ 0.5 giữ nguyên cho tất cả các nút khi ấn */
+    button:active,
+    a:active,
+    input:active,
+    select:active,
+    textarea:active,
+    .product-card:active,
+    .category-card:active,
+    .visual-filter-card:active,
+    .color-btn-wrapper:active,
+    .drawer-nav-item:active,
+    .bottom-nav-item:active,
+    [role="button"]:active,
+    [onclick]:active {
+        opacity: 0.5 !important;
+        transition: opacity 0.1s ease !important;
+        -webkit-tap-highlight-color: transparent !important;
     }
 }

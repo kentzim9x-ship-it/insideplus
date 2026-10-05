@@ -10,6 +10,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 
+    <script src="../config.js"></script>
     <link rel="stylesheet" href="tshirt.css">
 </head>
 
@@ -74,7 +75,7 @@
                             <span>GIỎ HÀNG</span>
                             <!-- Đã chỉnh position: -top-1 giúp hạ thấp vị trí badge xuống vừa vặn với chữ -->
                             <span id="cart-badge-desktop"
-                                class="absolute -top-1 -right-3.5 bg-[#b91c1c] text-white text-[10px] font-bold w-4 h-4 rounded-full badge-centered hidden">0</span>
+                                class="absolute -top-1 -right-3.5 bg-[#b91c1c] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center pl-[2px] leading-none hidden">0</span>
                             <span
                                 class="absolute bottom-0 left-0 w-0 h-[2px] bg-slate-900 transition-all duration-300 group-hover:w-full"></span>
                         </button>
@@ -465,14 +466,22 @@
             class="absolute inset-0 bg-slate-950/40 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
         <div id="cart-panel"
             class="absolute top-0 right-0 h-full w-full max-w-2xl bg-white shadow-2xl translate-x-full transition-transform duration-300 ease-out flex flex-col">
+            <!-- HEADER GIỎ HÀNG: THÊM NÚT XÓA TẤT CẢ -->
             <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-3">
                     <h3 class="text-xl font-black uppercase text-slate-900 tracking-tight">GIỎ HÀNG</h3>
                     <span id="cart-modal-title-badge"
                         class="bg-[#b91c1c] text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
                 </div>
-                <button onclick="closeCartModal()" class="p-2 -mr-2 text-slate-400 hover:text-slate-900 transition"><i
-                        data-lucide="x" class="w-6 h-6"></i></button>
+                <div class="flex items-center gap-4">
+                    <button id="btn-clear-all-cart" onclick="clearAllCartItems()"
+                        class="text-xs font-bold text-red-600 hover:text-red-800 hover:underline uppercase hidden">
+                        Xóa tất cả
+                    </button>
+                    <button onclick="closeCartModal()" class="p-1 text-slate-400 hover:text-slate-900 transition">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                </div>
             </div>
 
             <div id="free-ship-banner" class="bg-blue-50 px-6 py-2.5 border-b border-blue-100 hidden">
