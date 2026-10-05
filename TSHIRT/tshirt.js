@@ -411,37 +411,28 @@ function clearAllBoldActiveStates() {
 
 window.addEventListener('pageshow', clearAllBoldActiveStates);
 
-window.addEventListener('popstate', function () {
+window.addEventListener('popstate', function (e) {
+    // 1. Đóng các drawer con nếu đang mở
     const infoDrawer = document.getElementById('info-drawer');
-    if (infoDrawer) {
-        infoDrawer.classList.add('hidden');
-        const infoOverlay = document.getElementById('info-overlay');
-        const infoPanel = document.getElementById('info-panel');
-        if (infoOverlay) infoOverlay.classList.add('opacity-0');
-        if (infoPanel) infoPanel.classList.add('translate-x-full');
-    }
+    if (infoDrawer && !infoDrawer.classList.contains('hidden')) closeInfoDrawer();
 
     const introDrawer = document.getElementById('intro-drawer');
-    if (introDrawer) {
-        introDrawer.classList.add('hidden');
-        const introOverlay = document.getElementById('intro-overlay');
-        const introPanel = document.getElementById('intro-panel');
-        if (introOverlay) introOverlay.classList.add('opacity-0');
-        if (introPanel) introPanel.classList.add('translate-x-full');
-    }
+    if (introDrawer && !introDrawer.classList.contains('hidden')) closeIntroDrawer();
 
     const galleryModal = document.getElementById('gallery-modal');
-    if (galleryModal) {
-        galleryModal.classList.add('hidden');
-    }
+    if (galleryModal && !galleryModal.classList.contains('hidden')) closeGalleryModal();
 
-    const productDrawer = document.getElementById('product-drawer');
-    if (productDrawer) {
-        productDrawer.classList.remove('drawer-open');
-    }
-    document.body.classList.remove('drawer-open');
+    // 2. Kiểm tra URL xem có còn tham số ?product= hay không
+    const urlParams = new URLSearchParams(window.location.search);
+    const productParam = urlParams.get('product');
 
-    checkAndOpenProductFromUrl();
+    if (!productParam) {
+        // Nếu URL đã về lại trang Category (không còn ?product=) -> Ẩn hoàn toàn Product Drawer
+        closeProductDrawer(false);
+    } else {
+        // Nếu vẫn còn param product khác thì mở/cập nhật sản phẩm đó
+        checkAndOpenProductFromUrl();
+    }
 });
 
 function handleMenuBtnClick(element) {
