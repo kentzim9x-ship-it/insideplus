@@ -118,6 +118,26 @@ button.color-out-of-stock::after {
     transform: scale(1.35);
 }
 
+.floating-widget {
+    width: 2.75rem;          /* Chiều rộng nút (44px) */
+    height: 2.75rem;         /* Chiều cao nút (44px) */
+    border-radius: 9999px;   /* Bo tròn tuyệt đối thành hình tròn */
+    background-color: #ffffff;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Đổ bóng dưới nút */
+    border-width: 1px;
+    border-color: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+.floating-widget:hover {
+    transform: scale(1.05);  /* Hiệu ứng phóng to nhẹ khi rê chuột vào */
+}
+
 /* BIỂU TƯỢNG KÍNH LÚP Ở GÓC DƯỚI PHẢI HÌNH ẢNH */
 .zoom-icon-btn {
     position: absolute;

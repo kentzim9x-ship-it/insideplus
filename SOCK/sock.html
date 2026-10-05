@@ -284,25 +284,26 @@
     </footer>
 
     <!-- WIDGETS -->
-    <div class="fixed bottom-6 right-2 sm:right-2 z-[100] flex flex-col items-end gap-3">
+    <div class="fixed bottom-6 right-2 sm:right-2 z-50 flex flex-col items-end gap-3 mb-12 sm:mb-0">
         <div id="social-links-group" class="hidden flex flex-col gap-3">
-            <a href="https://m.me/yourpage" target="_blank"
-                class="w-11 h-11 rounded-full bg-white shadow-lg border border-slate-100 flex items-center justify-center hover:scale-105 transition">
+            <a href="https://m.me/yourpage" target="_blank" class="floating-widget">
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="#222222">
                     <path
                         d="M12 2C6.477 2 2 6.145 2 11.243c0 2.91 1.455 5.488 3.733 7.152V22l3.411-1.872c.907.252 1.868.385 2.856.385 5.523 0 10-4.145 10-9.243C22 6.145 17.523 2 12 2zm1.045 12.37l-2.545-2.715-4.965 2.715 5.46-5.79 2.59 2.715 4.92-2.715-5.46 5.79z" />
                 </svg>
             </a>
-            <a href="https://zalo.me/yourphonenumber" target="_blank"
-                class="w-11 h-11 rounded-full bg-white shadow-lg border border-slate-100 flex items-center justify-center hover:scale-105 transition"><span
-                    class="font-bold text-[13px] text-[#111]">Zalo</span></a>
+            <a href="https://zalo.me/yourphonenumber" target="_blank" class="floating-widget">
+                <span class="font-bold text-[13px] text-[#111]">Zalo</span>
+            </a>
         </div>
         <button onclick="toggleChatMenu()" id="main-chat-btn"
-            class="w-11 h-11 rounded-full bg-[#222] text-white shadow-lg flex items-center justify-center hover:bg-white hover:text-slate-900 transition"><i
-                data-lucide="message-circle" id="chat-icon" class="w-5 h-5"></i></button>
+            class="floating-widget bg-[#222] text-white hover:bg-white hover:text-slate-900 translate-y-4 md:translate-y-0 transition-transform duration-300">
+            <i data-lucide="message-circle" id="chat-icon" class="w-5 h-5"></i>
+        </button>
         <button onclick="scrollToTop()"
-            class="w-11 h-11 rounded-full bg-white/90 border border-slate-200 text-slate-700 shadow-lg flex items-center justify-center transition"><i
-                data-lucide="chevron-up" class="w-5 h-5"></i></button>
+            class="hidden md:flex floating-widget bg-white/90 border-slate-200 text-slate-700 bg-slate-950 text-black items-center justify-center">
+            <i data-lucide="chevron-up" class="w-5 h-5"></i>
+        </button>
     </div>
 
     <!-- TÌM KIẾM MỚI -->

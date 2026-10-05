@@ -109,7 +109,7 @@ const originalProducts = [
                 shopeeUrl: "https://shopee.vn/product/tshirt-2-den",
                 tiktokUrl: "https://tiktok.com/product/tshirt-2-den",
                 images: ["https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&q=80&w=1200"],
-                 sizes: [
+                sizes: [
                     { name: "S", stock: 0, outOfStock: true },
                     { name: "M", stock: 50, outOfStock: false },
                     { name: "L", stock: 0, outOfStock: true },
@@ -412,7 +412,6 @@ function clearAllBoldActiveStates() {
 window.addEventListener('pageshow', clearAllBoldActiveStates);
 
 window.addEventListener('popstate', function (e) {
-    // 1. Đóng các drawer con nếu đang mở
     const infoDrawer = document.getElementById('info-drawer');
     if (infoDrawer && !infoDrawer.classList.contains('hidden')) closeInfoDrawer();
 
@@ -422,15 +421,13 @@ window.addEventListener('popstate', function (e) {
     const galleryModal = document.getElementById('gallery-modal');
     if (galleryModal && !galleryModal.classList.contains('hidden')) closeGalleryModal();
 
-    // 2. Kiểm tra URL xem có còn tham số ?product= hay không
     const urlParams = new URLSearchParams(window.location.search);
     const productParam = urlParams.get('product');
 
     if (!productParam) {
-        // Nếu URL đã về lại trang Category (không còn ?product=) -> Ẩn hoàn toàn Product Drawer
+        // Tắt animation nặng khi chuyển trang bằng swipe back
         closeProductDrawer(false);
     } else {
-        // Nếu vẫn còn param product khác thì mở/cập nhật sản phẩm đó
         checkAndOpenProductFromUrl();
     }
 });
@@ -603,9 +600,9 @@ function renderCatalog(items) {
             </div>
             <div class="flex items-center gap-1.5 mb-2" onclick="event.stopPropagation()">
                 ${p.colors.map((c, cIdx) => {
-                    const isColorOutOfStock = c.sizes && c.sizes.length > 0 && c.sizes.every(s => s.outOfStock);
-                    return `<button onclick="changeCatalogThumbColor('${p.id}',${cIdx})" class="w-4 h-4 rounded-full border border-slate-300 ${isColorOutOfStock ? 'color-out-of-stock' : ''}" style="background-color: ${c.hex};" title="${c.name}"></button>`;
-                }).join('')}
+            const isColorOutOfStock = c.sizes && c.sizes.length > 0 && c.sizes.every(s => s.outOfStock);
+            return `<button onclick="changeCatalogThumbColor('${p.id}',${cIdx})" class="w-4 h-4 rounded-full border border-slate-300 ${isColorOutOfStock ? 'color-out-of-stock' : ''}" style="background-color: ${c.hex};" title="${c.name}"></button>`;
+        }).join('')}
             </div>
             <h3 class="font-bold text-slate-900 text-sm uppercase tracking-tight mb-1.5">${p.name}</h3>
             <div class="flex items-baseline gap-2.5">
@@ -1323,16 +1320,32 @@ document.addEventListener('touchstart', function (e) {
 }, { passive: true });
 
 document.addEventListener('touchend', function (e) {
+    // Bỏ qua nếu người dùng vuốt từ mép trái màn hình (< 30px) để Back trang, tránh lag transition
+    if (touchStartX < 30) return;
+
     const touchEndX = e.changedTouches[0].screenX;
     const touchEndY = e.changedTouches[0].screenY;
 
     const deltaX = touchEndX - touchStartX;
     const deltaY = Math.abs(touchEndY - touchStartY);
 
-    // 1. XỬ LÝ VUỐT TỪ PHẢI SANG TRÁI (Swipe Left: deltaX < -50) ĐỂ ĐÓNG MENU MOBILE NAV
+    // Xử lý đóng Quick Add Modal khi vuốt xuống
+    const quickModal = document.getElementById('quick-add-cart-modal');
+    if (quickModal && !quickModal.classList.contains('hidden')) {
+        const currentTouchEndY = e.changedTouches[0].clientY;
+        const swipeDownDistance = currentTouchEndY - quickModalTouchStartY;
+
+        if (swipeDownDistance > 50) {
+            if (typeof closeQuickAddToCartModal === 'function') {
+                closeQuickAddToCartModal();
+            }
+            return;
+        }
+    }
+
+    // Xử lý vuốt mở/đóng Navigation Mobile
     const mobileNav = document.getElementById('mobile-nav-drawer');
     if (mobileNav && !mobileNav.classList.contains('hidden')) {
-        // Nếu vuốt ngang sang trái lớn hơn 50px và chiều ngang chiếm ưu thế hơn chiều dọc
         if (deltaX < -50 && Math.abs(deltaX) > deltaY) {
             toggleMobileNavDrawer();
             clearAllBoldActiveStates();
@@ -1340,49 +1353,29 @@ document.addEventListener('touchend', function (e) {
         }
     }
 
-    // 2. XỬ LÝ VUỐT TỪ TRÁI SANG PHẢI (Swipe Right: deltaX > 60) ĐỂ ĐÓNG CÁC DRAWER KHÁC
+    // Tối ưu các Drawer phụ khi Swipe Right
     if (deltaX > 60 && deltaX > deltaY) {
-        const quickEditDrawer = document.getElementById('quick-edit-drawer');
-        if (quickEditDrawer && !quickEditDrawer.classList.contains('hidden')) {
-            if (typeof closeQuickEditDrawer === 'function') closeQuickEditDrawer();
-            return;
-        }
-
-        const voucherDrawer = document.getElementById('voucher-drawer');
-        if (voucherDrawer && !voucherDrawer.classList.contains('hidden')) {
-            if (typeof closeVoucherDrawer === 'function') closeVoucherDrawer();
-            return;
-        }
-
-        const cartModal = document.getElementById('cart-modal');
-        if (cartModal && !cartModal.classList.contains('hidden')) {
-            if (typeof closeCartModal === 'function') closeCartModal();
-            return;
-        }
-
-        const infoDrawer = document.getElementById('info-drawer');
-        if (infoDrawer && !infoDrawer.classList.contains('hidden')) {
-            closeInfoDrawer();
-            return;
-        }
-
-        const introDrawer = document.getElementById('intro-drawer');
-        if (introDrawer && !introDrawer.classList.contains('hidden')) {
-            closeIntroDrawer();
-            return;
+        const drawers = ['quick-edit-drawer', 'voucher-drawer', 'cart-modal', 'info-drawer', 'intro-drawer', 'search-modal'];
+        for (let id of drawers) {
+            const el = document.getElementById(id);
+            if (el && !el.classList.contains('hidden')) {
+                if (id === 'quick-edit-drawer' && typeof closeQuickEditDrawer === 'function') closeQuickEditDrawer();
+                if (id === 'voucher-drawer' && typeof closeVoucherDrawer === 'function') closeVoucherDrawer();
+                if (id === 'cart-modal' && typeof closeCartModal === 'function') closeCartModal();
+                if (id === 'info-drawer') closeInfoDrawer();
+                if (id === 'intro-drawer') closeIntroDrawer();
+                if (id === 'search-modal') closeSearchModal();
+                return;
+            }
         }
     }
 
-    // 3. Xử lý gallery ảnh
+    // Xử lý Gallery ảnh
     const galleryModal = document.getElementById('gallery-modal');
-    const isGalleryOpen = galleryModal && !galleryModal.classList.contains('hidden');
-    if (isGalleryOpen) {
+    if (galleryModal && !galleryModal.classList.contains('hidden')) {
         if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > deltaY) {
-            if (deltaX < 0) {
-                nextGalleryImage();
-            } else {
-                prevGalleryImage();
-            }
+            if (deltaX < 0) nextGalleryImage();
+            else prevGalleryImage();
         }
         return;
     }

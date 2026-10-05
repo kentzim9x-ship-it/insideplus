@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // CẬP NHẬT LẮNG NGHE SỰ KIỆN ESC VÀ VUỐT MOBILE
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' || e.key === 'Esc') {
-         const quickAddModal = document.getElementById('quick-add-cart-modal');
+        const quickAddModal = document.getElementById('quick-add-cart-modal');
         if (quickAddModal && !quickAddModal.classList.contains('hidden')) {
             if (typeof closeQuickAddToCartModal === 'function') closeQuickAddToCartModal();
             return;
@@ -344,27 +344,40 @@ document.addEventListener('touchstart', (e) => {
     touchStartY = e.changedTouches[0].screenY;
 }, { passive: true });
 
-document.addEventListener('touchend', (e) => {
+document.addEventListener('touchend', function (e) {
+    // Bỏ qua nếu người dùng vuốt từ mép trái màn hình (< 30px) để Back trang, tránh lag transition
+    if (touchStartX < 30) return;
+
     const touchEndX = e.changedTouches[0].screenX;
     const touchEndY = e.changedTouches[0].screenY;
+
     const deltaX = touchEndX - touchStartX;
     const deltaY = Math.abs(touchEndY - touchStartY);
 
+    // Xử lý vuốt mở/đóng Navigation Mobile
+    const mobileNav = document.getElementById('mobile-nav-drawer');
+    if (mobileNav && !mobileNav.classList.contains('hidden')) {
+        if (deltaX < -50 && Math.abs(deltaX) > deltaY) {
+            toggleMobileNavDrawer();
+            clearAllBoldActiveStates();
+            return;
+        }
+    }
+
+    // Tối ưu các Drawer phụ khi Swipe Right
     if (deltaX > 60 && deltaX > deltaY) {
-        const quickEditDrawer = document.getElementById('quick-edit-drawer');
-        if (quickEditDrawer && !quickEditDrawer.classList.contains('hidden')) {
-            closeQuickEditDrawer();
-            return;
-        }
-        const voucherDrawer = document.getElementById('voucher-drawer');
-        if (voucherDrawer && !voucherDrawer.classList.contains('hidden')) {
-            closeVoucherDrawer();
-            return;
-        }
-        const cartModal = document.getElementById('cart-modal');
-        if (cartModal && !cartModal.classList.contains('hidden')) {
-            closeCartModal();
-            return;
+        const drawers = ['quick-edit-drawer', 'voucher-drawer', 'cart-modal', 'info-drawer', 'intro-drawer', 'search-modal'];
+        for (let id of drawers) {
+            const el = document.getElementById(id);
+            if (el && !el.classList.contains('hidden')) {
+                if (id === 'quick-edit-drawer' && typeof closeQuickEditDrawer === 'function') closeQuickEditDrawer();
+                if (id === 'voucher-drawer' && typeof closeVoucherDrawer === 'function') closeVoucherDrawer();
+                if (id === 'cart-modal' && typeof closeCartModal === 'function') closeCartModal();
+                if (id === 'info-drawer') closeInfoDrawer();
+                if (id === 'intro-drawer') closeIntroDrawer();
+                if (id === 'search-modal') closeSearchModal();
+                return;
+            }
         }
     }
 }, { passive: true });

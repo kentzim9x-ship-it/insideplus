@@ -673,6 +673,8 @@ function attachQuickAddHoverEvents() {
 
 let isQuickAddFirstOpen = false;
 
+let quickAddSavedScrollY = 0; // Biến lưu vị trí cuộn
+
 function openQuickAddToCartModal(productId) {
     quickAddToCartProduct = typeof findProductAnywhere === 'function'
         ? findProductAnywhere(productId)
@@ -682,7 +684,7 @@ function openQuickAddToCartModal(productId) {
 
     quickAddToCartColorIdx = 0;
     quickAddToCartSize = null;
-    quickAddImageIdx = 0; // Reset về ảnh đầu tiên khi mở Popup
+    quickAddImageIdx = 0; 
 
     let modal = document.getElementById('quick-add-cart-modal');
     if (!modal) {
@@ -694,8 +696,11 @@ function openQuickAddToCartModal(productId) {
 
     renderQuickAddToCartModalContent();
     modal.classList.remove('hidden');
-    // Khóa cuộn trang web nền phía sau
-    document.body.classList.add('drawer-open', 'overflow-hidden');
+
+    // Khắc phục: Lưu vị trí cuộn trang hiện tại
+    quickAddSavedScrollY = window.scrollY || document.documentElement.scrollTop;
+    document.body.classList.add('drawer-open');
+    document.body.style.top = `-${quickAddSavedScrollY}px`;
 }
 
 function closeQuickAddToCartModal() {
@@ -704,8 +709,11 @@ function closeQuickAddToCartModal() {
         modal.classList.add('hidden');
         modal.classList.remove('flex');
     }
-    // Mở lại cuộn trang web nền
-    document.body.classList.remove('drawer-open', 'overflow-hidden');
+    
+    // Khắc phục: Bỏ định vị fixed và khôi phục vị trí cuộn ban đầu
+    document.body.classList.remove('drawer-open');
+    document.body.style.top = '';
+    window.scrollTo(0, quickAddSavedScrollY);
 }
 
 function selectQuickAddColor(colorIdx) {
