@@ -1,0 +1,98 @@
+/* Khai báo Variable Font Montserrat duy nhất */
+@font-face {
+    font-family: 'Montserrat';
+    src: url('fonts/Montserrat-Medium.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: block;
+}
+
+/* Ép tất cả phần tử sử dụng Montserrat local kèm thuộc tính làm mịn nét chữ */
+html,
+body,
+*,
+::before,
+::after,
+input,
+button,
+select,
+textarea {
+    font-family: 'Montserrat', sans-serif !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    background-color: #f5f5f5;
+}
+
+/* Custom Radio Button cho Phương thức thanh toán */
+.custom-radio:checked + label {
+    border-color: #0f172a;
+    background-color: #ffffff;
+}
+
+.custom-radio:checked + label .radio-circle {
+    border-color: #0f172a;
+    background-color: #0f172a;
+    box-shadow: inset 0 0 0 3px #ffffff;
+}
+
+/* Nút Sử dụng Voucher khi đã gõ mã */
+.btn-voucher-active {
+    background-color: #0f172a !important;
+    cursor: pointer !important;
+}
+
+.btn-voucher-active:hover {
+    background-color: #000000 !important;
+}
+
+/* Custom Scrollbar */
+.custom-scroll::-webkit-scrollbar {
+    width: 4px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 2px;
+}
+
+/* CSS VẾT KHUYẾT TRÒN 2 BÊN CỦA THẺ VOUCHER */
+.voucher-card-notch-left {
+    position: absolute;
+    left: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+    background-color: #f8f9fa;
+    border-radius: 9999px;
+    border-right: 1px solid #cbd5e1;
+    z-index: 10;
+}
+
+.voucher-card-notch-right {
+    position: absolute;
+    right: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 14px;
+    height: 14px;
+    background-color: #f8f9fa;
+    border-radius: 9999px;
+    border-left: 1px solid #cbd5e1;
+    z-index: 10;
+}
+
+.voucher-card-selected .voucher-card-notch-left {
+    border-right: 1.5px solid #059669;
+}
+
+.voucher-card-selected .voucher-card-notch-right {
+    border-left: 1.5px solid #059669;
+}

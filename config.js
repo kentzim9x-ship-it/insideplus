@@ -234,13 +234,17 @@ function renderCartModalContent() {
     // ==========================================
     container.className = "flex-1 overflow-y-auto bg-[#f8f9fa]";
 
-    let rawSubtotal = 0;
-    let hasStockError = false; // Biến kiểm tra giỏ hàng có sản phẩm bị quá tồn kho hay không
+    let originalSubtotal = 0; // Giá trị đơn hàng (Chưa trừ chiết khấu)
+    let directDiscount = 0;    // Tổng chiết khấu trực tiếp từ sản phẩm gốc
+    let hasStockError = false;
 
     container.innerHTML = cartItems.map((item, idx) => {
-        rawSubtotal += item.price * item.quantity;
+        const itemOrigPrice = item.originalPrice || Math.round(item.price * 1.2);
+        originalSubtotal += itemOrigPrice * item.quantity;
+        directDiscount += (itemOrigPrice - item.price) * item.quantity;
+
         const codePrefix = formatProductCode(item.productId, item.category);
-        const origPriceFormatted = (item.originalPrice ? item.originalPrice : Math.round(item.price * 1.2)).toLocaleString('vi-VN');
+        const origPriceFormatted = (itemOrigPrice * item.quantity).toLocaleString('vi-VN');
         const discountPercent = item.originalPrice ? Math.round((1 - item.price / item.originalPrice) * 100) : 17;
 
         // KIỂM TRA TỒN KHO THỰC TẾ
@@ -248,7 +252,7 @@ function renderCartModalContent() {
         let stockWarningHtml = '';
 
         if (!stockCheck.valid || item.quantity > stockCheck.maxStock) {
-            hasStockError = true; // Đánh dấu giỏ hàng đang bị lỗi tồn kho
+            hasStockError = true;
             stockWarningHtml = `<p class="text-red-600 font-bold text-xs pt-1.5">* Vượt quá số lượng tồn kho (Còn lại: ${stockCheck.maxStock})</p>`;
         }
 
@@ -295,12 +299,20 @@ function renderCartModalContent() {
         </div>`;
     }).join('');
 
-    let discountAmount = 0;
+    const currentPriceTotal = originalSubtotal - directDiscount;
+    let voucherDiscount = 0;
+    let voucherTitleText = '';
+
     if (activeVoucher) {
-        if (rawSubtotal >= activeVoucher.minOrder) {
-            discountAmount = activeVoucher.discountType === 'percent'
-                ? Math.round((rawSubtotal * activeVoucher.discountValue) / 100)
+        if (currentPriceTotal >= activeVoucher.minOrder) {
+            voucherDiscount = activeVoucher.discountType === 'percent'
+                ? Math.round((currentPriceTotal * activeVoucher.discountValue) / 100)
                 : activeVoucher.discountValue;
+
+            voucherTitleText = activeVoucher.title 
+                ? `${activeVoucher.title} (${activeVoucher.desc || activeVoucher.code})` 
+                : activeVoucher.code;
+
             if (voucherLabel) voucherLabel.innerText = activeVoucher.code;
         } else {
             activeVoucher = null;
@@ -310,16 +322,16 @@ function renderCartModalContent() {
         voucherLabel.innerText = 'Chọn hoặc nhập mã';
     }
 
-    const finalTotal = Math.max(0, rawSubtotal - discountAmount);
-    if (subtotalEl) subtotalEl.innerText = rawSubtotal.toLocaleString('vi-VN') + ' đ';
+    const finalTotal = Math.max(0, currentPriceTotal - voucherDiscount);
+    if (subtotalEl) subtotalEl.innerText = originalSubtotal.toLocaleString('vi-VN') + ' đ';
 
     if (freeShipBanner && freeShipText) {
         freeShipBanner.classList.remove('hidden');
-        if (rawSubtotal >= SHIPPING_CONFIG.freeShippingThreshold) {
+        if (finalTotal >= SHIPPING_CONFIG.freeShippingThreshold) {
             freeShipBanner.className = "py-3.5 px-4 bg-[#dce3f6] text-[#2c3e6b] text-center w-full transition-all duration-200";
             freeShipText.innerHTML = `<div class="text-xs sm:text-sm sm:text-base font-normal tracking-wide">${SHIPPING_CONFIG.freeShippingMessage}</div>`;
         } else {
-            const needed = SHIPPING_CONFIG.freeShippingThreshold - rawSubtotal;
+            const needed = SHIPPING_CONFIG.freeShippingThreshold - finalTotal;
             freeShipBanner.className = "py-3.5 px-4 bg-slate-100 text-slate-700 text-center w-full transition-all duration-200";
             freeShipText.innerHTML = `<div class="text-xs sm:text-sm sm:text-base font-normal">Mua thêm <span class="font-bold text-slate-900">${needed.toLocaleString('vi-VN')} đ</span> để được <span class="text-blue-600 font-bold uppercase">MIỄN PHÍ VẬN CHUYỂN</span></div>`;
         }
@@ -331,7 +343,8 @@ function renderCartModalContent() {
         : "bg-[#cccccc] text-white cursor-not-allowed font-bold";
 
     if (cartFooter) {
-        const arrowIcon = isSubtotalExpanded ? 'v' : '>';
+        // Icon mũi tên trỏ lên khi mở (isSubtotalExpanded = true), trỏ xuống khi đóng
+        const arrowLucideIcon = isSubtotalExpanded ? 'chevron-up' : 'chevron-down';
 
         let expandedHtml = '';
         if (isSubtotalExpanded) {
@@ -339,42 +352,57 @@ function renderCartModalContent() {
                 <div class="space-y-2 pt-2 border-t border-slate-100 text-xs sm:text-sm">
                     <div class="flex justify-between items-center text-slate-600 font-normal">
                         <span>Giá trị đơn hàng</span>
-                        <span class="text-slate-900 font-medium">${rawSubtotal.toLocaleString('vi-VN')} đ</span>
+                        <span class="text-slate-900 font-medium">${originalSubtotal.toLocaleString('vi-VN')} đ</span>
                     </div>
                     <div class="flex justify-between items-center text-slate-600 font-normal">
                         <span>Giảm giá trực tiếp</span>
-                        <span class="text-red-500 font-medium">-${discountAmount.toLocaleString('vi-VN')} đ</span>
+                        <span class="text-red-500 font-medium">-${directDiscount.toLocaleString('vi-VN')} đ</span>
                     </div>
+                    ${voucherDiscount > 0 ? `
+                    <div class="flex justify-between items-center text-slate-600 font-normal">
+                        <span>${voucherTitleText}</span>
+                        <span class="text-red-500 font-medium">-${voucherDiscount.toLocaleString('vi-VN')} đ</span>
+                    </div>
+                    ` : ''}
                 </div>
             `;
         }
 
         cartFooter.innerHTML = `
-            <div class="p-4 sm:p-5 border-t border-slate-100 bg-white space-y-3">
-                <div class="flex justify-between items-center text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-900">
-                    <span>MÃ GIẢM GIÁ</span>
-                    <button onclick="openVoucherDrawer()" class="text-blue-600 hover:underline flex items-center gap-1 font-bold text-xs sm:text-sm cursor-pointer">
-                        <span>${activeVoucher ? activeVoucher.code : 'Chọn hoặc nhập mã'}</span>
-                        <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-                    </button>
-                </div>
-
-                ${expandedHtml}
-
-                <div class="flex justify-between items-center text-xs sm:text-sm font-bold text-slate-900 cursor-pointer pt-1" onclick="toggleSubtotalDetails()">
-                    <span class="uppercase tracking-wider">TẠM TÍNH</span>
-                    <div class="flex items-center gap-1 font-bold text-xs sm:text-sm">
-                        <span class="text-xs sm:text-sm leading-none">${arrowIcon}</span>
-                        <span>${finalTotal.toLocaleString('vi-VN')} đ</span>
-                    </div>
-                </div>
-
-                <!-- NÚT THANH TOÁN (Tự động Disable/Enable dựa theo trạng thái tồn kho) -->
-                <button onclick="handleCheckoutRedirect()" ${hasStockError ? 'disabled' : ''} class="w-full py-3.5 text-md uppercase tracking-widest transition block mt-2 ${checkoutBtnClass}">
-                    Thanh toán
+    <div class="p-4 sm:p-5 border-t border-slate-100 bg-white space-y-3 font-['Montserrat']">
+        
+        <!-- KHỐI CHỨA TIÊU ĐỀ & NÚT ĐỔI MÃ GIẢM GIÁ -->
+        <div>
+            <!-- HÀNG CĂN THẲNG NGANG BẰNG ITEMS-CENTER -->
+            <div class="flex justify-between items-center text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-900 leading-none">
+                <span>MÃ GIẢM GIÁ</span>
+                
+                <button onclick="openVoucherDrawer()" class="text-blue-600 hover:underline flex items-center gap-1 font-bold text-xs sm:text-sm cursor-pointer shrink-0">
+                    <span>${activeVoucher ? 'Đổi hoặc nhập mã' : 'Chọn hoặc nhập mã'}</span>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
                 </button>
             </div>
-        `;
+
+            <!-- HASHTAG HIỂN THỊ HÀNG BÊN DƯỚI -->
+            ${activeVoucher ? `<div class="pt-1.5"><span class="inline-block bg-blue-50 text-blue-600 font-bold text-[11px] px-2 py-0.5 font-mono">${activeVoucher.code}</span></div>` : ''}
+        </div>
+
+        ${expandedHtml}
+
+        <!-- TẠM TÍNH: MŨI TÊN ĐƯỢC ĐẶT NGAY BÊN CẠNH CHỮ TẠM TÍNH -->
+        <div class="flex justify-between items-center text-xs sm:text-sm font-bold text-slate-900 cursor-pointer pt-1" onclick="toggleSubtotalDetails()">
+            <div class="flex items-center gap-1 uppercase tracking-wider">
+                <span>TẠM TÍNH</span>
+                <i data-lucide="${arrowLucideIcon}" class="w-4 h-4 text-slate-600"></i>
+            </div>
+            <span class="text-base font-bold text-slate-900">${finalTotal.toLocaleString('vi-VN')} đ</span>
+        </div>
+
+        <button onclick="handleCheckoutRedirect()" ${hasStockError ? 'disabled' : ''} class="w-full py-3.5 text-md uppercase tracking-widest transition block mt-2 ${checkoutBtnClass}">
+            Thanh toán
+        </button>
+    </div>
+`;
     }
 
     updateCartBadge();
@@ -440,7 +468,7 @@ function handleCheckoutRedirect() {
         return;
     }
 
-    // Kiểm tra lại toàn bộ giỏ hàng trước khi cho thanh toán
+    // Kiểm tra tồn kho trước khi cho thanh toán
     for (let item of cartItems) {
         const stockCheck = checkProductStock(item.productId, item.colorName, item.size, item.quantity);
         if (!stockCheck.valid) {
@@ -449,7 +477,22 @@ function handleCheckoutRedirect() {
         }
     }
 
-    window.location.href = 'https://checkout.example.com';
+    // ĐẢM BẢO ĐỒNG BỘ NGUYÊN BẢN GIỎ HÀNG VÀ VOUCHER VÀO LOCALSTORAGE
+    localStorage.setItem('inside_cart', JSON.stringify(cartItems));
+    localStorage.setItem('inside_active_voucher', JSON.stringify(activeVoucher));
+
+    // Xác định đường dẫn tương đối chuẩn xác
+    const isInSubFolder = window.location.pathname.includes('/INSIDE/') ||
+        window.location.pathname.includes('/SOCK/') ||
+        window.location.pathname.includes('/TSHIRT/') ||
+        window.location.pathname.includes('/inside/') ||
+        window.location.pathname.includes('/sock/') ||
+        window.location.pathname.includes('/tshirt/');
+
+    const prefix = isInSubFolder ? '../' : '';
+
+    // Chuyển hướng sang checkout.html
+    window.location.href = prefix + 'checkout.html';
 }
 
 function removeCartItem(index) {

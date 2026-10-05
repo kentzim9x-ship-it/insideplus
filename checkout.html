@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán - INSIDE⁺</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Montserrat -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="checkout.css">
+</head>
+
+<body
+    class="antialiased selection:bg-slate-900 selection:text-white bg-[#f5f5f5] text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- HEADER THU GỌN CHIỀU CAO (h-12 sm:h-14) -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 sm:px-8 h-18 sm:h-20 flex items-center justify-between">
+            <!-- NÚT QUAY LẠI -->
+            <a href="javascript:history.back()"
+                class="flex items-center gap-2 text-slate-600 hover:text-black font-semibold text-xs uppercase tracking-wider">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                <span class="hidden sm:inline">Quay lại giỏ hàng</span>
+            </a>
+
+            <!-- LOGO INSIDE+ MẢNH THANH THOÁT -->
+            <a href="index.html"
+                class="inline-flex items-center font-medium text-xl sm:text-2xl tracking-wide uppercase text-slate-900 group">
+                <span>INSIDE</span>
+                <span
+                    class="text-blue-500 font-normal relative -top-1.5 sm:-top-2 left-1 transition transform inline-block group-hover:rotate-90">+</span>
+            </a>
+
+            <!-- THÔNG BÁO THANH TOÁN AN TOÀN -->
+            <div class="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600"></i>
+                <span class="hidden sm:inline">Thanh toán an toàn</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="max-w-5xl mx-auto px-4 py-8 sm:py-10 flex-1 w-full">
+        <form id="checkout-form" onsubmit="handlePlaceOrder(event)"
+            class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+            <!-- CỘT TRÁI -->
+            <div class="lg:col-span-7 space-y-6">
+
+                <!-- 1. THÔNG TIN VẬN CHUYỂN -->
+                <div class="bg-white p-6 sm:p-8 rounded-none shadow-xs space-y-5">
+                    <div>
+                        <h2 class="font-bold text-sm sm:text-base text-slate-800 tracking-wide uppercase">THÔNG TIN VẬN
+                            CHUYỂN</h2>
+                        <p class="text-xs text-slate-500 mt-1.5 font-normal leading-relaxed">Đăng nhập/ Đăng ký để nhận
+                            ưu đãi giảm giá thành viên đến 30% <a href="#"
+                                class="text-blue-600 font-bold hover:underline">Đăng nhập</a></p>
+                    </div>
+
+                    <div class="space-y-4 pt-1">
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">Họ
+                                và tên <span class="text-red-500">*</span></label>
+                            <input type="text" id="fullname" oninput="validateShippingForm()" placeholder="Nhập họ tên"
+                                class="w-full px-4 py-3 border border-slate-200 text-xs sm:text-sm font-normal focus:outline-none focus:border-slate-800 placeholder:text-slate-300">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">Số
+                                điện thoại <span class="text-red-500">*</span></label>
+                            <input type="tel" id="phone"
+                                oninput="this.value = this.value.replace(/[^0-9+]/g, ''); validateShippingForm();"
+                                placeholder="Nhập số điện thoại" maxlength="15"
+                                class="w-full px-4 py-3 border border-slate-200 text-xs sm:text-sm font-normal focus:outline-none focus:border-slate-800 placeholder:text-slate-300">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label
+                                    class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">Tỉnh/Thành
+                                    <span class="text-red-500">*</span></label>
+                                <select id="province" onchange="onProvinceChange()"
+                                    class="w-full px-3.5 py-3 border border-slate-200 text-xs sm:text-sm font-normal focus:outline-none focus:border-slate-800 bg-white cursor-pointer text-slate-700">
+                                    <option value="">Tỉnh / Thành phố</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label
+                                    class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">Phường/Xã
+                                    <span class="text-red-500">*</span></label>
+                                <select id="ward" onchange="validateShippingForm()"
+                                    class="w-full px-3.5 py-3 border border-slate-200 text-xs sm:text-sm font-normal focus:outline-none focus:border-slate-800 bg-white cursor-pointer text-slate-700">
+                                    <option value="">Phường / Xã</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label
+                                class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-1.5">Địa
+                                chỉ cụ thể <span class="text-red-500">*</span></label>
+                            <input type="text" id="address" oninput="validateShippingForm()"
+                                placeholder="Tòa nhà, số nhà, tên đường"
+                                class="w-full px-4 py-3 border border-slate-200 text-xs sm:text-sm font-normal focus:outline-none focus:border-slate-800 placeholder:text-slate-300">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. MÃ GIẢM GIÁ KHỐI -->
+                <div class="bg-white p-6 sm:p-8 rounded-none shadow-xs space-y-3">
+                    <div>
+                        <!-- HÀNG CĂN NGANG CHUẨN THẲNG MẮT -->
+                        <div class="flex justify-between items-center leading-none">
+                            <h2 class="font-bold text-sm sm:text-base text-slate-800 tracking-wide uppercase">MÃ GIẢM
+                                GIÁ</h2>
+
+                            <button type="button" onclick="openVoucherModal()"
+                                class="text-blue-600 text-xs font-bold flex items-center gap-1 hover:underline shrink-0 uppercase tracking-wider cursor-pointer">
+                                <span>Đổi hoặc nhập mã</span> <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+
+                        <!-- HASHTAG VOUCHER BÊN DƯỚI -->
+                        <div id="applied-voucher-tag" class="hidden pt-2">
+                            <span
+                                class="inline-block bg-blue-50 text-blue-600 font-bold text-[11px] px-2.5 py-1 rounded-none uppercase font-mono tracking-wider border border-blue-100">
+                                <span id="applied-voucher-code-text"></span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 pt-2">
+                        <input type="text" id="voucher-input" oninput="handleVoucherInput()"
+                            placeholder="Nhập mã ưu đãi"
+                            class="flex-1 px-4 py-3 border border-slate-200 text-xs sm:text-sm font-bold focus:outline-none focus:border-slate-800 uppercase placeholder:text-slate-300 placeholder:font-normal">
+                        <button type="button" onclick="applyManualVoucherCheckout()" id="btn-apply-voucher"
+                            class="px-7 py-3 bg-[#b0b0b0] text-white font-bold text-xs uppercase tracking-widest transition-colors cursor-not-allowed">
+                            Sử dụng
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. PHƯƠNG THỨC THANH TOÁN -->
+                <div id="payment-methods-block"
+                    class="bg-white p-6 sm:p-8 rounded-none shadow-xs space-y-4 hidden animate-fade-in">
+                    <h2 class="font-bold text-sm sm:text-base text-slate-800 tracking-wide uppercase">PHƯƠNG THỨC THANH
+                        TOÁN</h2>
+
+                    <div class="space-y-3 pt-1">
+                        <div class="relative">
+                            <input type="radio" id="payment-cod" name="payment_method" value="COD" checked
+                                class="custom-radio sr-only">
+                            <label for="payment-cod"
+                                class="flex items-center justify-between p-4 border border-slate-200 cursor-pointer transition">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="radio-circle w-4 h-4 rounded-full border border-slate-400 transition shrink-0">
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-xs sm:text-sm text-slate-800">Thanh toán khi nhận hàng
+                                            (COD)</p>
+                                        <p class="text-[11px] text-slate-500 font-normal">Thanh toán tiền mặt cho
+                                            shipper khi nhận hàng</p>
+                                    </div>
+                                </div>
+                                <i data-lucide="banknote" class="w-5 h-5 text-slate-600 shrink-0"></i>
+                            </label>
+                        </div>
+
+                        <div class="relative">
+                            <input type="radio" id="payment-qr" name="payment_method" value="BANK_TRANSFER"
+                                class="custom-radio sr-only">
+                            <label for="payment-qr"
+                                class="flex items-center justify-between p-4 border border-slate-200 cursor-pointer transition">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="radio-circle w-4 h-4 rounded-full border border-slate-400 transition shrink-0">
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-xs sm:text-sm text-slate-800">Chuyển khoản qua QR Code
+                                            (VietQR)</p>
+                                        <p class="text-[11px] text-slate-500 font-normal">Quét mã QR thanh toán nhanh
+                                            qua Internet Banking</p>
+                                    </div>
+                                </div>
+                                <i data-lucide="qr-code" class="w-5 h-5 text-slate-600 shrink-0"></i>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- CỘT PHẢI -->
+            <div class="lg:col-span-5 bg-white p-6 sm:p-8 rounded-none shadow-xs sticky top-20 space-y-5">
+                <div class="flex justify-between items-center border-b border-slate-100 pb-4">
+                    <h2 class="font-bold text-sm sm:text-base text-slate-800 tracking-wide uppercase"><span
+                            id="summary-total-count">1</span> sản phẩm</h2>
+                    <button type="button" onclick="toggleProductDetails()" id="btn-toggle-details"
+                        class="text-blue-600 text-xs font-bold uppercase tracking-wider hover:underline">
+                        Thu gọn
+                    </button>
+                </div>
+
+                <div id="checkout-product-details"
+                    class="space-y-4 pb-4 border-b border-slate-100 max-h-72 overflow-y-auto custom-scroll pr-1">
+                </div>
+
+                <div class="space-y-3 text-xs sm:text-sm">
+                    <div class="flex justify-between text-slate-600 font-normal">
+                        <span>Giá trị đơn hàng</span>
+                        <span id="summary-subtotal" class="font-bold text-slate-800">0 đ</span>
+                    </div>
+
+                    <div id="discount-breakdown-list" class="space-y-2">
+                        <div class="flex justify-between text-slate-600 items-start gap-2">
+                            <span>Giảm giá trực tiếp</span>
+                            <span id="summary-discount" class="font-bold text-red-600 shrink-0">0 đ</span>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between text-slate-600 font-normal">
+                        <span>Phí vận chuyển</span>
+                        <span id="summary-shipping" class="font-bold text-slate-800">0 đ</span>
+                    </div>
+
+                    <div class="border-t border-slate-200 pt-4 flex justify-between items-baseline">
+                        <div>
+                            <span class="font-bold text-sm sm:text-base uppercase text-slate-900 tracking-wider">TỔNG
+                                TIỀN</span>
+                            <span class="block text-[10px] text-slate-400 font-normal">(Đã bao gồm thuế VAT)</span>
+                        </div>
+                        <span id="summary-final-total" class="font-bold text-lg sm:text-xl text-slate-900">0 đ</span>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" id="btn-submit-order" disabled
+                        class="w-full py-4 bg-[#b0b0b0] text-white font-bold text-xs sm:text-sm tracking-widest uppercase transition cursor-not-allowed text-center block rounded-none">
+                        Thanh toán
+                    </button>
+                </div>
+            </div>
+
+        </form>
+    </main>
+
+    <!-- FORM VOUCHER MODAL -->
+    <div id="voucher-modal" class="fixed inset-0 z-[999] hidden items-center justify-center p-4 sm:p-6">
+        <div onclick="closeVoucherModal()" class="fixed inset-0 bg-black/50 transition-opacity"></div>
+
+        <div id="voucher-panel"
+            class="fixed inset-y-0 right-0 w-full sm:relative sm:inset-auto sm:w-[460px] sm:max-w-md sm:h-[82vh] sm:max-h-[640px] bg-white shadow-2xl flex flex-col justify-between transition-transform duration-300 transform translate-x-full sm:translate-x-0 z-10 rounded-none overflow-hidden">
+
+            <div class="flex items-center justify-between p-4 sm:p-5 border-b border-slate-100 bg-white shrink-0">
+                <div class="flex items-center gap-3">
+                    <button type="button" onclick="closeVoucherModal()" class="text-slate-800 hover:text-black">
+                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                    </button>
+                    <h3 class="font-bold text-sm sm:text-base uppercase tracking-wider text-slate-900">MÃ ƯU ĐÃI</h3>
+                </div>
+                <button type="button" onclick="closeVoucherModal()" class="text-slate-400 hover:text-black">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="p-4 sm:p-5 border-b border-slate-100 bg-white shrink-0">
+                <div class="flex gap-2">
+                    <input type="text" id="voucher-modal-input" placeholder="NHẬP MÃ ƯU ĐÃI"
+                        class="flex-1 px-3.5 py-2.5 border border-slate-200 text-xs font-bold uppercase tracking-wider text-slate-900 focus:outline-none focus:border-slate-800 placeholder:text-slate-300 placeholder:font-normal">
+                    <button type="button" onclick="applyModalInputVoucher()"
+                        class="px-5 py-2.5 bg-[#dbe3f0] text-[#64748b] font-bold text-xs uppercase tracking-wider hover:bg-slate-900 hover:text-white transition cursor-pointer">
+                        ÁP DỤNG
+                    </button>
+                </div>
+            </div>
+
+            <div id="voucher-list-container"
+                class="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4 bg-[#f8f9fa] custom-scroll">
+            </div>
+
+            <div class="p-4 sm:p-5 border-t border-slate-100 bg-white shrink-0">
+                <button type="button" onclick="closeVoucherModal()"
+                    class="w-full py-4 bg-[#030712] text-white font-bold text-xs sm:text-sm uppercase tracking-widest hover:bg-black transition cursor-pointer">
+                    ÁP DỤNG
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer
+        class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-400 font-bold uppercase tracking-wider mt-12">
+        <p>© 2026 INSIDE⁺. Minimalist Concept Layout.</p>
+    </footer>
+
+    <!-- Custom JS -->
+    <script src="config.js"></script>
+    <script src="checkout.js"></script>
+</body>
+
+</html>
