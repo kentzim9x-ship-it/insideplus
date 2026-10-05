@@ -1,0 +1,348 @@
+/* Khai báo Variable Font Montserrat duy nhất */
+@font-face {
+    font-family: 'Montserrat';
+    src: url('../fonts/Montserrat-Medium.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: block;
+}
+
+html,
+body,
+*,
+::before,
+::after,
+input,
+button,
+select,
+textarea {
+    font-family: 'Montserrat', sans-serif !important;
+}
+
+.custom-scroll::-webkit-scrollbar {
+    width: 5px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 2px;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+body.drawer-open {
+    overflow: hidden !important;
+    position: fixed !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+#product-drawer.drawer-open {
+    overflow: hidden !important;
+}
+
+.color-btn-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+button.color-out-of-stock {
+    position: relative !important;
+}
+
+button.color-out-of-stock::before,
+button.color-out-of-stock::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    width: 140% !important;
+    height: 2px !important;
+    background-color: #0f0e0e !important;
+    z-index: 5 !important;
+    pointer-events: none !important;
+}
+
+button.color-out-of-stock::before {
+    transform: translate(-50%, -50%) rotate(45deg) !important;
+}
+
+button.color-out-of-stock::after {
+    transform: translate(-50%, -50%) rotate(-45deg) !important;
+}
+
+.visual-card-active .visual-card-title {
+    color: #020617 !important;
+    font-weight: 900 !important;
+}
+
+.product-detail-img-container {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.product-detail-img-container img {
+    transition: transform 0.4s ease-out;
+    transform-origin: center center;
+}
+
+.product-detail-img-container:hover img {
+    transform: scale(1.35);
+}
+
+.zoom-icon-btn {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0.85);
+    transition: all 0.25s ease-out;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.product-detail-img-container:hover .zoom-icon-btn {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.zoom-icon-btn:hover {
+    background-color: #ffffff;
+    transform: scale(1.1) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.gallery-nav-pill {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 9999px;
+    padding: 6px 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.visual-filter-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.visual-filter-scroll-container {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.visual-filter-scroll-container::-webkit-scrollbar {
+    display: none;
+}
+
+.visual-filter-card {
+    flex: 0 0 auto;
+    cursor: pointer;
+    background-color: #ffffff;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    box-sizing: border-box;
+    padding: 0;
+}
+
+.visual-filter-card.visual-card-active,
+.visual-filter-card:hover {
+    border-color: #94a3b8;
+}
+
+@media (min-width: 1024px) {
+    .visual-filter-scroll-container {
+        gap: 16px;
+    }
+
+    .visual-filter-card {
+        width: calc((100% - 80px) / 6);
+    }
+}
+
+@media (max-width: 1023px) {
+    .visual-filter-card {
+        width: calc((100% - 16px) / 2.3);
+    }
+}
+
+.slider-arrow-btn {
+    position: absolute;
+    top: 40%;
+    transform: translateY(-50%);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #6a6a6a;
+    border: 2px solid #ffffff;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.slider-arrow-btn:hover {
+    background-color: #4a4a4a;
+    transform: translateY(-50%) scale(1.08);
+}
+
+.slider-arrow-prev {
+    left: 10px;
+}
+
+.slider-arrow-next {
+    right: 10px;
+}
+
+#main-header,
+#drawer-header-container header {
+    height: 4.5rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    line-height: 1 !important;
+}
+
+/* HIỆU ỨNG TAP ACTIVE HIGHLIGHT - CHỈ ÁP DỤNG TRÊN MOBILE */
+@media (max-width: 767px) {
+
+    #btn-mobile-menu,
+    #btn-search-mobile,
+    #header-logo-link,
+    #mobile-nav-drawer button,
+    #search-modal button,
+    .drawer-nav-item {
+        -webkit-tap-highlight-color: transparent !important;
+        user-select: none;
+        -webkit-user-select: none;
+        transition: background-color 0.12s cubic-bezier(0, 0, 0.2, 1),
+            transform 0.12s cubic-bezier(0, 0, 0.2, 1) !important;
+    }
+
+    #header-logo-link {
+        padding: 4px 12px !important;
+        border-radius: 1px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    #header-logo-link:active,
+    #header-logo-link.btn-bold-active {
+        background-color: transparent !important;
+        transform: scale(0.96) !important;
+    }
+
+    #btn-mobile-menu,
+    #btn-search-mobile {
+        padding: 1px !important;
+        border-radius: 1px !important;
+    }
+
+    #btn-mobile-menu:active,
+    #btn-search-mobile:active,
+    #btn-mobile-menu.btn-bold-active,
+    #btn-search-mobile.btn-bold-active {
+        background-color: transparent !important;
+        transform: scale(0.95) !important;
+    }
+
+    #mobile-nav-drawer button:active,
+    #mobile-nav-drawer button.btn-bold-active {
+        background-color: transparent !important;
+        border-radius: 1px !important;
+        transform: scale(0.92) !important;
+    }
+
+    #search-modal button:active,
+    #search-modal button.btn-bold-active {
+        background-color: transparent !important;
+        border-radius: 1px !important;
+        transform: scale(0.92) !important;
+    }
+
+    .drawer-nav-item {
+        padding: 10px 16px !important;
+        border-radius: 1px !important;
+        margin-left: -16px !important;
+        width: calc(100% + 16px) !important;
+    }
+
+    .drawer-nav-item:active,
+    .drawer-nav-item.btn-bold-active {
+        background-color: transparent !important;
+        transform: translateX(4px) scale(0.99) !important;
+    }
+
+    div.fixed.bottom-6.right-2>button[onclick="scrollToTop()"] {
+        display: none !important;
+    }
+
+    /* Đường gạch ngang/chéo rõ và đậm cho nút hết size */
+    .line-through-thick {
+        text-decoration: line-through;
+        text-decoration-thickness: 2px;
+        text-decoration-color: #64748b;
+    }
+
+    /* Căn giữa tuyệt đối cho badge số giỏ hàng */
+    .badge-centered {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        padding-top: 1px;
+    }
+}
+
+@media (max-width: 767px) {
+    /* Hiệu ứng mờ nhẹ 0.5 giữ nguyên cho tất cả các nút khi ấn */
+    button:active,
+    a:active,
+    input:active,
+    select:active,
+    textarea:active,
+    .product-card:active,
+    .category-card:active,
+    .visual-filter-card:active,
+    .color-btn-wrapper:active,
+    .drawer-nav-item:active,
+    .bottom-nav-item:active,
+    [role="button"]:active,
+    [onclick]:active {
+        opacity: 0.5 !important;
+        transition: opacity 0.1s ease !important;
+        -webkit-tap-highlight-color: transparent !important;
+    }
+}
