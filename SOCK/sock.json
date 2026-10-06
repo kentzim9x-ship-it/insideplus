@@ -1,0 +1,105 @@
+[
+  {
+    "id": "sock-1",
+    "name": "Tất Cổ Ngắn Bamboo Kháng Khuẩn SlimFit",
+    "category": "sock",
+    "price": 35000,
+    "originalPrice": 50000,
+    "style": "CoNgan",
+    "descriptionText": "Vớ tàng hình chuyên dụng cho giày lười, giày loafer. Viền cao su silicone chống tuột 360 độ.",
+    "materialText": "85% Bamboo tự nhiên, 15% Spandex co giãn đàn hồi cao.",
+    "usageGuideText": [
+      "Giặt máy ở chế độ nhẹ, nhiệt độ thường (30°C).",
+      "Không sử dụng hóa chất tẩy có chứa clo.",
+      "Phơi trong bóng mát.",
+      "Sấy khô ở nhiệt độ thấp.",
+      "Là ở nhiệt độ thấp (tối đa 110°C).",
+      "Giặt với sản phẩm cùng màu.",
+      "Không là lên chi tiết trang trí."
+    ],
+    "introImages": [
+      "https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?auto=format&fit=crop&q=80&w=1200",
+      "https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?auto=format&fit=crop&q=80&w=1200"
+    ],
+    "colors": [
+      {
+        "name": "Trắng",
+        "hex": "#ffffff",
+        "shopeeUrl": "https://shopee.vn/product/sock-1-trang",
+        "tiktokUrl": "https://tiktok.com/product/sock-1-trang",
+        "images": [
+          "https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?auto=format&fit=crop&q=80&w=1200",
+          "https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?auto=format&fit=crop&q=80&w=1200"
+        ],
+        "sizes": [
+          { "name": "M", "stock": 25, "outOfStock": false },
+          { "name": "L", "stock": 14, "outOfStock": false }
+        ]
+      },
+      {
+        "name": "Đen",
+        "hex": "#000000",
+        "shopeeUrl": "https://shopee.vn/product/sock-1-den",
+        "tiktokUrl": "https://tiktok.com/product/sock-1-den",
+        "images": [
+          "https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?auto=format&fit=crop&q=80&w=1200"
+        ],
+        "sizes": [
+          { "name": "M", "stock": 25, "outOfStock": false },
+          { "name": "L", "stock": 50, "outOfStock": false }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "sock-2",
+    "name": "Tất Cổ Trung Thể Thao Đệm Xù Êm Ái",
+    "category": "sock",
+    "price": 45000,
+    "originalPrice": 65000,
+    "style": "CoTrung",
+    "descriptionText": "Vớ thể thao cổ trung đệm xù dưới lòng bàn chân hỗ trợ giảm ma sát tối đa khi vận động.",
+    "materialText": "90% Cotton hữu cơ, 10% Elastane nâng đỡ vòm bàn chân.",
+    "usageGuideText": [
+      "Giặt máy ở chế độ nhẹ, nhiệt độ thường (30°C).",
+      "Không sử dụng hóa chất tẩy có chứa clo.",
+      "Phơi trong bóng mát.",
+      "Sấy khô ở nhiệt độ thấp.",
+      "Là ở nhiệt độ thấp (tối đa 110°C).",
+      "Giặt với sản phẩm cùng màu.",
+      "Không là lên chi tiết trang trí."
+    ],
+    "introImages": [
+      "https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?auto=format&fit=crop&q=80&w=1200",
+      "https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?auto=format&fit=crop&q=80&w=1200"
+    ],
+    "colors": [
+      {
+        "name": "Đen",
+        "hex": "#000000",
+        "shopeeUrl": "https://shopee.vn/product/sock-2-den",
+        "tiktokUrl": "https://tiktok.com/product/sock-2-den",
+        "images": [
+          "https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?auto=format&fit=crop&q=80&w=1200"
+        ],
+        "sizes": [
+          { "name": "M", "stock": 25, "outOfStock": false },
+          { "name": "L", "stock": 50, "outOfStock": false }
+        ]
+      },
+      {
+        "name": "Trắng",
+        "hex": "#ffffff",
+        "shopeeUrl": "https://shopee.vn/product/sock-2-trang",
+        "tiktokUrl": "https://tiktok.com/product/sock-2-trang",
+        "images": [
+          "https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?auto=format&fit=crop&q=80&w=1200"
+        ],
+        "sizes": [
+          { "name": "M", "stock": 25, "outOfStock": false },
+          { "name": "L", "stock": 14, "outOfStock": false }
+        ]
+      }
+    ]
+  }
+]

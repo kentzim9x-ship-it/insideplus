@@ -1,0 +1,36 @@
+name: Update Product Data from Google Sheet
+
+on:
+  repository_dispatch:
+    types: [update-product-data]
+  workflow_dispatch: # Cho phép bấm chạy thủ công trên GitHub nếu muốn
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Create data directory
+        run: mkdir -p data
+
+      - name: Fetch Latest Sock Data
+        run: |
+          curl -s "https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=SOCK" -o data/products_sock.json
+
+      - name: Fetch Latest Tshirt Data
+        run: |
+          curl -s "https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=TSHIRT" -o data/products_tshirt.json
+
+      - name: Fetch Latest Inside Data
+        run: |
+          curl -s "https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=INSIDE" -o data/products_inside.json
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/*.json
+          git commit -m "auto: update product data from Google Sheet" || exit 0
+          git push

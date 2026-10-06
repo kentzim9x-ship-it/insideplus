@@ -1,0 +1,858 @@
+[
+    {
+        "id": "inside-1",
+        "name": "Quần Lót Nam Seamless Không Đường May Brief", "category": "inside", "price": 89000, "originalprice": 120000,
+        "style": "Brief",
+        "descriptionText": "Công nghệ Seamless ép nhiệt siêu mỏng không đường may, loại bỏ hoàn toàn vết hằn trên da khi mặc quần bó sát.",
+        "materialText": "92% Bamboo tự nhiên kết hợp 8% Spandex co giãn 4 chiều kháng khuẩn.",
+        "usageGuideText": [
+            "Giặt máy ở chế độ nhẹ, nhiệt độ thường (30°C).",
+            "Không sử dụng hóa chất tẩy có chứa clo.",
+            "Phơi trong bóng mát.",
+            "Sấy khô ở nhiệt độ thấp.",
+            "Là ở nhiệt độ thấp (tối đa 110°C).",
+            "Giặt với sản phẩm cùng màu.",
+            "Không là lên chi tiết trang trí."
+        ],
+        "introImages": [
+            "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200",
+            "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
+        ],
+        "colors": [
+            {
+                "name": "Đen",
+                "hex": "#000000",
+                "shopeeUrl": "https://shopee.vn/product/inside-1-den",
+                "tiktokUrl": "https://tiktok.com/product/inside-1-den",
+                "images": [
+                    "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"
+                ],
+                "sizes": [
+                    {
+                        "name": "S",
+                        "stock": 3,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "M",
+                        "stock": 0,
+                        "outOfstock": true
+                    },
+                    {
+                        "name": "L",
+                        "stock": 0,
+                        "outOfstock": true
+                    }
+                ]
+            },
+            {
+                "name": "Xám SA045",
+                "hex": "#6b7280",
+                "shopeeUrl": "https://shopee.vn/product/inside-1-xam",
+                "tiktokUrl": "https://tiktok.com/product/inside-1-xam",
+                "images": [
+                    "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
+                ],
+                "sizes": [
+                    {
+                        "name": "S",
+                        "stock": 0,
+                        "outOfstock": true
+                    },
+                    {
+                        "name": "M",
+                        "stock": 25,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "L",
+                        "stock": 14,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "XL",
+                        "stock": 0,
+                        "outOfstock": true
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "inside-2",
+        "name": "Quần Lót Nam Sợi Tre Bamboo Premium Boxer", "category": "inside", "price": 115000, "originalprice": 150000,
+        "style": "Boxer",
+        "descriptionText": "Quần lót dáng đùi Boxer ôm nhẹ thoáng mát, cạp chun thêu tinh tế không gây hằn bụng.",
+        "materialText": "95% Bamboo Sợi Tre nhập khẩu, 5% Elastane thoáng khí chống nhăn.",
+        "usageGuideText": [
+            "Giặt máy ở chế độ nhẹ, nhiệt độ thường (30°C)."
+        ],
+        "introImages": [
+            "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"
+        ],
+        "colors": [
+            {
+                "name": "Trắng",
+                "hex": "#ffffff",
+                "shopeeUrl": "https://shopee.vn/product/inside-2-trang",
+                "tiktokUrl": "https://tiktok.com/product/inside-2-trang",
+                "images": [
+                    "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
+                ],
+                "sizes": [
+                    {
+                        "name": "S",
+                        "stock": 0,
+                        "outOfstock": true
+                    },
+                    {
+                        "name": "M",
+                        "stock": 25,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "L",
+                        "stock": 14,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "XL",
+                        "stock": 0,
+                        "outOfstock": true
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "inside-3",
+        "name": "Quần Lót Nam Modal Air Brief Siêu Nhẹ", "category": "inside", "price": 75000, "originalprice": 99000,
+        "style": "Brief",
+        "descriptionText": "Sợi Gỗ Sồi Modal siêu mềm mại.",
+        "materialText": "90% Modal Micro, 10% Spandex cao cấp.",
+        "usageGuideText": [
+            "Giặt máy."
+        ],
+        "introImages": [
+            "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"
+        ],
+        "colors": [
+            {
+                "name": "Be",
+                "hex": "#e3c4a8",
+                "shopeeUrl": "https://shopee.vn/product/inside-3-be",
+                "tiktokUrl": "https://tiktok.com/product/inside-3-be",
+                "images": [
+                    "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
+                ],
+                "sizes": [
+                    {
+                        "name": "S",
+                        "stock": 0,
+                        "outOfstock": true
+                    },
+                    {
+                        "name": "M",
+                        "stock": 25,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "L",
+                        "stock": 14,
+                        "outOfstock": false
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "inside-4",
+        "name": "Quần Lót Nam Thể Thao Pro-Dry Trunk Boxer", "category": "inside", "price": 135000, "originalprice": 180000,
+        "style": "Trunk",
+        "descriptionText": "Chuyên dụng vận động thể thao.",
+        "materialText": "88% Polyester, 12% Spandex.",
+        "usageGuideText": [
+            "Giặt máy."
+        ],
+        "introImages": [
+            "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"
+        ],
+        "colors": [
+            {
+                "name": "Đen",
+                "hex": "#000000",
+                "shopeeUrl": "https://shopee.vn/product/inside-4-den",
+                "tiktokUrl": "https://tiktok.com/product/inside-4-den",
+                "images": [
+                    "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
+                ],
+                "sizes": [
+                    {
+                        "name": "S",
+                        "stock": 0,
+                        "outOfstock": true
+                    },
+                    {
+                        "name": "M",
+                        "stock": 25,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "L",
+                        "stock": 14,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "XL",
+                        "stock": 0,
+                        "outOfstock": true
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "inside-5",
+        "name": "Quần Lót Nam Seamless Không Đường May Brief", "category": "inside", "price": 89000, "originalprice": 120000,
+        "style": "Brief",
+        "descriptionText": "Công nghệ Seamless ép nhiệt siêu mỏng không đường may, loại bỏ hoàn toàn vết hằn trên da khi mặc quần bó sát.",
+        "materialText": "92% Bamboo tự nhiên kết hợp 8% Spandex co giãn 4 chiều kháng khuẩn.",
+        "usageGuideText": [
+            "Giặt máy ở chế độ nhẹ, nhiệt độ thường (30°C).",
+            "Không sử dụng hóa chất tẩy có chứa clo.",
+            "Phơi trong bóng mát.",
+            "Sấy khô ở nhiệt độ thấp.",
+            "Là ở nhiệt độ thấp (tối đa 110°C).",
+            "Giặt với sản phẩm cùng màu.",
+            "Không là lên chi tiết trang trí."
+        ],
+        "introImages": [
+            "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200",
+            "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
+        ],
+        "colors": [
+            {
+                "name": "Đen",
+                "hex": "#000000",
+                "shopeeUrl": "https://shopee.vn/product/inside-1-den",
+                "tiktokUrl": "https://tiktok.com/product/inside-1-den",
+                "images": [
+                    "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"
+                ],
+                "sizes": [
+                    {
+                        "name": "S",
+                        "stock": 3,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "M",
+                        "stock": 0,
+                        "outOfstock": true
+                    },
+                    {
+                        "name": "L",
+                        "stock": 0,
+                        "outOfstock": true
+                    }
+                ]
+            },
+            {
+                "name": "Xám SA045",
+                "hex": "#6b7280",
+                "shopeeUrl": "https://shopee.vn/product/inside-1-xam",
+                "tiktokUrl": "https://tiktok.com/product/inside-1-xam",
+                "images": [
+                    "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
+                ],
+                "sizes": [
+                    {
+                        "name": "S",
+                        "stock": 0,
+                        "outOfstock": true
+                    },
+                    {
+                        "name": "M",
+                        "stock": 25,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "L",
+                        "stock": 14,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "XL",
+                        "stock": 0,
+                        "outOfstock": true
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "inside-6",
+        "name": "Quần Lót Nam Sợi Tre Bamboo Premium Boxer", "category": "inside", "price": 115000, "originalprice": 150000,
+        "style": "Boxer",
+        "descriptionText": "Quần lót dáng đùi Boxer ôm nhẹ thoáng mát, cạp chun thêu tinh tế không gây hằn bụng.",
+        "materialText": "95% Bamboo Sợi Tre nhập khẩu, 5% Elastane thoáng khí chống nhăn.",
+        "usageGuideText": [
+            "Giặt máy ở chế độ nhẹ, nhiệt độ thường (30°C)."
+        ],
+        "introImages": [
+            "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"
+        ],
+        "colors": [
+            {
+                "name": "Trắng",
+                "hex": "#ffffff",
+                "shopeeUrl": "https://shopee.vn/product/inside-2-trang",
+                "tiktokUrl": "https://tiktok.com/product/inside-2-trang",
+                "images": [
+                    "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
+                ],
+                "sizes": [
+                    {
+                        "name": "S",
+                        "stock": 0,
+                        "outOfstock": true
+                    },
+                    {
+                        "name": "M",
+                        "stock": 25,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "L",
+                        "stock": 14,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "XL",
+                        "stock": 0,
+                        "outOfstock": true
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "inside-7",
+        "name": "Quần Lót Nam Modal Air Brief Siêu Nhẹ", "category": "inside", "price": 75000, "originalprice": 99000,
+        "style": "Brief",
+        "descriptionText": "Sợi Gỗ Sồi Modal siêu mềm mại.",
+        "materialText": "90% Modal Micro, 10% Spandex cao cấp.",
+        "usageGuideText": [
+            "Giặt máy."
+        ],
+        "introImages": [
+            "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"
+        ],
+        "colors": [
+            {
+                "name": "Be",
+                "hex": "#e3c4a8",
+                "shopeeUrl": "https://shopee.vn/product/inside-3-be",
+                "tiktokUrl": "https://tiktok.com/product/inside-3-be",
+                "images": [
+                    "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
+                ],
+                "sizes": [
+                    {
+                        "name": "S",
+                        "stock": 0,
+                        "outOfstock": true
+                    },
+                    {
+                        "name": "M",
+                        "stock": 25,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "L",
+                        "stock": 14,
+                        "outOfstock": false
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "inside-8",
+        "name": "Quần Lót Nam Thể Thao Pro-Dry Trunk Boxer", "category": "inside", "price": 135000, "originalprice": 180000,
+        "style": "Trunk",
+        "descriptionText": "Chuyên dụng vận động thể thao.",
+        "materialText": "88% Polyester, 12% Spandex.",
+        "usageGuideText": [
+            "Giặt máy."
+        ],
+        "introImages": [
+            "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"
+        ],
+        "colors": [
+            {
+                "name": "Đen",
+                "hex": "#000000",
+                "shopeeUrl": "https://shopee.vn/product/inside-4-den",
+                "tiktokUrl": "https://tiktok.com/product/inside-4-den",
+                "images": [
+                    "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
+                ],
+                "sizes": [
+                    {
+                        "name": "S",
+                        "stock": 0,
+                        "outOfstock": true
+                    },
+                    {
+                        "name": "M",
+                        "stock": 25,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "L",
+                        "stock": 14,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "XL",
+                        "stock": 0,
+                        "outOfstock": true
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "inside-9",
+        "name": "Quần Lót Nam Seamless Không Đường May Brief", "category": "inside", "price": 89000, "originalprice": 120000,
+        "style": "Brief",
+        "descriptionText": "Công nghệ Seamless ép nhiệt siêu mỏng không đường may, loại bỏ hoàn toàn vết hằn trên da khi mặc quần bó sát.",
+        "materialText": "92% Bamboo tự nhiên kết hợp 8% Spandex co giãn 4 chiều kháng khuẩn.",
+        "usageGuideText": [
+            "Giặt máy ở chế độ nhẹ, nhiệt độ thường (30°C).",
+            "Không sử dụng hóa chất tẩy có chứa clo.",
+            "Phơi trong bóng mát.",
+            "Sấy khô ở nhiệt độ thấp.",
+            "Là ở nhiệt độ thấp (tối đa 110°C).",
+            "Giặt với sản phẩm cùng màu.",
+            "Không là lên chi tiết trang trí."
+        ],
+        "introImages": [
+            "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200",
+            "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
+        ],
+        "colors": [
+            {
+                "name": "Đen",
+                "hex": "#000000",
+                "shopeeUrl": "https://shopee.vn/product/inside-1-den",
+                "tiktokUrl": "https://tiktok.com/product/inside-1-den",
+                "images": [
+                    "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"
+                ],
+                "sizes": [
+                    {
+                        "name": "S",
+                        "stock": 3,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "M",
+                        "stock": 0,
+                        "outOfstock": true
+                    },
+                    {
+                        "name": "L",
+                        "stock": 0,
+                        "outOfstock": true
+                    }
+                ]
+            },
+            {
+                "name": "Xám SA045",
+                "hex": "#6b7280",
+                "shopeeUrl": "https://shopee.vn/product/inside-1-xam",
+                "tiktokUrl": "https://tiktok.com/product/inside-1-xam",
+                "images": [
+                    "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
+                ],
+                "sizes": [
+                    {
+                        "name": "S",
+                        "stock": 0,
+                        "outOfstock": true
+                    },
+                    {
+                        "name": "M",
+                        "stock": 25,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "L",
+                        "stock": 14,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "XL",
+                        "stock": 0,
+                        "outOfstock": true
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "inside-10",
+        "name": "Quần Lót Nam Sợi Tre Bamboo Premium Boxer", "category": "inside", "price": 115000, "originalprice": 150000,
+        "style": "Boxer",
+        "descriptionText": "Quần lót dáng đùi Boxer ôm nhẹ thoáng mát, cạp chun thêu tinh tế không gây hằn bụng.",
+        "materialText": "95% Bamboo Sợi Tre nhập khẩu, 5% Elastane thoáng khí chống nhăn.",
+        "usageGuideText": [
+            "Giặt máy ở chế độ nhẹ, nhiệt độ thường (30°C)."
+        ],
+        "introImages": [
+            "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"
+        ],
+        "colors": [
+            {
+                "name": "Trắng",
+                "hex": "#ffffff",
+                "shopeeUrl": "https://shopee.vn/product/inside-2-trang",
+                "tiktokUrl": "https://tiktok.com/product/inside-2-trang",
+                "images": [
+                    "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
+                ],
+                "sizes": [
+                    {
+                        "name": "S",
+                        "stock": 0,
+                        "outOfstock": true
+                    },
+                    {
+                        "name": "M",
+                        "stock": 25,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "L",
+                        "stock": 14,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "XL",
+                        "stock": 0,
+                        "outOfstock": true
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "inside-11",
+        "name": "Quần Lót Nam Modal Air Brief Siêu Nhẹ", "category": "inside", "price": 75000, "originalprice": 99000,
+        "style": "Brief",
+        "descriptionText": "Sợi Gỗ Sồi Modal siêu mềm mại.",
+        "materialText": "90% Modal Micro, 10% Spandex cao cấp.",
+        "usageGuideText": [
+            "Giặt máy."
+        ],
+        "introImages": [
+            "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"
+        ],
+        "colors": [
+            {
+                "name": "Be",
+                "hex": "#e3c4a8",
+                "shopeeUrl": "https://shopee.vn/product/inside-3-be",
+                "tiktokUrl": "https://tiktok.com/product/inside-3-be",
+                "images": [
+                    "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
+                ],
+                "sizes": [
+                    {
+                        "name": "S",
+                        "stock": 0,
+                        "outOfstock": true
+                    },
+                    {
+                        "name": "M",
+                        "stock": 25,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "L",
+                        "stock": 14,
+                        "outOfstock": false
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "inside-12",
+        "name": "Quần Lót Nam Thể Thao Pro-Dry Trunk Boxer", "category": "inside", "price": 135000, "originalprice": 180000,
+        "style": "Trunk",
+        "descriptionText": "Chuyên dụng vận động thể thao.",
+        "materialText": "88% Polyester, 12% Spandex.",
+        "usageGuideText": [
+            "Giặt máy."
+        ],
+        "introImages": [
+            "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"
+        ],
+        "colors": [
+            {
+                "name": "Đen",
+                "hex": "#000000",
+                "shopeeUrl": "https://shopee.vn/product/inside-4-den",
+                "tiktokUrl": "https://tiktok.com/product/inside-4-den",
+                "images": [
+                    "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
+                ],
+                "sizes": [
+                    {
+                        "name": "S",
+                        "stock": 0,
+                        "outOfstock": true
+                    },
+                    {
+                        "name": "M",
+                        "stock": 25,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "L",
+                        "stock": 14,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "XL",
+                        "stock": 0,
+                        "outOfstock": true
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "inside-13",
+        "name": "Quần Lót Nam Seamless Không Đường May Brief", "category": "inside", "price": 89000, "originalprice": 120000,
+        "style": "Brief",
+        "descriptionText": "Công nghệ Seamless ép nhiệt siêu mỏng không đường may, loại bỏ hoàn toàn vết hằn trên da khi mặc quần bó sát.",
+        "materialText": "92% Bamboo tự nhiên kết hợp 8% Spandex co giãn 4 chiều kháng khuẩn.",
+        "usageGuideText": [
+            "Giặt máy ở chế độ nhẹ, nhiệt độ thường (30°C).",
+            "Không sử dụng hóa chất tẩy có chứa clo.",
+            "Phơi trong bóng mát.",
+            "Sấy khô ở nhiệt độ thấp.",
+            "Là ở nhiệt độ thấp (tối đa 110°C).",
+            "Giặt với sản phẩm cùng màu.",
+            "Không là lên chi tiết trang trí."
+        ],
+        "introImages": [
+            "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200",
+            "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
+        ],
+        "colors": [
+            {
+                "name": "Đen",
+                "hex": "#000000",
+                "shopeeUrl": "https://shopee.vn/product/inside-1-den",
+                "tiktokUrl": "https://tiktok.com/product/inside-1-den",
+                "images": [
+                    "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200",
+                    "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"
+                ],
+                "sizes": [
+                    {
+                        "name": "S",
+                        "stock": 3,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "M",
+                        "stock": 0,
+                        "outOfstock": true
+                    },
+                    {
+                        "name": "L",
+                        "stock": 0,
+                        "outOfstock": true
+                    }
+                ]
+            },
+            {
+                "name": "Xám SA045",
+                "hex": "#6b7280",
+                "shopeeUrl": "https://shopee.vn/product/inside-1-xam",
+                "tiktokUrl": "https://tiktok.com/product/inside-1-xam",
+                "images": [
+                    "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
+                ],
+                "sizes": [
+                    {
+                        "name": "S",
+                        "stock": 0,
+                        "outOfstock": true
+                    },
+                    {
+                        "name": "M",
+                        "stock": 25,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "L",
+                        "stock": 14,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "XL",
+                        "stock": 0,
+                        "outOfstock": true
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "inside-14",
+        "name": "Quần Lót Nam Sợi Tre Bamboo Premium Boxer", "category": "inside", "price": 115000, "originalprice": 150000,
+        "style": "Boxer",
+        "descriptionText": "Quần lót dáng đùi Boxer ôm nhẹ thoáng mát, cạp chun thêu tinh tế không gây hằn bụng.",
+        "materialText": "95% Bamboo Sợi Tre nhập khẩu, 5% Elastane thoáng khí chống nhăn.",
+        "usageGuideText": [
+            "Giặt máy ở chế độ nhẹ, nhiệt độ thường (30°C)."
+        ],
+        "introImages": [
+            "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"
+        ],
+        "colors": [
+            {
+                "name": "Trắng",
+                "hex": "#ffffff",
+                "shopeeUrl": "https://shopee.vn/product/inside-2-trang",
+                "tiktokUrl": "https://tiktok.com/product/inside-2-trang",
+                "images": [
+                    "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
+                ],
+                "sizes": [
+                    {
+                        "name": "S",
+                        "stock": 0,
+                        "outOfstock": true
+                    },
+                    {
+                        "name": "M",
+                        "stock": 25,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "L",
+                        "stock": 14,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "XL",
+                        "stock": 0,
+                        "outOfstock": true
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "inside-15",
+        "name": "Quần Lót Nam Modal Air Brief Siêu Nhẹ", "category": "inside", "price": 75000, "originalprice": 99000,
+        "style": "Brief",
+        "descriptionText": "Sợi Gỗ Sồi Modal siêu mềm mại.",
+        "materialText": "90% Modal Micro, 10% Spandex cao cấp.",
+        "usageGuideText": [
+            "Giặt máy."
+        ],
+        "introImages": [
+            "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"
+        ],
+        "colors": [
+            {
+                "name": "Be",
+                "hex": "#e3c4a8",
+                "shopeeUrl": "https://shopee.vn/product/inside-3-be",
+                "tiktokUrl": "https://tiktok.com/product/inside-3-be",
+                "images": [
+                    "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
+                ],
+                "sizes": [
+                    {
+                        "name": "S",
+                        "stock": 0,
+                        "outOfstock": true
+                    },
+                    {
+                        "name": "M",
+                        "stock": 25,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "L",
+                        "stock": 14,
+                        "outOfstock": false
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "inside-16",
+        "name": "Quần Lót Nam Thể Thao Pro-Dry Trunk Boxer", "category": "inside", "price": 135000, "originalprice": 180000,
+        "style": "Trunk",
+        "descriptionText": "Chuyên dụng vận động thể thao.",
+        "materialText": "88% Polyester, 12% Spandex.",
+        "usageGuideText": [
+            "Giặt máy."
+        ],
+        "introImages": [
+            "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=1200"
+        ],
+        "colors": [
+            {
+                "name": "Đen",
+                "hex": "#000000",
+                "shopeeUrl": "https://shopee.vn/product/inside-4-den",
+                "tiktokUrl": "https://tiktok.com/product/inside-4-den",
+                "images": [
+                    "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&q=80&w=1200"
+                ],
+                "sizes": [
+                    {
+                        "name": "S",
+                        "stock": 0,
+                        "outOfstock": true
+                    },
+                    {
+                        "name": "M",
+                        "stock": 25,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "L",
+                        "stock": 14,
+                        "outOfstock": false
+                    },
+                    {
+                        "name": "XL",
+                        "stock": 0,
+                        "outOfstock": true
+                    }
+                ]
+            }
+        ]
+    }
+]

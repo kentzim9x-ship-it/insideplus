@@ -38,97 +38,132 @@ const visualFilterCategories = [
 ];
 
 let activeVisualFilter = "ALL";
-
-const originalProducts = [
-    {
-        id: "sock-1", name: "Tất Cổ Ngắn Bamboo Kháng Khuẩn SlimFit", category: "sock", price: 35000, originalPrice: 50000,
-        style: "CoNgan",
-        descriptionText: "Vớ tàng hình chuyên dụng cho giày lười, giày loafer. Viền cao su silicone chống tuột 360 độ.",
-        materialText: "85% Bamboo tự nhiên, 15% Spandex co giãn đàn hồi cao.",
-        usageGuideText: [
-            "Giặt máy ở chế độ nhẹ, nhiệt độ thường (30°C).",
-            "Không sử dụng hóa chất tẩy có chứa clo.",
-            "Phơi trong bóng mát.",
-            "Sấy khô ở nhiệt độ thấp.",
-            "Là ở nhiệt độ thấp (tối đa 110°C).",
-            "Giặt với sản phẩm cùng màu.",
-            "Không là lên chi tiết trang trí."
-        ],
-        introImages: [
-            "https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?auto=format&fit=crop&q=80&w=1200",
-            "https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?auto=format&fit=crop&q=80&w=1200"
-        ],
-        colors: [
-            {
-                name: "Trắng", hex: "#ffffff",
-                shopeeUrl: "https://shopee.vn/product/sock-1-trang",
-                tiktokUrl: "https://tiktok.com/product/sock-1-trang",
-                images: ["https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?auto=format&fit=crop&q=80&w=1200", "https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?auto=format&fit=crop&q=80&w=1200"],
-                sizes: [
-                    { name: "M", stock: 25, outOfStock: false },
-                    { name: "L", stock: 14, outOfStock: false }
-                ]
-            },
-            {
-                name: "Đen", hex: "#000000",
-                shopeeUrl: "https://shopee.vn/product/sock-1-den",
-                tiktokUrl: "https://tiktok.com/product/sock-1-den",
-                images: ["https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?auto=format&fit=crop&q=80&w=1200"],
-                sizes: [
-                    { name: "M", stock: 25, outOfStock: false },
-                    { name: "L", stock: 50, outOfStock: false }
-                ]
-            }
-        ]
-    },
-    {
-        id: "sock-2", name: "Tất Cổ Trung Thể Thao Đệm Xù Êm Ái", category: "sock", price: 45000, originalPrice: 65000,
-        style: "CoTrung",
-        descriptionText: "Vớ thể thao cổ trung đệm xù dưới lòng bàn chân hỗ trợ giảm ma sát tối đa khi vận động.",
-        materialText: "90% Cotton hữu cơ, 10% Elastane nâng đỡ vòm bàn chân.",
-        usageGuideText: [
-            "Giặt máy ở chế độ nhẹ, nhiệt độ thường (30°C).",
-            "Không sử dụng hóa chất tẩy có chứa clo.",
-            "Phơi trong bóng mát.",
-            "Sấy khô ở nhiệt độ thấp.",
-            "Là ở nhiệt độ thấp (tối đa 110°C).",
-            "Giặt với sản phẩm cùng màu.",
-            "Không là lên chi tiết trang trí."
-        ],
-        introImages: [
-            "https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?auto=format&fit=crop&q=80&w=1200",
-            "https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?auto=format&fit=crop&q=80&w=1200"
-        ],
-        colors: [
-            {
-                name: "Đen", hex: "#000000",
-                shopeeUrl: "https://shopee.vn/product/sock-2-den",
-                tiktokUrl: "https://tiktok.com/product/sock-2-den",
-                images: ["https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?auto=format&fit=crop&q=80&w=1200"],
-                sizes: [
-                    { name: "M", stock: 25, outOfStock: false },
-                    { name: "L", stock: 50, outOfStock: false }
-                ]
-            },
-            {
-                name: "Trắng", hex: "#ffffff",
-                shopeeUrl: "https://shopee.vn/product/sock-2-trang",
-                tiktokUrl: "https://tiktok.com/product/sock-2-trang",
-                images: ["https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?auto=format&fit=crop&q=80&w=1200"],
-                sizes: [
-                    { name: "M", stock: 25, outOfStock: false },
-                    { name: "L", stock: 14, outOfStock: false }
-                ]
-            }
-        ]
-    }
-];
-
-let currentFilteredProducts = [...originalProducts];
+let originalProducts = [];
+let currentFilteredProducts = [];
 let currentSelectedSize = null;
 let currentGalleryImages = [];
 let currentGalleryIndex = 0;
 let currentQuantity = 1;
+
+// --- Cấu hình Phân trang / Infinite Scroll ---
+let currentPage = 1;
+const PAGE_SIZE = 12;
+let isLoadingProducts = false;
+let catalogIntersectionObserver = null;
+
+const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbyl0IDuPpwEtHpQJOU5uONu5Oc50A8Yrk5lUMSwT0u_4VgSNmhUYCBIKX9OOFC5zTDS/exec?sheet=SOCK';
+
+function parseJsonSafe(val, fallback) {
+    if (typeof val !== 'string') return val || fallback;
+    try {
+        return JSON.parse(val);
+    } catch (e) {
+        return fallback;
+    }
+}
+
+function processRawProductsData(data) {
+    return (Array.isArray(data) ? data : []).map(item => {
+        let colors = [];
+        if (item.colorsJSON) {
+            colors = parseJsonSafe(item.colorsJSON, []);
+        } else if (item.colors) {
+            colors = parseJsonSafe(item.colors, []);
+        }
+
+        colors = colors.map(c => ({
+            ...c,
+            images: (c.images || []).map(img => String(img).replace(/^["']|["']$/g, '').trim())
+        }));
+
+        let introImages = parseJsonSafe(item.introImages, []);
+        introImages = introImages.map(img => String(img).replace(/^["']|["']$/g, '').trim());
+
+        let usageGuideText = parseJsonSafe(item.usageGuideText, []);
+
+        return {
+            ...item,
+            id: String(item.id || '').trim(), // Chuẩn hóa ID
+            price: Number(item.price) || 0,
+            originalPrice: Number(item.originalPrice) || 0,
+            colors: colors,
+            introImages: introImages,
+            usageGuideText: usageGuideText
+        };
+    });
+}
+
+// 1. Khai báo 2 hàm xử lý cache có hạn 5 phút
+function setCacheWithExpiry(key, value, ttlMinutes = 5) {
+    const item = {
+        value: value,
+        expiry: new Date().getTime() + (ttlMinutes * 60 * 1000)
+    };
+    sessionStorage.setItem(key, JSON.stringify(item));
+}
+
+function getCacheWithExpiry(key) {
+    const itemStr = sessionStorage.getItem(key);
+    if (!itemStr) return null;
+    try {
+        const item = JSON.parse(itemStr);
+        if (new Date().getTime() > item.expiry) {
+            sessionStorage.removeItem(key);
+            return null;
+        }
+        return item.value;
+    } catch (e) {
+        sessionStorage.removeItem(key);
+        return null;
+    }
+}
+
+// 2. Sử dụng bên trong loadProductsData():
+function loadProductsData() {
+    return new Promise((resolve, reject) => {
+        // Thay getItem bằng getCacheWithExpiry
+        const cachedData = getCacheWithExpiry('cached_sock_products'); 
+        if (cachedData) {
+            originalProducts = cachedData;
+            currentFilteredProducts = [...originalProducts];
+            renderVisualFilterBar();
+            renderCatalog(originalProducts);
+            if (typeof updateCartBadge === 'function') updateCartBadge();
+            checkAndOpenProductFromUrl();
+            resolve(originalProducts);
+            return;
+        }
+
+        const callbackName = 'googleSheetCallback_sock_' + Math.round(100000 * Math.random());
+        
+        window[callbackName] = function(data) {
+            delete window[callbackName];
+            if (script && script.parentNode) script.parentNode.removeChild(script);
+            
+            originalProducts = processRawProductsData(data);
+            
+            // Thay setItem bằng setCacheWithExpiry (Lưu cache 5 phút)
+            setCacheWithExpiry('cached_sock_products', originalProducts, 5);
+
+            currentFilteredProducts = [...originalProducts];
+            renderVisualFilterBar();
+            renderCatalog(originalProducts);
+            if (typeof updateCartBadge === 'function') updateCartBadge();
+            checkAndOpenProductFromUrl();
+            resolve(data);
+        };
+
+        const script = document.createElement('script');
+        script.src = `${GOOGLE_SHEET_API_URL}&callback=${callbackName}`;
+        script.onerror = (err) => {
+            delete window[callbackName];
+            if (script && script.parentNode) script.parentNode.removeChild(script);
+            reject(err);
+        };
+        
+        document.body.appendChild(script);
+    });
+}
 
 function changeQty(delta) {
     currentQuantity = Math.max(1, currentQuantity + delta);
@@ -195,7 +230,7 @@ function showAddedNotification(item) {
             <button onclick="document.getElementById('added-toast-popup').remove(); updateCartBadge();" class="text-slate-400 hover:text-slate-900"><i data-lucide="x" class="w-4 h-4"></i></button>
         </div>
         <div class="flex gap-3 items-center mb-4">
-            <img src="${item.image}" class="w-14 h-16 object-cover bg-slate-100">
+            <img src="${item.image}" loading="lazy" class="w-14 h-16 object-cover bg-slate-100">
             <div>
                 <h4 class="font-bold text-xs uppercase text-slate-900 line-clamp-1">${item.name}</h4>
                 <p class="text-[11px] text-slate-500 mt-0.5">${item.colorName} - ${codePrefix} | S: ${item.size} | SL: ${item.quantity}</p>
@@ -229,21 +264,13 @@ function getColorPrefix(category) {
 }
 
 function formatProductCode(productId, category) {
-    const prefix = getCategoryPrefix(category);
-    const numMatch = productId.match(/\d+/);
-    const num = numMatch ? parseInt(numMatch[0], 10) : 1;
-    return prefix + String(num).padStart(3, '0');
+    return String(productId || '').toUpperCase();
 }
 
 function parseProductIdFromCode(code) {
     if (!code) return null;
-    const numMatch = code.match(/\d+/);
-    if (!numMatch) return null;
-    const num = parseInt(numMatch[0], 10);
-    const p = originalProducts.find(item => {
-        const itemNumMatch = item.id.match(/\d+/);
-        return itemNumMatch && parseInt(itemNumMatch[0], 10) === num;
-    });
+    const cleanCode = String(code).trim().toLowerCase();
+    const p = originalProducts.find(item => String(item.id).trim().toLowerCase() === cleanCode);
     return p ? p.id : null;
 }
 
@@ -268,7 +295,6 @@ function updateProductUrlParam(productId, colorIdx, isReplace = false) {
         const formattedColor = formatColorCode(colorIdx, category);
         const newUrl = window.location.pathname + '?product=' + encodeURIComponent(formattedProduct) + '&color=' + encodeURIComponent(formattedColor);
         
-        // Nếu chuyển màu hoặc tham số phụ -> dùng replaceState để không rác lịch sử Back
         if (isReplace) {
             window.history.replaceState({ productId: productId, colorIdx: colorIdx }, '', newUrl);
         } else {
@@ -290,7 +316,7 @@ function checkAndOpenProductFromUrl() {
             const p = originalProducts.find(item => item.id === productId);
             if (p) {
                 let colorIdx = parseColorIndexFromCode(colorParam);
-                if (colorIdx < 0 || colorIdx >= p.colors.length) colorIdx = 0;
+                if (colorIdx < 0 || colorIdx >= (p.colors || []).length) colorIdx = 0;
                 openProductDrawer(productId, colorIdx, false);
             }
         }
@@ -309,7 +335,7 @@ function addProductToViewed(product) {
         originalPrice: product.originalPrice,
         category: product.category,
         pageUrl: getCategoryPageUrl(product.category),
-        images: product.colors[0].images,
+        images: product.colors && product.colors[0] ? product.colors[0].images : [],
         colors: product.colors
     });
     if (viewed.length > 8) {
@@ -332,8 +358,8 @@ function renderRecentViewedSlider(currentProductId) {
     }
 
     container.innerHTML = viewedFiltered.map(p => {
-        const img1 = p.images[0];
-        const img2 = p.images[1] || img1;
+        const img1 = (p.images && p.images[0]) || '';
+        const img2 = (p.images && p.images[1]) || img1;
         const targetPage = getCategoryPageUrl(p.category);
         const isCurrentPage = targetPage.includes('sock.html');
 
@@ -347,7 +373,7 @@ function renderRecentViewedSlider(currentProductId) {
 
         return `<div class="flex-none w-[calc(50%-12px)] lg:w-[calc(25%-18px)] group cursor-pointer" onclick="${clickAction}">
             <div class="relative aspect-[3/4] bg-slate-100 overflow-hidden mb-3">
-                <img id="recent-thumb-${p.id}" src="${img1}" data-img1="${img1}" data-img2="${img2}" 
+                <img id="recent-thumb-${p.id}" src="${img1}" loading="lazy" data-img1="${img1}" data-img2="${img2}" 
                 onmouseenter="this.src=this.getAttribute('data-img2'); this.classList.add('scale-105');" 
                 onmouseleave="this.src=this.getAttribute('data-img1'); this.classList.remove('scale-105');" 
                 class="w-full h-full object-cover transition-transform duration-500 ease-out">
@@ -410,14 +436,12 @@ function clearAllBoldActiveStates() {
 window.addEventListener('pageshow', clearAllBoldActiveStates);
 
 window.addEventListener('pageshow', function (event) {
-    // Nếu trang được tải lại từ BFCache (vuốt back/forward)
     if (event.persisted) {
         clearAllBoldActiveStates();
     }
 });
 
 window.addEventListener('popstate', function (e) {
-    // Đóng nhanh các drawer phụ mà không cần chờ animation
     const infoDrawer = document.getElementById('info-drawer');
     if (infoDrawer && !infoDrawer.classList.contains('hidden')) closeInfoDrawer();
 
@@ -430,7 +454,6 @@ window.addEventListener('popstate', function (e) {
     const urlParams = new URLSearchParams(window.location.search);
     const productParam = urlParams.get('product');
 
-    // Dùng requestAnimationFrame để đẩy việc xử lý DOM sang frame tiếp theo, giúp thao tác vuốt back phản hồi lập tức
     requestAnimationFrame(() => {
         if (!productParam) {
             closeProductDrawer(false);
@@ -499,7 +522,7 @@ function renderVisualFilterBar() {
         const isActive = activeVisualFilter === item.styleValue;
         return `<div onclick="selectVisualFilter('${item.styleValue}')" class="visual-filter-card group flex flex-col ${isActive ? 'visual-card-active' : ''}">
             <div class="w-full aspect-[4/5] bg-slate-100 overflow-hidden relative">
-                <img src="${item.image}" alt="${item.title}" class="w-full h-full object-cover transition-transform duration-500">
+                <img src="${item.image}" loading="lazy" alt="${item.title}" class="w-full h-full object-cover transition-transform duration-500">
             </div>
             <div class="pt-3.5 pb-1 text-left bg-white">
                 <h4 class="visual-card-title text-sm sm:text-base font-bold text-slate-900 tracking-tight transition-colors group-hover:text-black">${item.title}</h4>
@@ -574,6 +597,40 @@ function selectVisualFilter(styleVal) {
     renderCatalog(currentFilteredProducts);
 }
 
+function renderProductCardHTML(p) {
+    const firstColor = p.colors && p.colors.length > 0 ? p.colors[0] : { images: [''] };
+    const img1 = firstColor.images[0] || '';
+    const img2 = firstColor.images[1] || img1;
+
+    return `<div class="bg-white p-0 overflow-hidden group cursor-pointer transition" onclick="openProductDrawer('${p.id}', 0)">
+        <div class="relative w-full aspect-[3/4] bg-slate-100 overflow-hidden mb-3">
+            <img id="thumb-${p.id}" src="${img1}" loading="lazy" data-img1="${img1}" data-img2="${img2}" 
+            onmouseenter="this.src=this.getAttribute('data-img2'); this.classList.add('scale-105');" 
+            onmouseleave="this.src=this.getAttribute('data-img1'); this.classList.remove('scale-105');" 
+            class="w-full h-full object-cover transition-transform duration-500 ease-out transform">
+            
+            <button onclick="event.stopPropagation(); if(typeof openQuickAddToCartModal==='function') openQuickAddToCartModal('${p.id}')" 
+                    class="quick-add-btn-mobile sm:opacity-0 sm:group-hover:opacity-100 absolute bottom-1.5 right-1.5 w-8 h-8 rounded-full bg-white text-slate-800 flex items-center justify-center transition-all duration-200 shadow-md hover:bg-slate-100 z-10 border border-slate-200" 
+                    title="Thêm nhanh vào giỏ">
+                <svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                </svg>
+            </button>
+        </div>
+        <div class="flex items-center gap-1.5 mb-2" onclick="event.stopPropagation()">
+            ${(p.colors || []).map((c, cIdx) => {
+        const isColorOutOfStock = c.sizes && c.sizes.length > 0 && c.sizes.every(s => s.outOfStock);
+        return `<button onclick="changeCatalogThumbColor('${p.id}',${cIdx})" class="w-4 h-4 rounded-full border border-slate-300 ${isColorOutOfStock ? 'color-out-of-stock' : ''}" style="background-color: ${c.hex};" title="${c.name}"></button>`;
+    }).join('')}
+        </div>
+        <h3 class="font-bold text-slate-900 text-sm uppercase tracking-tight mb-1.5">${p.name}</h3>
+        <div class="flex items-baseline gap-2.5">
+            <span class="text-sm font-medium text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
+            <span class="text-xs text-slate-400 line-through font-normal">${p.originalPrice ? p.originalPrice.toLocaleString('vi-VN') + 'đ' : ''}</span>
+        </div>
+    </div>`;
+}
+
 function renderCatalog(items) {
     const grid = document.getElementById('catalog-grid');
     if (!grid) return;
@@ -585,42 +642,72 @@ function renderCatalog(items) {
         return;
     }
 
-    grid.innerHTML = items.map(p => {
-        const firstColor = p.colors[0];
-        const img1 = firstColor.images[0];
-        const img2 = firstColor.images[1] || img1;
+    currentPage = 1;
+    const initialItems = items.slice(0, PAGE_SIZE);
+    grid.innerHTML = initialItems.map(p => renderProductCardHTML(p)).join('');
 
-        return `<div class="bg-white p-0 overflow-hidden group cursor-pointer transition" onclick="openProductDrawer('${p.id}', 0)">
-            <div class="relative w-full aspect-[3/4] bg-slate-100 overflow-hidden mb-3">
-                <img id="thumb-${p.id}" src="${img1}" data-img1="${img1}" data-img2="${img2}" 
-                onmouseenter="this.src=this.getAttribute('data-img2'); this.classList.add('scale-105');" 
-                onmouseleave="this.src=this.getAttribute('data-img1'); this.classList.remove('scale-105');" 
-                class="w-full h-full object-cover transition-transform duration-500 ease-out transform">
-                
-                <!-- NÚT GIỎ HÀNG: ĐẶT SÁT GÓC PHẢI DƯỚI (bottom-1.5 right-1.5) -->
-                <button onclick="event.stopPropagation(); if(typeof openQuickAddToCartModal==='function') openQuickAddToCartModal('${p.id}')" 
-                        class="quick-add-btn-mobile sm:opacity-0 sm:group-hover:opacity-100 absolute bottom-1.5 right-1.5 w-8 h-8 rounded-full bg-white text-slate-800 flex items-center justify-center transition-all duration-200 shadow-md hover:bg-slate-100 z-10 border border-slate-200" 
-                        title="Thêm nhanh vào giỏ">
-                    <svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="flex items-center gap-1.5 mb-2" onclick="event.stopPropagation()">
-                ${p.colors.map((c, cIdx) => {
-            const isColorOutOfStock = c.sizes && c.sizes.length > 0 && c.sizes.every(s => s.outOfStock);
-            return `<button onclick="changeCatalogThumbColor('${p.id}',${cIdx})" class="w-4 h-4 rounded-full border border-slate-300 ${isColorOutOfStock ? 'color-out-of-stock' : ''}" style="background-color: ${c.hex};" title="${c.name}"></button>`;
-        }).join('')}
-            </div>
-            <h3 class="font-bold text-slate-900 text-sm uppercase tracking-tight mb-1.5">${p.name}</h3>
-            <div class="flex items-baseline gap-2.5">
-                <span class="text-sm font-medium text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
-                <span class="text-xs text-slate-400 line-through font-normal">${p.originalPrice ? p.originalPrice.toLocaleString('vi-VN') + 'đ' : ''}</span>
-            </div>
-        </div>`;
-    }).join('');
+    let sentinel = document.getElementById('catalog-sentinel');
+    if (!sentinel) {
+        sentinel = document.createElement('div');
+        sentinel.id = 'catalog-sentinel';
+        sentinel.className = 'col-span-full h-10 flex items-center justify-center my-4';
+        grid.after(sentinel);
+    }
+    sentinel.innerHTML = items.length > PAGE_SIZE ? '<span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Đang tải thêm...</span>' : '';
+
+    setupInfiniteScroll();
 
     if (window.lucide) lucide.createIcons();
+}
+
+function loadMoreProducts() {
+    if (isLoadingProducts) return;
+    const startIndex = currentPage * PAGE_SIZE;
+    if (startIndex >= currentFilteredProducts.length) {
+        const sentinel = document.getElementById('catalog-sentinel');
+        if (sentinel) sentinel.innerHTML = '';
+        return;
+    }
+
+    isLoadingProducts = true;
+    const grid = document.getElementById('catalog-grid');
+    const sentinel = document.getElementById('catalog-sentinel');
+    if (sentinel) sentinel.innerHTML = '<span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Đang tải thêm...</span>';
+
+    setTimeout(() => {
+        currentPage++;
+        const newItems = currentFilteredProducts.slice(startIndex, currentPage * PAGE_SIZE);
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = newItems.map(p => renderProductCardHTML(p)).join('');
+
+        while (tempDiv.firstChild) {
+            grid.appendChild(tempDiv.firstChild);
+        }
+
+        if (currentPage * PAGE_SIZE >= currentFilteredProducts.length) {
+            if (sentinel) sentinel.innerHTML = '';
+        }
+
+        if (window.lucide) lucide.createIcons();
+        isLoadingProducts = false;
+    }, 300);
+}
+
+function setupInfiniteScroll() {
+    if (catalogIntersectionObserver) {
+        catalogIntersectionObserver.disconnect();
+    }
+
+    const sentinel = document.getElementById('catalog-sentinel');
+    if (!sentinel) return;
+
+    catalogIntersectionObserver = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+            loadMoreProducts();
+        }
+    }, { rootMargin: '200px' });
+
+    catalogIntersectionObserver.observe(sentinel);
 }
 
 function changeCatalogThumbColor(id, colorIdx) {
@@ -628,7 +715,7 @@ function changeCatalogThumbColor(id, colorIdx) {
     if (!p) return;
     const targetColor = p.colors[colorIdx];
     const imgEl = document.getElementById('thumb-' + id);
-    if (imgEl) {
+    if (imgEl && targetColor) {
         const newImg1 = targetColor.images[0];
         const newImg2 = targetColor.images[1] || newImg1;
         imgEl.src = newImg1;
@@ -655,13 +742,12 @@ function toggleSortDropdown(device) {
     if (drop) drop.classList.toggle('hidden');
 }
 
-let savedCategoryScrollY = 0; // Biến lưu vị trí cuộn trang category
+let savedCategoryScrollY = 0;
 
 function openProductDrawer(id, colorIdx, shouldUpdateUrl) {
-    const p = originalProducts.find(item => item.id === id);
+    const p = originalProducts.find(item => String(item.id).trim() === String(id).trim());
     if (!p) return;
 
-    // LƯU VỊ TRÍ CUỘN TRANG CATEGORY HIỆN TẠI (Nếu drawer chưa mở)
     const drawer = document.getElementById('product-drawer');
     if (drawer && drawer.classList.contains('hidden')) {
         savedCategoryScrollY = window.scrollY || window.pageYOffset;
@@ -690,7 +776,7 @@ function openProductDrawer(id, colorIdx, shouldUpdateUrl) {
 
     if (drawer) {
         drawer.classList.remove('hidden');
-        drawer.scrollTop = 0; // Cuộn riêng nội dung của Drawer lên đầu
+        drawer.scrollTop = 0;
     }
 
     drawer.classList.add('is-active');
@@ -711,7 +797,6 @@ function closeProductDrawer(shouldUpdateUrl) {
 
     document.body.classList.remove('drawer-open');
 
-    // Khôi phục lại đúng vị trí cuộn trang Category ban đầu
     window.scrollTo(0, savedCategoryScrollY);
 
     if (shouldUpdateUrl !== false) {
@@ -724,7 +809,6 @@ function changeDrawerColor(productId, colorIdx) {
     if (!p) return;
 
     renderDrawerContent(p, colorIdx);
-    // Đổi tham số thành true để dùng replaceState
     updateProductUrlParam(p.id, colorIdx, true); 
 
     const drawer = document.getElementById('product-drawer');
@@ -734,9 +818,9 @@ function changeDrawerColor(productId, colorIdx) {
 }
 
 function renderDrawerContent(p, colorIdx) {
-    const activeColor = p.colors[colorIdx];
+    const activeColor = p.colors && p.colors[colorIdx] ? p.colors[colorIdx] : { name: '', hex: '', images: [''], sizes: [] };
     const availableSizes = activeColor.sizes || [];
-    currentGalleryImages = activeColor.images;
+    currentGalleryImages = activeColor.images || [];
 
     if (!currentSelectedSize || !availableSizes.some(s => s.name === currentSelectedSize)) {
         const firstAvailable = availableSizes.find(s => !s.outOfStock);
@@ -755,26 +839,26 @@ function renderDrawerContent(p, colorIdx) {
     const imagesHtml = `
     <div class="block sm:hidden -mx-4 -mt-2 sm:mx-0 sm:mt-0 mb-6">
         <div class="relative w-full aspect-[3/4] bg-slate-100 overflow-hidden mb-3" onclick="openGalleryModal(window.currentMobileImgIdx || 0)">
-            <img id="mobile-main-img" src="${activeColor.images[0]}" class="w-full h-full object-cover">
+            <img id="mobile-main-img" src="${activeColor.images[0] || ''}" loading="lazy" class="w-full h-full object-cover">
             <button onclick="event.stopPropagation(); openGalleryModal(window.currentMobileImgIdx || 0)" class="zoom-icon-btn !opacity-100 !scale-100" title="Xem ảnh">
                 <i data-lucide="search" class="w-4 h-4 text-slate-800"></i>
             </button>
         </div>
 
         <div class="flex gap-2.5 overflow-x-auto px-4 no-scrollbar">
-            ${activeColor.images.map((img, imgIdx) => `
+            ${(activeColor.images || []).map((img, imgIdx) => `
                 <button onclick="changeMobileMainImage('${img}',${imgIdx})" 
                     class="mobile-thumb-btn flex-none w-16 aspect-[3/4] bg-slate-100 overflow-hidden border-b-2 transition-all pb-0.5 ${imgIdx === 0 ? 'border-slate-900 opacity-100' : 'border-transparent opacity-50'}">
-                    <img src="${img}" class="w-full h-full object-cover">
+                    <img src="${img}" loading="lazy" class="w-full h-full object-cover">
                 </button>
             `).join('')}
         </div>
     </div>
 
     <div class="hidden sm:grid grid-cols-2 gap-4">
-        ${activeColor.images.map((img, imgIdx) => `
+        ${(activeColor.images || []).map((img, imgIdx) => `
             <div class="product-detail-img-container aspect-[4/5] bg-slate-100 shadow-sm" onclick="openGalleryModal(${imgIdx})">
-                <img src="${img}" class="w-full h-full object-cover">
+                <img src="${img}" loading="lazy" class="w-full h-full object-cover">
                 <button onclick="event.stopPropagation(); openGalleryModal(${imgIdx})" class="zoom-icon-btn" title="Xem ảnh">
                     <i data-lucide="search" class="w-4 h-4 text-slate-800"></i>
                 </button>
@@ -782,7 +866,7 @@ function renderDrawerContent(p, colorIdx) {
         `).join('')}
     </div>`;
 
-    const colorsHtml = p.colors.map((c, cIdx) => {
+    const colorsHtml = (p.colors || []).map((c, cIdx) => {
         const cIsAllOutOfStock = c.sizes && c.sizes.length > 0 && c.sizes.every(s => s.outOfStock);
         const strikeClass = cIsAllOutOfStock ? 'color-out-of-stock' : '';
         const activeClass = cIdx === colorIdx ? 'ring-2 ring-slate-900 ring-offset-2' : '';
@@ -864,11 +948,11 @@ function renderDrawerContent(p, colorIdx) {
                 <h2 class="text-2xl font-black uppercase text-slate-900 mt-1">${p.name}</h2>
                 <div class="flex items-baseline gap-3 mt-3">
                     <span class="text-2xl font-black text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
-                    <span class="text-sm text-slate-400 line-through">${p.originalPrice.toLocaleString('vi-VN')}đ</span>
+                    <span class="text-sm text-slate-400 line-through">${p.originalPrice ? p.originalPrice.toLocaleString('vi-VN') + 'đ' : ''}</span>
                 </div>
             </div>
             <div class="space-y-2">
-                <span class="text-xs font-bold uppercase text-slate-700">MÀU: <span class="font-black">${activeColor.name.toUpperCase()}</span></span>
+                <span class="text-xs font-bold uppercase text-slate-700">MÀU: <span class="font-black">${(activeColor.name || '').toUpperCase()}</span></span>
                 <div class="flex gap-2 items-center">${colorsHtml}</div>
             </div>
             <div class="space-y-2" id="size-selection-container">
@@ -971,8 +1055,8 @@ function applyFilters() {
     currentFilteredProducts = originalProducts.filter(p => {
         let matchVisual = (activeVisualFilter === 'ALL' || p.style === activeVisualFilter);
         let matchStyle = selectedStyles.length === 0 || selectedStyles.includes(p.style);
-        let matchSize = selectedSizes.length === 0 || p.colors.some(c => c.sizes && c.sizes.some(s => selectedSizes.includes(s.name)));
-        let matchColor = selectedColors.length === 0 || p.colors.some(c => selectedColors.includes(c.hex));
+        let matchSize = selectedSizes.length === 0 || (p.colors || []).some(c => c.sizes && c.sizes.some(s => selectedSizes.includes(s.name)));
+        let matchColor = selectedColors.length === 0 || (p.colors || []).some(c => selectedColors.includes(c.hex));
         return matchVisual && matchStyle && matchSize && matchColor;
     });
     closeFilterDrawer();
@@ -1058,7 +1142,7 @@ function handleSearchInput(query) {
     container.innerHTML = matches.map(p => `
         <div class="group cursor-pointer" onclick="openProductDrawer('${p.id}', 0); closeSearchModal();">
             <div class="relative aspect-[3/4] bg-slate-100 overflow-hidden border border-slate-100">
-                <img src="${p.colors[0].images[0]}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                <img src="${p.colors && p.colors[0] && p.colors[0].images ? p.colors[0].images[0] : ''}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                 <span class="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-[9px] font-black uppercase tracking-widest text-slate-900 px-2 py-0.5">${p.category}</span>
             </div>
         </div>
@@ -1086,7 +1170,7 @@ function renderViewedProducts() {
 
         return `<div class="group cursor-pointer" onclick="${clickAction}">
             <div class="relative aspect-[3/4] bg-slate-100 overflow-hidden border border-slate-100">
-                <img src="${p.images[0]}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                <img src="${p.images ? p.images[0] : ''}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                 <span class="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-[9px] font-black uppercase tracking-widest text-slate-900 px-2 py-0.5">${p.category}</span>
             </div>
         </div>`;
@@ -1121,7 +1205,7 @@ function openInfoDrawer() {
     const p = originalProducts.find(x => x.id === window.currentActiveProductId);
     if (!p) return;
 
-    const guides = p.usageGuideText || [
+    const guides = (p.usageGuideText && p.usageGuideText.length > 0) ? p.usageGuideText : [
         "Giặt máy ở chế độ nhẹ, nhiệt độ thường (30°C).",
         "Không sử dụng hóa chất tẩy có chứa clo.",
         "Phơi trong bóng mát.",
@@ -1136,14 +1220,14 @@ function openInfoDrawer() {
         contentEl.innerHTML = `
         <div class="grid grid-cols-[70px_1fr] gap-x-4 gap-y-3 pb-4 border-b border-slate-100">
             <span class="font-bold text-slate-900">Mã SP</span>
-            <span class="text-slate-600">${p.id.toUpperCase()}</span>
+            <span class="text-slate-600">${p.id ? p.id.toUpperCase() : ''}</span>
     
             <span class="font-bold text-slate-900">Chất liệu</span>
-            <span class="text-slate-600">${p.materialText}</span>
+            <span class="text-slate-600">${p.materialText || ''}</span>
         </div>
         <div class="pt-4 space-y-3">
             <h4 class="font-bold text-slate-900 text-sm">Mô tả sản phẩm</h4>
-            <p class="text-slate-600 leading-relaxed">${p.descriptionText}</p>
+            <p class="text-slate-600 leading-relaxed">${p.descriptionText || ''}</p>
         </div>
         <div class="pt-4 space-y-3">
             <h4 class="font-bold text-slate-900 text-sm">Hướng dẫn sử dụng</h4>
@@ -1188,12 +1272,14 @@ function openIntroDrawer() {
     const p = originalProducts.find(x => x.id === window.currentActiveProductId);
     if (!p) return;
 
-    const imagesToDisplay = p.introImages || (p.colors[0] ? p.colors[0].images : []);
+    const imagesToDisplay = (p.introImages && p.introImages.length > 0) 
+        ? p.introImages 
+        : (p.colors && p.colors[0] ? p.colors[0].images : []);
 
     const contentEl = document.getElementById('intro-drawer-content');
     if (contentEl) {
         contentEl.innerHTML = imagesToDisplay.map((img, idx) => `
-            <img src="${img}" class="w-full h-auto block object-cover px-3 ${idx === 0 ? 'pt-3' : ''}">
+            <img src="${img}" loading="lazy" class="w-full h-auto block object-cover px-3 ${idx === 0 ? 'pt-3' : ''}">
         `).join('');
     }
 
@@ -1320,18 +1406,14 @@ document.addEventListener('keydown', function (e) {
     }
 });
 
-// Biến lưu tọa độ thao tác vuốt
 let touchStartX = 0;
 let touchStartY = 0;
-let isNativeNavigation = false; // Biến cờ đánh dấu thao tác Back/Forward native
+let isNativeNavigation = false;
 
 document.addEventListener('touchstart', function (e) {
     const startX = e.touches[0].clientX;
     const windowWidth = window.innerWidth;
 
-    // TÁCH BIỆT THAO TÁC BACK / FORWARD:
-    // Nếu điểm chạm xuất phát từ sát mép trái (< 35px) hoặc sát mép phải (> windowWidth - 35px)
-    // -> Đây là thao tác Vuốt Back/Forward của trình duyệt/Hệ điều hành, đánh dấu bỏ qua JS.
     if (startX < 35 || startX > (windowWidth - 35)) {
         isNativeNavigation = true;
         return;
@@ -1341,7 +1423,6 @@ document.addEventListener('touchstart', function (e) {
     touchStartX = e.changedTouches[0].screenX;
     touchStartY = e.changedTouches[0].screenY;
 
-    // Lưu tọa độ riêng cho Modal Thêm Nhanh
     const quickModal = document.getElementById('quick-add-cart-modal');
     if (quickModal && !quickModal.classList.contains('hidden')) {
         quickModalTouchStartY = e.touches[0].clientY;
@@ -1349,8 +1430,6 @@ document.addEventListener('touchstart', function (e) {
 }, { passive: true });
 
 document.addEventListener('touchend', function (e) {
-    // NẾU LÀ THAO TÁC BACK/FORWARD NATIVE: THOÁT NGAY LẬP TỨC
-    // Trình duyệt sẽ thực thi hành động Back cực kỳ mượt mà không bị delay 1ms nào
     if (isNativeNavigation) return;
 
     const touchEndX = e.changedTouches[0].screenX;
@@ -1359,7 +1438,6 @@ document.addEventListener('touchend', function (e) {
     const deltaX = touchEndX - touchStartX;
     const deltaY = Math.abs(touchEndY - touchStartY);
 
-    // Xử lý đóng Quick Add Modal khi vuốt xuống
     const quickModal = document.getElementById('quick-add-cart-modal');
     if (quickModal && !quickModal.classList.contains('hidden')) {
         const currentTouchEndY = e.changedTouches[0].clientY;
@@ -1373,7 +1451,6 @@ document.addEventListener('touchend', function (e) {
         }
     }
 
-    // Xử lý vuốt mở/đóng Navigation Mobile
     const mobileNav = document.getElementById('mobile-nav-drawer');
     if (mobileNav && !mobileNav.classList.contains('hidden')) {
         if (deltaX < -50 && Math.abs(deltaX) > deltaY) {
@@ -1383,7 +1460,6 @@ document.addEventListener('touchend', function (e) {
         }
     }
 
-    // Tối ưu các Drawer phụ khi Swipe Right
     if (deltaX > 60 && deltaX > deltaY) {
         const drawers = ['quick-edit-drawer', 'voucher-drawer', 'cart-modal', 'info-drawer', 'intro-drawer', 'search-modal'];
         for (let id of drawers) {
@@ -1400,7 +1476,6 @@ document.addEventListener('touchend', function (e) {
         }
     }
 
-    // Xử lý Gallery ảnh
     const galleryModal = document.getElementById('gallery-modal');
     if (galleryModal && !galleryModal.classList.contains('hidden')) {
         if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > deltaY) {
@@ -1426,8 +1501,5 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    renderVisualFilterBar();
-    renderCatalog(originalProducts);
-    updateCartBadge();
-    checkAndOpenProductFromUrl();
+    loadProductsData();
 });
