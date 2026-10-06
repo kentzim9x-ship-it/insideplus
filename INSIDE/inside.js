@@ -693,6 +693,7 @@ function openProductDrawer(id, colorIdx, shouldUpdateUrl) {
         drawer.scrollTop = 0; // Cuộn nội dung bên trong drawer lên đầu
     }
 
+    drawer.classList.add('is-active');
     document.body.classList.add('drawer-open');
 
     if (shouldUpdateUrl !== false) {
@@ -703,18 +704,27 @@ function openProductDrawer(id, colorIdx, shouldUpdateUrl) {
 function closeProductDrawer(shouldUpdateUrl) {
     const drawer = document.getElementById('product-drawer');
     if (drawer) {
-        drawer.classList.add('hidden');
-        drawer.scrollTop = 0;
+        // 1. Gỡ class active để CSS transform trượt drawer ra ngoài GPU (mượt 60fps)
+        drawer.classList.remove('is-active');
         drawer.classList.remove('drawer-open');
     }
 
     document.body.classList.remove('drawer-open');
 
-    // Khôi phục lại đúng vị trí cuộn trang Category ban đầu
-    window.scrollTo(0, savedCategoryScrollY);
+    // 2. Dùng requestAnimationFrame để đẩy việc scrollTo sang frame tiếp theo.
+    // Tránh việc giật/khựng UI khi cuộn trang cùng lúc animation đóng drawer đang chạy.
+    requestAnimationFrame(() => {
+        window.scrollTo(0, savedCategoryScrollY);
+        
+        // Reset cuộn của drawer về đầu sau khi đã trượt ẩn đi
+        if (drawer) {
+            drawer.scrollTop = 0;
+        }
+    });
 
+    // 3. Cập nhật lại URL nếu cần (dùng replaceState để sạch lịch sử duyệt)
     if (shouldUpdateUrl !== false) {
-        updateProductUrlParam(null, null);
+        updateProductUrlParam(null, null, true);
     }
 }
 

@@ -701,11 +701,38 @@ function openProductDrawer(id, colorIdx, shouldUpdateUrl) {
         drawer.scrollTop = 0; // Cuộn riêng nội dung của Drawer lên đầu
     }
 
+    drawer.classList.add('is-active');
     document.body.classList.add('drawer-open');
 
     if (shouldUpdateUrl !== false) {
-        // BỎ window.scrollTo(0, 0) ở đây để không làm nhảy trang bên dưới
         updateProductUrlParam(p.id, initialColorIdx);
+    }
+}
+
+function closeProductDrawer(shouldUpdateUrl) {
+    const drawer = document.getElementById('product-drawer');
+    if (drawer) {
+        // 1. Gỡ class active để CSS transform trượt drawer ra ngoài GPU (mượt 60fps)
+        drawer.classList.remove('is-active');
+        drawer.classList.remove('drawer-open');
+    }
+
+    document.body.classList.remove('drawer-open');
+
+    // 2. Dùng requestAnimationFrame để đẩy việc scrollTo sang frame tiếp theo.
+    // Tránh việc giật/khựng UI khi cuộn trang cùng lúc animation đóng drawer đang chạy.
+    requestAnimationFrame(() => {
+        window.scrollTo(0, savedCategoryScrollY);
+        
+        // Reset cuộn của drawer về đầu sau khi đã trượt ẩn đi
+        if (drawer) {
+            drawer.scrollTop = 0;
+        }
+    });
+
+    // 3. Cập nhật lại URL nếu cần (dùng replaceState để sạch lịch sử duyệt)
+    if (shouldUpdateUrl !== false) {
+        updateProductUrlParam(null, null, true);
     }
 }
 
@@ -922,24 +949,6 @@ function prevGalleryImage() {
 function nextGalleryImage() {
     currentGalleryIndex = (currentGalleryIndex < currentGalleryImages.length - 1) ? currentGalleryIndex + 1 : 0;
     updateGalleryModalView();
-}
-
-function closeProductDrawer(shouldUpdateUrl) {
-    const drawer = document.getElementById('product-drawer');
-    if (drawer) {
-        drawer.classList.add('hidden');
-        drawer.scrollTop = 0;
-        drawer.classList.remove('drawer-open');
-    }
-
-    document.body.classList.remove('drawer-open');
-
-    // Khôi phục lại đúng vị trí cuộn trang Category ban đầu
-    window.scrollTo(0, savedCategoryScrollY);
-
-    if (shouldUpdateUrl !== false) {
-        updateProductUrlParam(null, null);
-    }
 }
 
 function openFilterDrawer() {

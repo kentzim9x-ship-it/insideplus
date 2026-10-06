@@ -302,3 +302,59 @@ html, body {
     will-change: transform, opacity;
     -webkit-overflow-scrolling: touch; /* Giúp cuộn mượt trên iOS Safari */
 }
+
+/* Khung chứa Drawer (Overlay + Panel) */
+.drawer-container {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    
+    /* Ẩn drawer khỏi cây tương tác khi đóng */
+    visibility: hidden;
+    pointer-events: none;
+    transition: visibility 0.3s ease;
+}
+
+/* Khi Drawer mở */
+.drawer-container.is-active {
+    visibility: visible;
+    pointer-events: auto;
+}
+
+/* Lớp nền mờ (Overlay) */
+.drawer-overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: opacity;
+}
+
+.drawer-container.is-active .drawer-overlay {
+    opacity: 1;
+}
+
+/* Trục nội dung Drawer (Panel) */
+.drawer-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 480px;
+    background-color: #ffffff;
+    
+    /* Đẩy toàn bộ panel sang bên phải màn hình */
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Tăng tốc GPU & tối ưu cuộn trên iOS */
+    will-change: transform;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Khi mở: trượt Panel vào vị trí 0 */
+.drawer-container.is-active .drawer-panel {
+    transform: translateX(0);
+}
