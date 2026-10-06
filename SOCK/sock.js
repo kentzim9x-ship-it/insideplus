@@ -93,7 +93,7 @@ function processRawProductsData(data) {
     });
 }
 
-// 1. Khai báo 2 hàm xử lý cache có hạn 5 phút
+// 1. Khai báo 2 hàm Cache có giới hạn thời gian (5 phút)
 function setCacheWithExpiry(key, value, ttlMinutes = 5) {
     const item = {
         value: value,
@@ -118,11 +118,11 @@ function getCacheWithExpiry(key) {
     }
 }
 
-// 2. Sử dụng bên trong loadProductsData():
+// 2. Hàm loadProductsData tối ưu tốc độ
 function loadProductsData() {
-    return new Promise((resolve, reject) => {
-        // Thay getItem bằng getCacheWithExpiry
-        const cachedData = getCacheWithExpiry('cached_sock_products'); 
+    return new Promise((resolve) => {
+        // Lần 1: Đọc từ Session Storage nếu còn hạn (0.01 giây)
+        const cachedData = getCacheWithExpiry('cached_sock_products');
         if (cachedData) {
             originalProducts = cachedData;
             currentFilteredProducts = [...originalProducts];
@@ -134,16 +134,32 @@ function loadProductsData() {
             return;
         }
 
-        const callbackName = 'googleSheetCallback_sock_' + Math.round(100000 * Math.random());
-        
+        // Lần 2: Đọc ngay từ file JSON Tĩnh trên GitHub (0.05 giây - Hiển thị ngay sản phẩm)
+        fetch('../data/products_inside.json')
+            .then(res => res.json())
+            .then(localData => {
+                if (originalProducts.length === 0) {
+                    originalProducts = processRawProductsData(localData);
+                    currentFilteredProducts = [...originalProducts];
+                    renderVisualFilterBar();
+                    renderCatalog(originalProducts);
+                    if (typeof updateCartBadge === 'function') updateCartBadge();
+                    checkAndOpenProductFromUrl();
+                }
+            })
+            .catch(() => {});
+
+        // Lần 3: Gọi ngầm Google Sheet API để tự cập nhật bộ nhớ tạm mới nhất
+        const callbackName = 'googleSheetCallback_inside_' + Math.round(100000 * Math.random());
         window[callbackName] = function(data) {
             delete window[callbackName];
             if (script && script.parentNode) script.parentNode.removeChild(script);
             
-            originalProducts = processRawProductsData(data);
+            const freshProducts = processRawProductsData(data);
+            originalProducts = freshProducts;
             
-            // Thay setItem bằng setCacheWithExpiry (Lưu cache 5 phút)
-            setCacheWithExpiry('cached_sock_products', originalProducts, 5);
+            // Lưu vào cache 5 phút
+            setCacheWithExpiry('cached_sock_products', freshProducts, 5);
 
             currentFilteredProducts = [...originalProducts];
             renderVisualFilterBar();
@@ -155,12 +171,10 @@ function loadProductsData() {
 
         const script = document.createElement('script');
         script.src = `${GOOGLE_SHEET_API_URL}&callback=${callbackName}`;
-        script.onerror = (err) => {
+        script.onerror = () => {
             delete window[callbackName];
             if (script && script.parentNode) script.parentNode.removeChild(script);
-            reject(err);
         };
-        
         document.body.appendChild(script);
     });
 }
