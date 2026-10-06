@@ -135,7 +135,7 @@ function loadProductsData() {
         }
 
         // Lần 2: Đọc ngay từ file JSON Tĩnh trên GitHub (0.05 giây - Hiển thị ngay sản phẩm)
-        fetch('../data/products_inside.json')
+        fetch('../data/products_sock.json')
             .then(res => res.json())
             .then(localData => {
                 if (originalProducts.length === 0) {
@@ -261,8 +261,8 @@ function showAddedNotification(item) {
 
 function getCategoryPageUrl(category) {
     if (category === 'sock') return 'sock.html';
-    if (category === 'tshirt') return '../tshirt/tshirt.html';
-    return '../inside/inside.html';
+    if (category === 'tshirt') return '../TSHIRT/tshirt.html';
+    return '../INSIDE/inside.html';
 }
 
 function getCategoryPrefix(category) {
