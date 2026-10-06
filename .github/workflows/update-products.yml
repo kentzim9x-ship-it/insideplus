@@ -3,7 +3,10 @@ name: Update Product Data from Google Sheet
 on:
   repository_dispatch:
     types: [update-product-data]
-  workflow_dispatch: # Cho phép bấm chạy thủ công trên GitHub nếu muốn
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   update-data:
