@@ -275,7 +275,7 @@ function updateProductUrlParam(productId, colorIdx, isReplace = false) {
         const formattedProduct = formatProductCode(productId, category);
         const formattedColor = formatColorCode(colorIdx, category);
         const newUrl = window.location.pathname + '?product=' + encodeURIComponent(formattedProduct) + '&color=' + encodeURIComponent(formattedColor);
-        
+
         // Nếu chuyển màu hoặc tham số phụ -> dùng replaceState để không rác lịch sử Back
         if (isReplace) {
             window.history.replaceState({ productId: productId, colorIdx: colorIdx }, '', newUrl);
@@ -712,27 +712,18 @@ function openProductDrawer(id, colorIdx, shouldUpdateUrl) {
 function closeProductDrawer(shouldUpdateUrl) {
     const drawer = document.getElementById('product-drawer');
     if (drawer) {
-        // 1. Gỡ class active để CSS transform trượt drawer ra ngoài GPU (mượt 60fps)
-        drawer.classList.remove('is-active');
+        drawer.classList.add('hidden');
+        drawer.scrollTop = 0;
         drawer.classList.remove('drawer-open');
     }
 
     document.body.classList.remove('drawer-open');
 
-    // 2. Dùng requestAnimationFrame để đẩy việc scrollTo sang frame tiếp theo.
-    // Tránh việc giật/khựng UI khi cuộn trang cùng lúc animation đóng drawer đang chạy.
-    requestAnimationFrame(() => {
-        window.scrollTo(0, savedCategoryScrollY);
-        
-        // Reset cuộn của drawer về đầu sau khi đã trượt ẩn đi
-        if (drawer) {
-            drawer.scrollTop = 0;
-        }
-    });
+    // Khôi phục lại đúng vị trí cuộn trang Category ban đầu
+    window.scrollTo(0, savedCategoryScrollY);
 
-    // 3. Cập nhật lại URL nếu cần (dùng replaceState để sạch lịch sử duyệt)
     if (shouldUpdateUrl !== false) {
-        updateProductUrlParam(null, null, true);
+        updateProductUrlParam(null, null);
     }
 }
 
@@ -742,7 +733,7 @@ function changeDrawerColor(productId, colorIdx) {
 
     renderDrawerContent(p, colorIdx);
     // Đổi tham số thành true để dùng replaceState
-    updateProductUrlParam(p.id, colorIdx, true); 
+    updateProductUrlParam(p.id, colorIdx, true);
 
     const drawer = document.getElementById('product-drawer');
     if (drawer) {
