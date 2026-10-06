@@ -18,23 +18,28 @@ jobs:
       - name: Create data directory
         run: mkdir -p data
 
-      - name: Fetch Latest Sock Data
+      - name: Fetch Data via Python
         run: |
-          curl -sL "https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=SOCK" -o data/products_sock.json
+          python3 -c '
+          import urllib.request, json
 
-      - name: Fetch Latest Tshirt Data
-        run: |
-          curl -sL "https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=TSHIRT" -o data/products_tshirt.json
+          urls = {
+              "data/products_sock.json": "https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=SOCK",
+              "data/products_tshirt.json": "https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=TSHIRT",
+              "data/products_inside.json": "https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=INSIDE"
+          }
 
-      - name: Fetch Latest Inside Data
-        run: |
-          curl -sL "https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=INSIDE" -o data/products_inside.json
-
-      - name: Verify JSON Files
-        run: |
-          cat data/products_sock.json
-          cat data/products_tshirt.json
-          cat data/products_inside.json
+          for path, url in urls.items():
+              try:
+                  req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+                  with urllib.request.urlopen(req) as response:
+                      data = response.read().decode("utf-8")
+                      with open(path, "w", encoding="utf-8") as f:
+                          f.write(data)
+                  print(f"Successfully fetched {path}")
+              except Exception as e:
+                  print(f"Error fetching {path}: {e}")
+          '
 
       - name: Commit and Push Changes
         run: |
