@@ -20,15 +20,21 @@ jobs:
 
       - name: Fetch Latest Sock Data
         run: |
-          curl -s "https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=SOCK" -o data/products_sock.json
+          curl -sL "https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=SOCK" -o data/products_sock.json
 
       - name: Fetch Latest Tshirt Data
         run: |
-          curl -s "https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=TSHIRT" -o data/products_tshirt.json
+          curl -sL "https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=TSHIRT" -o data/products_tshirt.json
 
       - name: Fetch Latest Inside Data
         run: |
-          curl -s "https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=INSIDE" -o data/products_inside.json
+          curl -sL "https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=INSIDE" -o data/products_inside.json
+
+      - name: Verify JSON Files
+        run: |
+          cat data/products_sock.json
+          cat data/products_tshirt.json
+          cat data/products_inside.json
 
       - name: Commit and Push Changes
         run: |
