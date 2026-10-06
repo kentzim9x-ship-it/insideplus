@@ -80,6 +80,14 @@
                                 class="w-full px-4 py-3 border border-slate-200 text-xs sm:text-sm font-normal focus:outline-none focus:border-slate-800 placeholder:text-slate-300">
                         </div>
 
+                        <div class="space-y-1">
+                            <label for="email" class="text-xs font-bold uppercase tracking-wider text-slate-900">
+                                EMAIL <span class="text-red-600">*</span>
+                            </label>
+                            <input type="email" id="email" placeholder="VD: email@example.com"
+                                class="w-full border border-slate-300 px-4 py-3 text-sm focus:outline-none focus:border-slate-900 rounded-none">
+                        </div>
+
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label
@@ -226,9 +234,9 @@
                         </div>
                     </div>
 
-                    <div class="flex justify-between text-slate-600 font-normal">
+                    <div class="flex justify-between text-slate-600 items-center">
                         <span>Phí vận chuyển</span>
-                        <span id="summary-shipping" class="font-bold text-slate-800">0 đ</span>
+                        <span id="summary-shipping-fee" class="font-bold text-slate-900 shrink-0">0 đ</span>
                     </div>
 
                     <div class="border-t border-slate-200 pt-4 flex justify-between items-baseline">

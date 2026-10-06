@@ -1,12 +1,15 @@
 // --- 1. CẤU HÌNH TĨNH ---
 const SHIPPING_CONFIG = {
+    shippingFee: 30000, // Phí vận chuyển mặc định
     freeShippingThreshold: 399000,
     freeShippingMessage: "Bạn đã được miễn phí vận chuyển"
 };
 
 const availableVouchers = [
-    { code: "INSIDE10", title: "Giảm 10%", desc: "Đơn hàng tối thiểu 200.000đ", minOrder: 200000, discountType: "percent", discountValue: 10 },
-    { code: "FREESHIP", title: "Giảm 30.000đ phí ship", desc: "Đơn hàng tối thiểu 300.000đ", minOrder: 300000, discountType: "fixed", discountValue: 30000 }
+    { code: "INSIDE10", title: "Giảm 10%", desc: "Đơn hàng tối thiểu 500.000đ", minOrder: 500000, discountType: "percent", discountValue: 10 },
+    { code: "INSIDE20", title: "Giảm 20.000đ", desc: "Đơn hàng tối thiểu 200.000đ", minOrder: 200000, discountType: "fixed", discountValue: 20000 },
+    { code: "INSIDE50", title: "Giảm 50.000đ", desc: "Đơn hàng tối thiểu 300.000đ", minOrder: 300000, discountType: "fixed", discountValue: 50000 },
+    { code: "INSIDE100", title: "Giảm 100.000đ", desc: "Đơn hàng tối thiểu 500.000đ", minOrder: 500000, discountType: "fixed", discountValue: 100000 }
 ];
 
 // --- 2. TRẠNG THÁI TOÀN CỤC GIỎ HÀNG & VOUCHER ---
@@ -327,11 +330,11 @@ function renderCartModalContent() {
 
     if (freeShipBanner && freeShipText) {
         freeShipBanner.classList.remove('hidden');
-        if (finalTotal >= SHIPPING_CONFIG.freeShippingThreshold) {
+        if (currentPriceTotal >= SHIPPING_CONFIG.freeShippingThreshold) {
             freeShipBanner.className = "py-3.5 px-4 bg-[#dce3f6] text-[#2c3e6b] text-center w-full transition-all duration-200";
             freeShipText.innerHTML = `<div class="text-xs sm:text-sm sm:text-base font-normal tracking-wide">${SHIPPING_CONFIG.freeShippingMessage}</div>`;
         } else {
-            const needed = SHIPPING_CONFIG.freeShippingThreshold - finalTotal;
+            const needed = SHIPPING_CONFIG.freeShippingThreshold - currentPriceTotal;
             freeShipBanner.className = "py-3.5 px-4 bg-slate-100 text-slate-700 text-center w-full transition-all duration-200";
             freeShipText.innerHTML = `<div class="text-xs sm:text-sm sm:text-base font-normal">Mua thêm <span class="font-bold text-slate-900">${needed.toLocaleString('vi-VN')} đ</span> để được <span class="text-blue-600 font-bold uppercase">MIỄN PHÍ VẬN CHUYỂN</span></div>`;
         }

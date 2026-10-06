@@ -307,3 +307,16 @@ button,
         transition: opacity 0.1s ease !important;
     }
 }
+
+/* Tối ưu hiệu năng vuốt cho trình duyệt mobile */
+html, body {
+    overscroll-behavior-y: none; /* Tránh giật lag bounce khi lướt tới mép */
+}
+
+#product-drawer, 
+#mobile-nav-drawer, 
+#cart-modal, 
+#search-modal {
+    will-change: transform, opacity;
+    -webkit-overflow-scrolling: touch; /* Giúp cuộn mượt trên iOS Safari */
+}

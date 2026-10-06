@@ -1,5 +1,127 @@
-// let cartItems = JSON.parse(localStorage.getItem('inside_cart') || '[]');
-// let activeVoucher = JSON.parse(localStorage.getItem('inside_active_voucher') || 'null');
+const CHECKOUT_SESSION_KEY = 'inside_checkout_form_data';
+
+// 1. HÀM LƯU DỮ LIỆU FORM (THÊM EMAIL)
+function saveCheckoutSession() {
+    const formData = {
+        fullname: document.getElementById('fullname')?.value || '',
+        phone: document.getElementById('phone')?.value || '',
+        email: document.getElementById('email')?.value || '', // <-- Thêm email
+        province: document.getElementById('province')?.value || '',
+        ward: document.getElementById('ward')?.value || '',
+        address: document.getElementById('address')?.value || '',
+        note: document.getElementById('note')?.value || ''
+    };
+    sessionStorage.setItem(CHECKOUT_SESSION_KEY, JSON.stringify(formData));
+}
+
+// 2. HÀM KHÔI PHÚC DỮ LIỆU TỪ SESSION STORAGE (THÊM EMAIL)
+function loadCheckoutSession() {
+    const savedData = sessionStorage.getItem(CHECKOUT_SESSION_KEY);
+    if (!savedData) return;
+
+    try {
+        const formData = JSON.parse(savedData);
+
+        if (formData.fullname && document.getElementById('fullname')) 
+            document.getElementById('fullname').value = formData.fullname;
+            
+        if (formData.phone && document.getElementById('phone')) 
+            document.getElementById('phone').value = formData.phone;
+
+        if (formData.email && document.getElementById('email')) 
+            document.getElementById('email').value = formData.email; // <-- Khôi phục email
+            
+        if (formData.address && document.getElementById('address')) 
+            document.getElementById('address').value = formData.address;
+
+        if (formData.note && document.getElementById('note')) 
+            document.getElementById('note').value = formData.note;
+
+        if (formData.province && document.getElementById('province')) {
+            document.getElementById('province').value = formData.province;
+            onProvinceChange(false);
+            
+            if (formData.ward && document.getElementById('ward')) {
+                document.getElementById('ward').value = formData.ward;
+            }
+        }
+        
+        validateShippingForm();
+    } catch (err) {
+        console.error("Lỗi khi khôi phục session checkout:", err);
+    }
+}
+
+// 3. ĐẮNG KÝ LẮNG NGHE SỰ KIỆN NHẬP LIỆU (THÊM EMAIL)
+function attachSessionInputListeners() {
+    const fieldIds = ['fullname', 'phone', 'email', 'address', 'note']; // <-- Thêm email
+    fieldIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', () => {
+                saveCheckoutSession();
+                validateShippingForm();
+            });
+        }
+    });
+
+    const wardSelect = document.getElementById('ward');
+    if (wardSelect) {
+        wardSelect.addEventListener('change', () => {
+            saveCheckoutSession();
+            validateShippingForm();
+        });
+    }
+}
+
+// 4. CHECK DỮ LIỆU BẮT BUỘC (ĐỊNH DẠNG VÀ YÊU CẦU NHẬP EMAIL)
+function validateShippingForm() {
+    const fullname = document.getElementById('fullname')?.value.trim() || '';
+    const phone = document.getElementById('phone')?.value.trim() || '';
+    const email = document.getElementById('email')?.value.trim() || ''; // <-- Lấy giá trị email
+    const province = document.getElementById('province')?.value || '';
+    const ward = document.getElementById('ward')?.value || '';
+    const address = document.getElementById('address')?.value.trim() || '';
+
+    // Kiểm tra định dạng Email chuẩn
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isEmailValid = email !== '' && emailRegex.test(email);
+
+    // Điều kiện hợp lệ: Yêu cầu bắt buộc điền đầy đủ cả 6 thông tin
+    const isValid = fullname !== '' && phone !== '' && isEmailValid && province !== '' && ward !== '' && address !== '';
+
+    const paymentBlock = document.getElementById('payment-methods-block');
+    const submitBtn = document.getElementById('btn-submit-order');
+
+    if (paymentBlock && submitBtn) {
+        if (isValid) {
+            paymentBlock.classList.remove('hidden');
+            submitBtn.disabled = false;
+            submitBtn.className = "w-full py-4 bg-[#0f172a] text-white font-bold text-sm tracking-wider uppercase hover:bg-black transition cursor-pointer text-center block rounded-none";
+        } else {
+            paymentBlock.classList.add('hidden');
+            submitBtn.disabled = true;
+            submitBtn.className = "w-full py-4 bg-[#b0b0b0] text-white font-bold text-sm tracking-wider uppercase transition cursor-not-allowed text-center block rounded-none";
+        }
+    }
+}
+
+// 5. XỬ LÝ KHI BẤM THANH TOÁN (LẤY CẢ EMAIL NẾU CẦN)
+function handlePlaceOrder(e) {
+    if (e) e.preventDefault();
+    const fullname = document.getElementById('fullname')?.value || '';
+    const phone = document.getElementById('phone')?.value || '';
+    const email = document.getElementById('email')?.value || '';
+
+    // Xóa bộ nhớ lưu tạm
+    localStorage.removeItem('inside_cart');
+    localStorage.removeItem('inside_active_voucher');
+    sessionStorage.removeItem(CHECKOUT_SESSION_KEY);
+
+    alert(`Đặt hàng thành công!\nCảm ơn quý khách ${fullname} (${email} - SĐT: ${phone}). INSIDE⁺ sẽ sớm giao hàng đến bạn!`);
+    window.location.href = 'index.html';
+}
+
 let isDetailsExpanded = true;
 let provincesData = [];
 
@@ -18,14 +140,22 @@ async function fetchProvinces() {
             opt.textContent = p.name;
             provinceSelect.appendChild(opt);
         });
+
+        // Tải xong API Tỉnh/Thành mới tiến hành khôi phục Session Data
+        loadCheckoutSession();
     } catch (err) {
         console.error("Không lấy được dữ liệu hành chính:", err);
     }
 }
 
-function onProvinceChange() {
-    const provinceCode = document.getElementById('province').value;
+function onProvinceChange(resetWard = true) {
+    const provinceSelect = document.getElementById('province');
+    if (!provinceSelect) return;
+    
+    const provinceCode = provinceSelect.value;
     const wardSelect = document.getElementById('ward');
+    if (!wardSelect) return;
+    
     wardSelect.innerHTML = '<option value="">Phường / Xã</option>';
 
     if (provinceCode) {
@@ -44,30 +174,11 @@ function onProvinceChange() {
             });
         }
     }
-    validateShippingForm();
-}
 
-function validateShippingForm() {
-    const fullname = document.getElementById('fullname').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const province = document.getElementById('province').value;
-    const ward = document.getElementById('ward').value;
-    const address = document.getElementById('address').value.trim();
-
-    const isValid = fullname !== '' && phone !== '' && province !== '' && ward !== '' && address !== '';
-
-    const paymentBlock = document.getElementById('payment-methods-block');
-    const submitBtn = document.getElementById('btn-submit-order');
-
-    if (isValid) {
-        paymentBlock.classList.remove('hidden');
-        submitBtn.disabled = false;
-        submitBtn.className = "w-full py-4 bg-[#0f172a] text-white font-bold text-sm tracking-wider uppercase hover:bg-black transition cursor-pointer text-center block rounded-none";
-    } else {
-        paymentBlock.classList.add('hidden');
-        submitBtn.disabled = true;
-        submitBtn.className = "w-full py-4 bg-[#b0b0b0] text-white font-bold text-sm tracking-wider uppercase transition cursor-not-allowed text-center block rounded-none";
+    if (resetWard) {
+        saveCheckoutSession();
     }
+    validateShippingForm();
 }
 
 function handleVoucherInput() {
@@ -96,9 +207,6 @@ function toggleProductDetails() {
     }
 }
 
-/* ==========================================================================
-   ĐIỀU KHIỂN MODAL VOUCHER (Màn hình PC căn giữa / Mobile trượt phải)
-   ========================================================================== */
 function openVoucherModal() {
     renderVoucherModalList();
     const modal = document.getElementById('voucher-modal');
@@ -106,7 +214,7 @@ function openVoucherModal() {
 
     if (modal && panel) {
         modal.classList.remove('hidden');
-        modal.classList.add('flex');
+        modal.classList.add('flex', 'voucher-modal-open');
         document.body.classList.add('overflow-hidden');
 
         if (window.innerWidth < 640) {
@@ -123,6 +231,8 @@ function closeVoucherModal() {
     const panel = document.getElementById('voucher-panel');
 
     if (modal && panel) {
+        modal.classList.remove('voucher-modal-open');
+        
         if (window.innerWidth < 640) {
             panel.classList.remove('translate-x-0');
             panel.classList.add('translate-x-full');
@@ -247,7 +357,7 @@ function applyManualVoucherCheckout() {
     }
 }
 
-/* RENDER TỔNG QUAN ĐƠN HÀNG GIỐNG 100% MẪU */
+/* RENDER TỔNG QUAN ĐƠN HÀNG */
 function renderCheckoutSummary() {
     cartItems = JSON.parse(localStorage.getItem('inside_cart') || '[]');
     activeVoucher = JSON.parse(localStorage.getItem('inside_active_voucher') || 'null');
@@ -256,6 +366,7 @@ function renderCheckoutSummary() {
     const totalCountEl = document.getElementById('summary-total-count');
     const subtotalEl = document.getElementById('summary-subtotal');
     const finalTotalEl = document.getElementById('summary-final-total');
+    const shippingFeeEl = document.getElementById('summary-shipping-fee'); // Thẻ hiển thị phí ship
     const voucherTagEl = document.getElementById('applied-voucher-tag');
     const voucherCodeTextEl = document.getElementById('applied-voucher-code-text');
     const discountBreakdownList = document.getElementById('discount-breakdown-list');
@@ -269,8 +380,8 @@ function renderCheckoutSummary() {
     const totalQty = cartItems.reduce((sum, item) => sum + item.quantity, 0);
     if (totalCountEl) totalCountEl.innerText = totalQty;
 
-    let originalSubtotal = 0; // Giá trị đơn hàng (Chưa trừ chiết khấu)
-    let directDiscount = 0;    // Tổng chiết khấu trực tiếp từ sản phẩm gốc
+    let originalSubtotal = 0;
+    let directDiscount = 0;
 
     detailsDiv.innerHTML = cartItems.map(item => {
         const itemOrigPrice = item.originalPrice || Math.round(item.price * 1.2);
@@ -301,7 +412,6 @@ function renderCheckoutSummary() {
 
     const currentPriceTotal = originalSubtotal - directDiscount;
 
-    // HASHTAG VOUCHER BÊN DƯỚI CHỮ MÃ GIẢM GIÁ
     if (activeVoucher && currentPriceTotal >= activeVoucher.minOrder) {
         if (voucherTagEl && voucherCodeTextEl) {
             voucherCodeTextEl.innerText = activeVoucher.code;
@@ -311,7 +421,6 @@ function renderCheckoutSummary() {
         if (voucherTagEl) voucherTagEl.classList.add('hidden');
     }
 
-    // TÍNH TOÁN CÁC DÒNG CHIẾT KHẤU ĐỒNG NHẤT
     let voucherDiscount = 0;
     let discountBreakdownHtml = `
         <div class="flex justify-between text-slate-600 items-start gap-2">
@@ -341,26 +450,96 @@ function renderCheckoutSummary() {
         discountBreakdownList.innerHTML = discountBreakdownHtml;
     }
 
-    const finalTotal = Math.max(0, currentPriceTotal - voucherDiscount);
+    // TÍNH PHÍ VẬN CHUYỂN DỰA TRÊN CONFIG
+    const baseShippingFee = (typeof SHIPPING_CONFIG !== 'undefined' && SHIPPING_CONFIG.shippingFee) ? SHIPPING_CONFIG.shippingFee : 30000;
+    const freeThreshold = (typeof SHIPPING_CONFIG !== 'undefined' && SHIPPING_CONFIG.freeShippingThreshold) ? SHIPPING_CONFIG.freeShippingThreshold : 399000;
+    
+    // Nếu tổng tiền thực tế của sản phẩm (chưa trừ voucher) >= ngưỡng thì miễn phí vận chuyển
+    const effectiveShippingFee = currentPriceTotal >= freeThreshold ? 0 : baseShippingFee;
+
+    if (shippingFeeEl) {
+        if (effectiveShippingFee === 0) {
+            shippingFeeEl.innerText = 'Miễn phí';
+            shippingFeeEl.className = 'font-bold text-emerald-600 shrink-0';
+        } else {
+            shippingFeeEl.innerText = effectiveShippingFee.toLocaleString('vi-VN') + ' đ';
+            shippingFeeEl.className = 'font-bold text-slate-900 shrink-0';
+        }
+    }
+
+    // TỔNG THANH TOÁN = (GIÁ TRỊ SẢN PHẨM SAU GIẢM GIÁ TRỰC TIẾP - VOUCHER) + PHÍ VẬN CHUYỂN
+    const finalTotal = Math.max(0, currentPriceTotal - voucherDiscount) + effectiveShippingFee;
 
     if (subtotalEl) subtotalEl.innerText = originalSubtotal.toLocaleString('vi-VN') + ' đ';
     if (finalTotalEl) finalTotalEl.innerText = finalTotal.toLocaleString('vi-VN') + ' đ';
 }
 
-function handlePlaceOrder(e) {
-    e.preventDefault();
-    const fullname = document.getElementById('fullname').value;
-    const phone = document.getElementById('phone').value;
-
-    localStorage.removeItem('inside_cart');
-    localStorage.removeItem('inside_active_voucher');
-
-    alert(`Đặt hàng thành công!\nCảm ơn quý khách ${fullname} (SĐT: ${phone}). INSIDE⁺ sẽ sớm giao hàng đến bạn!`);
-    window.location.href = 'index.html';
-}
-
 document.addEventListener('DOMContentLoaded', () => {
     fetchProvinces();
     renderCheckoutSummary();
+    attachSessionInputListeners();
     if (window.lucide) lucide.createIcons();
+
+    // CHẶN SỰ KIỆN BẤM PHÍM ENTER GỬI FORM HOẶC KÍCH HOẠT THANH TOÁN
+    const checkoutForm = document.querySelector('form');
+    if (checkoutForm) {
+        checkoutForm.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault(); // Ngăn chặn hành vi Submit mặc định
+                return false;
+            }
+        });
+    }
 });
+
+// Đảm bảo khôi phục lại Session ngay cả khi trình duyệt dùng BFCache (Khi bấm Back / Vuốt trở lại)
+window.addEventListener('pageshow', (event) => {
+    loadCheckoutSession();
+});
+
+// ==========================================================================
+// BẮT SỰ KIỆN PHÍM ESC & VUỐT SANG PHẢI ĐỂ ĐÓNG VOUCHER MODAL
+// ==========================================================================
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' || e.key === 'Esc') {
+        const modal = document.getElementById('voucher-modal');
+        if (modal && !modal.classList.contains('hidden')) {
+            closeVoucherModal();
+        }
+    }
+});
+
+let voucherTouchStartX = 0;
+let voucherTouchStartY = 0;
+let isVoucherEdgeSwipe = false;
+
+document.addEventListener('touchstart', (e) => {
+    const startX = e.touches[0].clientX;
+
+    if (startX < 35) {
+        isVoucherEdgeSwipe = true;
+        return;
+    }
+
+    isVoucherEdgeSwipe = false;
+    voucherTouchStartX = e.changedTouches[0].screenX;
+    voucherTouchStartY = e.changedTouches[0].screenY;
+}, { passive: true });
+
+document.addEventListener('touchend', (e) => {
+    if (isVoucherEdgeSwipe) return;
+
+    const modal = document.getElementById('voucher-modal');
+    if (modal && !modal.classList.contains('hidden')) {
+        const touchEndX = e.changedTouches[0].screenX;
+        const touchEndY = e.changedTouches[0].screenY;
+
+        const deltaX = touchEndX - voucherTouchStartX;
+        const deltaY = Math.abs(touchEndY - voucherTouchStartY);
+
+        if (deltaX > 60 && deltaX > deltaY) {
+            closeVoucherModal();
+        }
+    }
+}, { passive: true });

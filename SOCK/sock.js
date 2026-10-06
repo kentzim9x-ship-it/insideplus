@@ -260,14 +260,20 @@ function parseColorIndexFromCode(colorCode) {
     return Math.max(0, parseInt(numMatch[0], 10) - 1);
 }
 
-function updateProductUrlParam(productId, colorIdx) {
+function updateProductUrlParam(productId, colorIdx, isReplace = false) {
     if (productId) {
         const p = originalProducts.find(item => item.id === productId);
-        const category = p ? p.category : 'sock';
+        const category = p ? p.category : 'inside';
         const formattedProduct = formatProductCode(productId, category);
         const formattedColor = formatColorCode(colorIdx, category);
         const newUrl = window.location.pathname + '?product=' + encodeURIComponent(formattedProduct) + '&color=' + encodeURIComponent(formattedColor);
-        window.history.pushState({ productId: productId, colorIdx: colorIdx }, '', newUrl);
+        
+        // Nếu chuyển màu hoặc tham số phụ -> dùng replaceState để không rác lịch sử Back
+        if (isReplace) {
+            window.history.replaceState({ productId: productId, colorIdx: colorIdx }, '', newUrl);
+        } else {
+            window.history.pushState({ productId: productId, colorIdx: colorIdx }, '', newUrl);
+        }
     } else {
         window.history.pushState({}, '', window.location.pathname);
     }
@@ -403,7 +409,15 @@ function clearAllBoldActiveStates() {
 
 window.addEventListener('pageshow', clearAllBoldActiveStates);
 
+window.addEventListener('pageshow', function (event) {
+    // Nếu trang được tải lại từ BFCache (vuốt back/forward)
+    if (event.persisted) {
+        clearAllBoldActiveStates();
+    }
+});
+
 window.addEventListener('popstate', function (e) {
+    // Đóng nhanh các drawer phụ mà không cần chờ animation
     const infoDrawer = document.getElementById('info-drawer');
     if (infoDrawer && !infoDrawer.classList.contains('hidden')) closeInfoDrawer();
 
@@ -416,12 +430,14 @@ window.addEventListener('popstate', function (e) {
     const urlParams = new URLSearchParams(window.location.search);
     const productParam = urlParams.get('product');
 
-    if (!productParam) {
-        // Tắt animation nặng khi chuyển trang bằng swipe back
-        closeProductDrawer(false);
-    } else {
-        checkAndOpenProductFromUrl();
-    }
+    // Dùng requestAnimationFrame để đẩy việc xử lý DOM sang frame tiếp theo, giúp thao tác vuốt back phản hồi lập tức
+    requestAnimationFrame(() => {
+        if (!productParam) {
+            closeProductDrawer(false);
+        } else {
+            checkAndOpenProductFromUrl();
+        }
+    });
 });
 
 function handleMenuBtnClick(element) {
@@ -708,13 +724,13 @@ function changeDrawerColor(productId, colorIdx) {
     if (!p) return;
 
     renderDrawerContent(p, colorIdx);
-    updateProductUrlParam(p.id, colorIdx);
+    // Đổi tham số thành true để dùng replaceState
+    updateProductUrlParam(p.id, colorIdx, true); 
 
     const drawer = document.getElementById('product-drawer');
     if (drawer) {
         drawer.scrollTop = 0;
     }
-    window.scrollTo(0, 0);
 }
 
 function renderDrawerContent(p, colorIdx) {
