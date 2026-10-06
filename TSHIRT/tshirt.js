@@ -1306,13 +1306,28 @@ document.addEventListener('keydown', function (e) {
     }
 });
 
+// Biến lưu tọa độ thao tác vuốt
 let touchStartX = 0;
 let touchStartY = 0;
+let isNativeNavigation = false; // Biến cờ đánh dấu thao tác Back/Forward native
 
 document.addEventListener('touchstart', function (e) {
+    const startX = e.touches[0].clientX;
+    const windowWidth = window.innerWidth;
+
+    // TÁCH BIỆT THAO TÁC BACK / FORWARD:
+    // Nếu điểm chạm xuất phát từ sát mép trái (< 35px) hoặc sát mép phải (> windowWidth - 35px)
+    // -> Đây là thao tác Vuốt Back/Forward của trình duyệt/Hệ điều hành, đánh dấu bỏ qua JS.
+    if (startX < 35 || startX > (windowWidth - 35)) {
+        isNativeNavigation = true;
+        return;
+    }
+
+    isNativeNavigation = false;
     touchStartX = e.changedTouches[0].screenX;
     touchStartY = e.changedTouches[0].screenY;
 
+    // Lưu tọa độ riêng cho Modal Thêm Nhanh
     const quickModal = document.getElementById('quick-add-cart-modal');
     if (quickModal && !quickModal.classList.contains('hidden')) {
         quickModalTouchStartY = e.touches[0].clientY;
@@ -1320,8 +1335,9 @@ document.addEventListener('touchstart', function (e) {
 }, { passive: true });
 
 document.addEventListener('touchend', function (e) {
-    // Bỏ qua nếu người dùng vuốt từ mép trái màn hình (< 30px) để Back trang, tránh lag transition
-    if (touchStartX < 30) return;
+    // NẾU LÀ THAO TÁC BACK/FORWARD NATIVE: THOÁT NGAY LẬP TỨC
+    // Trình duyệt sẽ thực thi hành động Back cực kỳ mượt mà không bị delay 1ms nào
+    if (isNativeNavigation) return;
 
     const touchEndX = e.changedTouches[0].screenX;
     const touchEndY = e.changedTouches[0].screenY;
