@@ -19,6 +19,10 @@ textarea {
     font-family: 'Montserrat', sans-serif !important;
 }
 
+html, body {
+    overflow-x: hidden;
+}
+
 .custom-scroll::-webkit-scrollbar {
     width: 5px;
 }

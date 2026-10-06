@@ -20,6 +20,10 @@ textarea {
     font-family: 'Montserrat', sans-serif !important;
 }
 
+html, body {
+    overflow-x: hidden;
+}
+
 /* Custom Scrollbar */
 .custom-scroll::-webkit-scrollbar {
     width: 5px;
