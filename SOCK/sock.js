@@ -923,7 +923,7 @@ function renderDrawerContent(p, colorIdx) {
         const isOutOfStock = selectedSizeObj.outOfStock || selectedSizeObj.stock === 0;
         maxStock = selectedSizeObj.stock !== undefined ? selectedSizeObj.stock : (isOutOfStock ? 0 : 50);
 
-        if (currentQuantity > maxStock) {
+        if (currentQuantity > maxStock && maxStock > 0) {
             stockBadgeHtml = `<span class="text-red-600 font-bold text-[11px] bg-red-50 px-2 py-0.5 rounded-sm">Còn ${maxStock} SP</span>`;
         } else if (maxStock < 20) {
             stockBadgeHtml = `<span class="text-amber-600 font-bold text-[11px] bg-amber-50 px-2 py-0.5 rounded-sm">Sắp hết hàng</span>`;
@@ -1052,7 +1052,12 @@ function renderDrawerContent(p, colorIdx) {
                 <h2 class="text-2xl font-black uppercase text-slate-900 mt-1">${p.name}</h2>
                 <div class="flex items-baseline gap-3 mt-3">
                     <span class="text-2xl font-black text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
-                    <span class="text-sm text-slate-400 line-through">${p.originalPrice ? p.originalPrice.toLocaleString('vi-VN') + 'đ' : ''}</span>
+                    ${(p.originalPrice && p.originalPrice > p.price) ? `
+                        <span class="text-sm text-slate-400 line-through">${p.originalPrice.toLocaleString('vi-VN')}đ</span>
+                        <span class="bg-slate-100 text-slate-600 font-bold text-xs px-2 py-0.5">
+                            -${Math.round((1 - p.price / p.originalPrice) * 100)}%
+                        </span>
+                    ` : ''}
                 </div>
             </div>
             <div class="space-y-2">

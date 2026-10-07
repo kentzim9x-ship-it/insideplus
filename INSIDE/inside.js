@@ -62,6 +62,7 @@ function parseJsonSafe(val, fallback) {
 }
 
 function processRawProductsData(data) {
+    // Sửa thêm tham số index vào map()
     return (Array.isArray(data) ? data : []).map((item, index) => {
         let colors = [];
         if (item.colorsJSON) {
@@ -82,6 +83,7 @@ function processRawProductsData(data) {
 
         return {
             ...item,
+            // SỬA DÒNG NÀY: Bao quát thêm các trường hợp ID viết hoa hoặc dùng index dự phòng
             id: String(item.id || item.ID || item.productId || `SP_${index}`).trim(),
             price: Number(item.price) || 0,
             originalPrice: Number(item.originalPrice) || 0,
@@ -92,6 +94,7 @@ function processRawProductsData(data) {
     });
 }
 
+// Biến lưu thông tin phiên bản file JSON (dùng ETag hoặc Last-Modified)
 let currentJsonETag = null;
 
 function loadProductsData() {
@@ -100,19 +103,24 @@ function loadProductsData() {
     return fetch(jsonUrl)
         .then(response => {
             if (!response.ok) throw new Error('Không thể tải file JSON tĩnh');
+            
+            // Lưu lại thông tin phiên bản file (ETag / Last-Modified) của lần load đầu
             currentJsonETag = response.headers.get('ETag') || response.headers.get('Last-Modified');
+            
             return response.json();
         })
         .then(data => {
             originalProducts = processRawProductsData(data);
             currentFilteredProducts = [...originalProducts];
             
+            // Render giao diện LẦN 1 TỨC THÌ (Hiển thị mượt 0.02s)
             renderVisualFilterBar();
             renderDynamicFilterOptions();
             renderCatalog(originalProducts);
             if (typeof updateCartBadge === 'function') updateCartBadge();
             checkAndOpenProductFromUrl();
             
+            // Bắt đầu kích hoạt kiểm tra ngầm phiên bản JSON tĩnh trên GitHub
             checkStaticJsonUpdatesSilently(jsonUrl);
 
             return originalProducts;
@@ -122,30 +130,40 @@ function loadProductsData() {
         });
 }
 
+// Hàm kiểm tra ngầm xem GitHub Actions đã đẩy file JSON tĩnh mới lên chưa
 function checkStaticJsonUpdatesSilently(jsonUrl) {
+    // Chỉ gửi HEAD request ngầm (rất nhẹ, không tải lại toàn bộ nội dung file)
     fetch(jsonUrl, { method: 'HEAD', cache: 'no-cache' })
         .then(response => {
             if (!response.ok) return;
             
             const newETag = response.headers.get('ETag') || response.headers.get('Last-Modified');
             
+            // So sánh: Nếu có ETag và ETag mới KHÁC ETag cũ -> GitHub Actions đã cập nhật JSON mới!
             if (newETag && currentJsonETag && newETag !== currentJsonETag) {
                 console.log('Phát hiện dữ liệu JSON tĩnh mới từ GitHub Actions. Đang âm thầm cập nhật...');
                 currentJsonETag = newETag;
                 
+                // Tải file JSON mới và cập nhật lại giao diện
                 fetch(jsonUrl, { cache: 'no-cache' })
                     .then(res => res.json())
                     .then(newData => {
                         const freshProducts = processRawProductsData(newData);
+                        
+                        // Kiểm tra nếu nội dung sản phẩm thực sự thay đổi mới render lại
                         if (JSON.stringify(originalProducts) !== JSON.stringify(freshProducts)) {
                             originalProducts = freshProducts;
                             currentFilteredProducts = [...originalProducts];
+                            
+                            // Cập nhật giao diện nhẹ nhàng
                             renderCatalog(originalProducts);
                         }
                     });
             }
         })
-        .catch(err => {});
+        .catch(err => {
+            // Lỗi mạng ngầm thì bỏ qua, không ảnh hưởng trải nghiệm người dùng
+        });
 }
 
 function changeQty(delta) {
@@ -301,6 +319,7 @@ function addProductToViewed(product) {
     localStorage.setItem('viewed_products', JSON.stringify(viewed));
 }
 
+// HÀM TỰ ĐỘNG TỔNG HỢP VÀ RENDER TOÀN BỘ BỘ LỌC TỪ DỮ LIỆU SẢN PHẨM
 function renderDynamicFilterOptions() {
     const styleContainer = document.getElementById('style-content');
     const sizeContainer = document.getElementById('size-content');
@@ -308,15 +327,19 @@ function renderDynamicFilterOptions() {
 
     if (!styleContainer || !sizeContainer || !colorContainer) return;
 
+    // Sử dụng Set/Map để gom các giá trị duy nhất (không trùng lặp)
     const uniqueStyles = new Set();
     const uniqueSizes = new Set();
-    const uniqueColorsMap = new Map();
+    const uniqueColorsMap = new Map(); // Key: hex (lowercase), Value: name
 
+    // Duyệt qua toàn bộ sản phẩm đang có từ JSON
     originalProducts.forEach(product => {
+        // 1. Gom kiểu dáng (Kiểu dáng được lưu ở trường product.style)
         if (product.style) {
             uniqueStyles.add(product.style);
         }
 
+        // 2. Gom Màu sắc và Kích cỡ từ danh sách màu
         if (Array.isArray(product.colors)) {
             product.colors.forEach(colorObj => {
                 if (colorObj.hex) {
@@ -326,6 +349,7 @@ function renderDynamicFilterOptions() {
                     }
                 }
 
+                // Gom kích cỡ từ danh sách sizes của từng màu
                 if (Array.isArray(colorObj.sizes)) {
                     colorObj.sizes.forEach(sizeObj => {
                         if (sizeObj.name) {
@@ -337,6 +361,7 @@ function renderDynamicFilterOptions() {
         }
     });
 
+    // --- 1. RENDER KIỂU DÁNG ---
     if (uniqueStyles.size > 0) {
         styleContainer.innerHTML = Array.from(uniqueStyles).map(style => `
             <label class="flex items-center text-xs font-bold text-slate-700 cursor-pointer">
@@ -348,6 +373,7 @@ function renderDynamicFilterOptions() {
         styleContainer.innerHTML = '<span class="text-xs text-slate-400">Không có kiểu dáng</span>';
     }
 
+    // --- 2. RENDER KÍCH CỠ (Sắp xếp theo thứ tự chuẩn: S, M, L, XL, XXL,...) ---
     const standardSizeOrder = ['S', 'M', 'L', 'XL', '2XL', 'XXL', '3XL', 'FREE'];
     const sortedSizes = Array.from(uniqueSizes).sort((a, b) => {
         let idxA = standardSizeOrder.indexOf(a);
@@ -368,6 +394,7 @@ function renderDynamicFilterOptions() {
         sizeContainer.innerHTML = '<span class="text-xs text-slate-400 col-span-4">Không có kích cỡ</span>';
     }
 
+    // --- 3. RENDER MÀU SẮC ---
     if (uniqueColorsMap.size > 0) {
         colorContainer.innerHTML = Array.from(uniqueColorsMap.entries()).map(([hex, name]) => `
             <button onclick="toggleColorSelect(this)" data-val="${hex}"
@@ -477,12 +504,7 @@ window.addEventListener('pageshow', function (event) {
     }
 });
 
-// MỤC 2: TỐI ƯU SỰ KIỆN POPSTATE KHI VUỐT BACK TRỞ VỀ CATEGORY
 window.addEventListener('popstate', function (e) {
-    // Cưỡng chế xóa ngay các class khóa cuộn body để tránh kẹt trạng thái cuộn
-    document.body.classList.remove('drawer-open');
-    document.body.style.top = '';
-
     const infoDrawer = document.getElementById('info-drawer');
     if (infoDrawer && !infoDrawer.classList.contains('hidden')) closeInfoDrawer();
 
@@ -495,14 +517,13 @@ window.addEventListener('popstate', function (e) {
     const urlParams = new URLSearchParams(window.location.search);
     const productParam = urlParams.get('product');
 
-    // Chờ nhẹ 50ms để trình duyệt chạy xong hiệu ứng vuốt back của OS rồi mới cập nhật UI
-    setTimeout(() => {
+    requestAnimationFrame(() => {
         if (!productParam) {
             closeProductDrawer(false);
         } else {
             checkAndOpenProductFromUrl();
         }
-    }, 50);
+    });
 });
 
 function handleMenuBtnClick(element) {
@@ -640,93 +661,50 @@ function selectVisualFilter(styleVal) {
     renderCatalog(currentFilteredProducts);
 }
 
-function renderCatalog(items, isAppend = false) {
+function renderCatalog(items) {
     const grid = document.getElementById('catalog-grid');
     if (!grid) return;
 
     document.querySelectorAll('.catalog-count-text').forEach(el => el.innerText = items.length + ' sản phẩm');
-
-    if (!isAppend) {
-        currentPage = 1;
-        grid.innerHTML = '';
-    }
 
     if (items.length === 0) {
         grid.innerHTML = '<p class="col-span-full text-center text-xs text-slate-400 py-12 font-bold uppercase tracking-wider">Không tìm thấy sản phẩm phù hợp.</p>';
         return;
     }
 
-    const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
-    const endIndex = currentPage * PRODUCTS_PER_PAGE;
-    const pagedItems = items.slice(startIndex, endIndex);
+    currentPage = 1;
+    const initialItems = items.slice(0, PAGE_SIZE);
+    grid.innerHTML = initialItems.map(p => renderProductCardHTML(p)).join('');
 
-    const htmlContent = pagedItems.map(p => {
-        const firstColor = p.colors && p.colors.length > 0 ? p.colors[0] : { images: [''] };
-        const img1 = firstColor.images[0] || '';
-        const img2 = firstColor.images[1] || img1;
-
-        return `<div class="bg-white p-0 overflow-hidden group cursor-pointer transition" onclick="openProductDrawer('${p.id}', 0)">
-            <div class="relative w-full aspect-[3/4] bg-slate-100 overflow-hidden mb-3">
-                <img id="thumb-${p.id}" src="${img1}" loading="lazy" data-img1="${img1}" data-img2="${img2}" 
-                onmouseenter="this.src=this.getAttribute('data-img2'); this.classList.add('scale-105');" 
-                onmouseleave="this.src=this.getAttribute('data-img1'); this.classList.remove('scale-105');" 
-                class="w-full h-full object-cover transition-transform duration-500 ease-out transform">
-                
-                <button onclick="event.stopPropagation(); if(typeof openQuickAddToCartModal==='function') openQuickAddToCartModal('${p.id}')" 
-                        class="quick-add-btn-mobile sm:opacity-0 sm:group-hover:opacity-100 absolute bottom-1.5 right-1.5 w-8 h-8 rounded-full bg-white text-slate-800 flex items-center justify-center transition-all duration-200 shadow-md hover:bg-slate-100 z-10 border border-slate-200" 
-                        title="Thêm nhanh vào giỏ">
-                    <svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="flex items-center gap-1.5 mb-2" onclick="event.stopPropagation()">
-                ${(p.colors || []).map((c, cIdx) => {
-            const isColorOutOfStock = c.sizes && c.sizes.length > 0 && c.sizes.every(s => s.outOfStock);
-            return `<button onclick="changeCatalogThumbColor('${p.id}',${cIdx})" class="w-4 h-4 rounded-full border border-slate-300 ${isColorOutOfStock ? 'color-out-of-stock' : ''}" style="background-color: ${c.hex};" title="${c.name}"></button>`;
-        }).join('')}
-            </div>
-            <h3 class="font-bold text-slate-900 text-sm uppercase tracking-tight mb-1.5">${p.name}</h3>
-            <div class="flex items-baseline gap-2.5">
-                <span class="text-sm font-medium text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
-                <span class="text-xs text-slate-400 line-through font-normal">${p.originalPrice ? p.originalPrice.toLocaleString('vi-VN') + 'đ' : ''}</span>
-            </div>
-        </div>`;
-    }).join('');
-
-    if (isAppend) {
-        grid.insertAdjacentHTML('beforeend', htmlContent);
-    } else {
-        grid.innerHTML = htmlContent;
+    let sentinel = document.getElementById('catalog-sentinel');
+    if (!sentinel) {
+        sentinel = document.createElement('div');
+        sentinel.id = 'catalog-sentinel';
+        sentinel.className = 'col-span-full h-10 flex items-center justify-center my-4';
+        grid.after(sentinel);
     }
+    sentinel.innerHTML = items.length > PAGE_SIZE ? '<span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Đang tải thêm...</span>' : '';
 
-    // GIỮ NGUYÊN HOÀN TOÀN TÍNH NĂNG RENDER ICON ĐỂ KHÔNG BỊ MẤT ICON HEADER
+    setupInfiniteScroll();
+
     if (window.lucide) lucide.createIcons();
-    isLoadingMore = false;
 }
 
-// MỤC 1: TỐI ƯU SỰ KIỆN CUỘN TRANG (THROTTLED INFINITE SCROLL)
-let scrollThrottleTimer = null;
+// LẮNG NGHE SỰ KIỆN CUỘN TRANG (INFINITE SCROLL)
 window.addEventListener('scroll', function() {
-    if (scrollThrottleTimer) return;
+    if (isLoadingMore) return;
+    
+    const productDrawer = document.getElementById('product-drawer');
+    if (productDrawer && !productDrawer.classList.contains('hidden')) return;
 
-    scrollThrottleTimer = setTimeout(() => {
-        scrollThrottleTimer = null;
-
-        if (isLoadingMore) return;
-        
-        const productDrawer = document.getElementById('product-drawer');
-        if (productDrawer && !productDrawer.classList.contains('hidden')) return;
-
-        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
-            if (currentPage * PRODUCTS_PER_PAGE < currentFilteredProducts.length) {
-                isLoadingMore = true;
-                currentPage++;
-                renderCatalog(currentFilteredProducts, true);
-            }
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
+        if (currentPage * PRODUCTS_PER_PAGE < currentFilteredProducts.length) {
+            isLoadingMore = true;
+            currentPage++;
+            renderCatalog(currentFilteredProducts, true);
         }
-    }, 100);
-}, { passive: true });
+    }
+});
 
 function changeCatalogThumbColor(id, colorIdx) {
     const p = originalProducts.find(item => item.id === id);
@@ -814,7 +792,6 @@ function closeProductDrawer(shouldUpdateUrl) {
     }
 
     document.body.classList.remove('drawer-open');
-    document.body.style.top = '';
 
     window.scrollTo(0, savedCategoryScrollY);
 
@@ -849,20 +826,23 @@ function renderDrawerContent(p, colorIdx) {
 
     const selectedSizeObj = availableSizes.find(s => s.name === currentSelectedSize);
     
+    // --- THÊM LOGIC TÍNH TOÁN BADGE TỒN KHO ---
     let stockBadgeHtml = '';
     let maxStock = 999;
     
     if (selectedSizeObj) {
+        // Đánh giá hết hàng dựa trên thuộc tính outOfStock hoặc stock = 0
         const isOutOfStock = selectedSizeObj.outOfStock || selectedSizeObj.stock === 0;
         maxStock = selectedSizeObj.stock !== undefined ? selectedSizeObj.stock : (isOutOfStock ? 0 : 50);
 
-        if (currentQuantity > maxStock) {
+        if (currentQuantity > maxStock && maxStock > 0) {
             stockBadgeHtml = `<span class="text-red-600 font-bold text-[11px] bg-red-50 px-2 py-0.5 rounded-sm">Còn ${maxStock} SP</span>`;
         } else if (maxStock < 20) {
             stockBadgeHtml = `<span class="text-amber-600 font-bold text-[11px] bg-amber-50 px-2 py-0.5 rounded-sm">Sắp hết hàng</span>`;
         }
     }
 
+    // Cập nhật lại điều kiện vô hiệu hóa nút bấm nếu stock = 0
     const isSelectedSizeOutOfStock = selectedSizeObj ? (selectedSizeObj.outOfStock || selectedSizeObj.stock === 0) : false;
     const isAllSizesOutOfStock = availableSizes.length > 0 && availableSizes.every(s => (s.outOfStock || s.stock === 0));
     const showOutOfStockBtn = isSelectedSizeOutOfStock || isAllSizesOutOfStock;
@@ -915,6 +895,7 @@ function renderDrawerContent(p, colorIdx) {
 
     const sizesHtml = availableSizes.map(s => {
         const isSelected = currentSelectedSize === s.name;
+        // Bổ sung kiểm tra s.stock === 0
         const isOutOfStock = s.outOfStock || s.stock === 0;
 
         const btnStyle = isOutOfStock
@@ -983,7 +964,12 @@ function renderDrawerContent(p, colorIdx) {
                 <h2 class="text-2xl font-black uppercase text-slate-900 mt-1">${p.name}</h2>
                 <div class="flex items-baseline gap-3 mt-3">
                     <span class="text-2xl font-black text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
-                    <span class="text-sm text-slate-400 line-through">${p.originalPrice ? p.originalPrice.toLocaleString('vi-VN') + 'đ' : ''}</span>
+                    ${(p.originalPrice && p.originalPrice > p.price) ? `
+                        <span class="text-sm text-slate-400 line-through">${p.originalPrice.toLocaleString('vi-VN')}đ</span>
+                        <span class="bg-slate-100 text-slate-600 font-bold text-xs px-2 py-0.5">
+                            -${Math.round((1 - p.price / p.originalPrice) * 100)}%
+                        </span>
+                    ` : ''}
                 </div>
             </div>
             <div class="space-y-2">
@@ -992,6 +978,7 @@ function renderDrawerContent(p, colorIdx) {
             </div>
             <div class="space-y-2" id="size-selection-container">
                 <div class="flex justify-between items-center">
+                    <!-- SỬA LẠI KHỐI NÀY ĐỂ HIỂN THỊ BADGE -->
                     <div class="flex items-center gap-2">
                         <span class="text-xs font-bold uppercase text-slate-700">KÍCH CỠ: <span class="font-black text-slate-900">${currentSelectedSize || ''}</span></span>
                         ${stockBadgeHtml}
@@ -1116,6 +1103,7 @@ function openSearchModal() {
 
     savedScrollPositionY = window.scrollY;
 
+    // Reset các trạng thái animation đóng cũ
     searchModal.classList.remove('is-closing', 'hidden');
     searchModal.scrollTop = 0;
 
@@ -1126,6 +1114,7 @@ function openSearchModal() {
     if (input) {
         input.value = '';
         handleSearchInput('');
+        // Tự động focus vào ô tìm kiếm sau khi hiệu ứng hoàn tất
         setTimeout(() => input.focus(), 250);
     }
 
@@ -1136,8 +1125,10 @@ function closeSearchModal() {
     const searchModal = document.getElementById('search-modal');
     if (!searchModal || searchModal.classList.contains('hidden')) return;
 
+    // Kích hoạt animation trượt ngược lên trên
     searchModal.classList.add('is-closing');
 
+    // Chờ animation kéo lên hoàn tất (300ms) rồi mới ẩn modal
     setTimeout(() => {
         searchModal.classList.add('hidden');
         searchModal.classList.remove('is-closing');

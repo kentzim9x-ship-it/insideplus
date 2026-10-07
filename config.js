@@ -1080,10 +1080,15 @@ function renderQuickAddToCartModalContent() {
                                     <p class="text-slate-400 text-[11px] mt-0.5">SKU: ${typeof formatProductCode === 'function' ? formatProductCode(p.id, p.category) : p.id}</p>
                                 </div>
 
-                                <div class="flex items-baseline gap-2 pt-1">
-                                    <span class="text-slate-400 line-through text-xs sm:text-sm">${origPriceFormatted} đ</span>
-                                    <span class="bg-slate-100 text-slate-600 px-1.5 py-0.5 font-bold text-[10px]">-${discountPercent}%</span>
-                                </div>
+                               <!-- Kiểm tra nếu có giảm giá (originalPrice > price) thì mới hiện giá cũ & badge % giảm -->
+                                ${(p.originalPrice && p.originalPrice > p.price) ? `
+                                    <div class="flex items-baseline gap-2 pt-0.5">
+                                        <span class="text-slate-400 line-through text-[11px]">${p.originalPrice.toLocaleString('vi-VN')} đ</span>
+                                        <span class="bg-slate-100 text-slate-600 px-1 py-0.2 font-bold text-[9px]">
+                                            -${Math.round((1 - p.price / p.originalPrice) * 100)}%
+                                        </span>
+                                    </div>
+                                ` : ''}
                                 <p class="text-lg font-bold text-slate-900">${p.price.toLocaleString('vi-VN')} đ</p>
 
                                 <div class="pt-2">

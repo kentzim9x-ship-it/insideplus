@@ -19,20 +19,6 @@ textarea {
     font-family: 'Montserrat', sans-serif !important;
 }
 
-/* --- TỐI ƯU CUỘN VÀ HIỆU NĂNG CHO THIẾT BỊ DI ĐỘNG --- */
-html, body {
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: none;
-}
-
-#catalog-grid {
-    contain: content;
-}
-
-#product-drawer {
-    will-change: transform, opacity;
-}
-
 .custom-scroll::-webkit-scrollbar {
     width: 5px;
 }
@@ -278,15 +264,26 @@ button,
 
 /* HIỆU ỨNG BÓNG MỜ (ACTIVE) CHỈ ÁP DỤNG RIÊNG CHO CÁC NÚT ĐƯỢC CHỈ ĐỊNH TRÊN MOBILE */
 @media (max-width: 767px) {
+    /* 1. Nút Logo trên header */
     #header-logo-link:active,
+    
+    /* 2. Nút menu bên tay trái (Icon Hamburger) */
     #btn-mobile-menu:active,
+    
+    /* 3. Nút Tìm kiếm trên header */
     #btn-search-mobile:active,
+    
+    /* 4. Nút Giỏ hàng trên header */
     #btn-cart-mobile:active,
+    
+    /* 5. Nút 'X' đóng các chức năng/Modal/Drawer */
     button[onclick*="close"]:active,
     button[onclick*="Close"]:active,
     button[onclick*="toggleMobileNavDrawer"]:active,
     #search-modal button[onclick*="closeSearchModal"]:active,
     #cart-modal button[onclick*="closeCartModal"]:active,
+    
+    /* 6. 3 nút điều hướng bên trong Menu Mobile (INSIDE, SOCK, T-SHIRT) */
     .drawer-nav-item:active {
         opacity: 0.5 !important;
         transition: opacity 0.1s ease !important;
@@ -316,6 +313,7 @@ button,
     }
 }
 
+/* Class áp dụng hiệu ứng */
 #search-modal {
     transition: opacity 0.3s ease;
 }
