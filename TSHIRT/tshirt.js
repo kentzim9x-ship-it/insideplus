@@ -1,42 +1,42 @@
-const visualFilterCategories = [
-    {
-        id: "ALL",
-        title: "Tất cả",
-        styleValue: "ALL",
-        image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=600"
-    },
-    {
-        id: "REGULAR",
-        title: "Regular Fit",
-        styleValue: "Regular",
-        image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=600"
-    },
-    {
-        id: "OVERSIZE",
-        title: "Oversize Fit",
-        styleValue: "Oversize",
-        image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&q=80&w=600"
-    },
-    {
-        id: "CO_TRON",
-        title: "Áo Cổ Tròn",
-        styleValue: "CoTron",
-        image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&q=80&w=600"
-    },
-    {
-        id: "COMPACT",
-        title: "Cotton Compact",
-        styleValue: "Compact",
-        image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=600"
-    },
-    {
-        id: "STREETWEAR",
-        title: "Streetwear Style",
-        styleValue: "Streetwear",
-        image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&q=80&w=600"
-    }
-];
-
+// const visualFilterCategories = [
+//     {
+//         id: "ALL",
+//         title: "Tất cả",
+//         styleValue: "ALL",
+//         image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=600"
+//     },
+//     {
+//         id: "REGULAR",
+//         title: "Regular Fit",
+//         styleValue: "Regular",
+//         image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=600"
+//     },
+//     {
+//         id: "OVERSIZE",
+//         title: "Oversize Fit",
+//         styleValue: "Oversize",
+//         image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&q=80&w=600"
+//     },
+//     {
+//         id: "CO_TRON",
+//         title: "Áo Cổ Tròn",
+//         styleValue: "CoTron",
+//         image: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&q=80&w=600"
+//     },
+//     {
+//         id: "COMPACT",
+//         title: "Cotton Compact",
+//         styleValue: "Compact",
+//         image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&q=80&w=600"
+//     },
+//     {
+//         id: "STREETWEAR",
+//         title: "Streetwear Style",
+//         styleValue: "Streetwear",
+//         image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&q=80&w=600"
+//     }
+// ];
+let visualFilterCategories = [];
 let activeVisualFilter = "ALL";
 let originalProducts = [];
 let currentFilteredProducts = [...originalProducts];
@@ -44,6 +44,7 @@ let currentSelectedSize = null;
 let currentGalleryImages = [];
 let currentGalleryIndex = 0;
 let currentQuantity = 1;
+let currentFilterETag = null;
 
 const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbyl0IDuPpwEtHpQJOU5uONu5Oc50A8Yrk5lUMSwT0u_4VgSNmhUYCBIKX9OOFC5zTDS/exec?sheet=TSHIRT';
 
@@ -60,6 +61,93 @@ function parseJsonSafe(val, fallback) {
     } catch (e) {
         return fallback;
     }
+}
+
+// URL API Google Apps Script dự phòng (Thay URL thực tế của bạn vào đây)
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=CATEGORIES_INSIDE";
+
+function loadVisualFilterCategories() {
+    const filterJsonUrl = '../data/categories_tshirt.json'; // Hoặc categories_sock.json / categories_tshirt.json
+    const sheetName = 'CATEGORIES_TSHIRT'; // Hoặc CATEGORIES_SOCK / CATEGORIES_TSHIRT
+
+    // 1. Thử tải file JSON tĩnh từ GitHub Pages
+    return fetch(filterJsonUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Không tìm thấy file JSON tĩnh trên GitHub, chuyển sang dùng Google Sheet');
+            }
+            // Lưu ETag để kiểm tra bản cập nhật về sau
+            currentFilterETag = response.headers.get('ETag') || response.headers.get('Last-Modified');
+            return response.json();
+        })
+        .then(data => {
+            visualFilterCategories = data;
+            
+            // Render giao diện lần đầu từ JSON tĩnh
+            if (typeof renderVisualFilterBar === 'function') {
+                renderVisualFilterBar();
+            }
+
+            // Kích hoạt kiểm tra ngầm bản cập nhật từ GitHub Actions
+            checkFilterUpdatesSilently(filterJsonUrl);
+
+            return visualFilterCategories;
+        })
+        .catch(error => {
+            console.warn(error.message);
+            
+            // 2. FALLBACK: Nếu không có file JSON tĩnh -> Lấy trực tiếp từ Google Sheet API
+            return fetch(`${APPS_SCRIPT_URL}?sheet=${sheetName}`)
+                .then(res => {
+                    if (!res.ok) throw new Error('Không thể tải dữ liệu từ Google Sheet API');
+                    return res.json();
+                })
+                .then(fallbackData => {
+                    console.log('Đã nạp dữ liệu thành công từ Google Sheet API!');
+                    visualFilterCategories = fallbackData;
+
+                    if (typeof renderVisualFilterBar === 'function') {
+                        renderVisualFilterBar();
+                    }
+                    return visualFilterCategories;
+                })
+                .catch(apiError => {
+                    console.error('Lỗi nạp dữ liệu cả 2 nguồn (JSON tĩnh & Google Sheet):', apiError);
+                });
+        });
+}
+
+// Hàm kiểm tra ngầm xem GitHub Actions đã đẩy file JSON tĩnh mới lên chưa
+function checkFilterUpdatesSilently(jsonUrl) {
+    // Chỉ gửi HEAD request ngầm (siêu nhẹ, không tải lại nội dung file)
+    fetch(jsonUrl, { method: 'HEAD', cache: 'no-cache' })
+        .then(response => {
+            if (!response.ok) return;
+
+            const newETag = response.headers.get('ETag') || response.headers.get('Last-Modified');
+
+            // So sánh ETag: Nếu khác ETag cũ -> GitHub Actions đã cập nhật JSON mới trên server!
+            if (newETag && currentFilterETag && newETag !== currentFilterETag) {
+                console.log('Phát hiện dữ liệu Filter mới từ Google Sheet. Đang cập nhật...');
+                currentFilterETag = newETag;
+
+                // Âm thầm tải file JSON mới về
+                fetch(jsonUrl, { cache: 'no-cache' })
+                    .then(res => res.json())
+                    .then(newData => {
+                        // So sánh dữ liệu thực tế: Nếu thực sự khác mảng hiện tại mới tiến hành render lại
+                        if (JSON.stringify(visualFilterCategories) !== JSON.stringify(newData)) {
+                            visualFilterCategories = newData;
+                            if (typeof renderVisualFilterBar === 'function') {
+                                renderVisualFilterBar();
+                            }
+                        }
+                    });
+            }
+        })
+        .catch(() => {
+            // Lỗi mạng ngầm thì bỏ qua, hoàn toàn không làm giật lag giao diện người dùng
+        });
 }
 
 function processRawProductsData(data) {
@@ -1723,6 +1811,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Tải dữ liệu sản phẩm từ Google Sheet API
+    loadVisualFilterCategories()
     loadProductsData();
 });

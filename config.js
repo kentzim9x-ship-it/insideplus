@@ -766,7 +766,6 @@ function changeQuickAddImage(delta) {
 }
 
 // --- HÀM CẬP NHẬT TRỰC TIẾP DOM CHUẨN XÁC CẢ MOBILE VÀ PC ---
-// --- HÀM CẬP NHẬT TRỰC TIẾP DOM CHUẨN XÁC CẢ MOBILE VÀ PC ---
 function updateQuickAddModalDOM() {
     const modal = document.getElementById('quick-add-cart-modal');
     if (!modal || !quickAddToCartProduct) return;
@@ -1392,7 +1391,7 @@ function renderQuickEditDrawer() {
 
             <!-- Footer: Nút Cập nhật giỏ hàng (Tự động disable nếu hết hàng) -->
             <div class="p-5 border-t border-slate-100 bg-white">
-                <button onclick="saveQuickEdit()" ${isBtnDisabled ? 'disabled' : ''} class="w-full py-3.5 text-md uppercase tracking-widest transition ${btnClass}">
+                <button onclick="saveQuickEdit()" ${isBtnDisabled ? 'disabled' : ''} class="w-full py-3.5 text-md uppercase tracking-widest transition ${btnClass}" style="padding-bottom: calc(1.25rem + env(safe-area-inset-bottom));">
                     Cập nhật giỏ hàng
                 </button>
             </div>
