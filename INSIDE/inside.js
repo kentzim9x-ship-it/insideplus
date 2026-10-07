@@ -43,16 +43,19 @@ function loadVisualFilterCategories() {
             return response.json();
         })
         .then(data => {
-            visualFilterCategories = data;
-            
-            // Render giao diện lần đầu từ JSON tĩnh
-            if (typeof renderVisualFilterBar === 'function') {
-                renderVisualFilterBar();
+            if (Array.isArray(data)) {
+                // CHUẨN HÓA DỮ LIỆU: Bất kể Google Sheet viết styleValue hay stylevalue đều nhận đúng
+                visualFilterCategories = data.map(item => ({
+                    id: item.id || item.ID || '',
+                    type: item.type || item.TYPE || '',
+                    styleValue: item.styleValue || item.stylevalue || item.STYLEVALUE || item.name || '',
+                    image: item.image || item.IMAGE || item.img || ''
+                }));
+
+                if (typeof renderVisualFilterBar === 'function') {
+                    renderVisualFilterBar();
+                }
             }
-
-            // Kích hoạt kiểm tra ngầm bản cập nhật từ GitHub Actions
-            checkFilterUpdatesSilently(filterJsonUrl);
-
             return visualFilterCategories;
         })
         .catch(error => {
