@@ -693,6 +693,7 @@ function openQuickAddToCartModal(productId) {
     if (!modal) {
         modal = document.createElement('div');
         modal.id = 'quick-add-cart-modal';
+        // Đã sửa p-4 thành p-0 sm:p-4 để Mobile sát rạt viền ngoài
         modal.className = "fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4 hidden";
         document.body.appendChild(modal);
     }
@@ -700,7 +701,6 @@ function openQuickAddToCartModal(productId) {
     renderQuickAddToCartModalContent();
     modal.classList.remove('hidden');
 
-    // Bật hiệu ứng mờ nền Backdrop và trượt Popup
     const backdrop = document.getElementById('quick-add-backdrop');
     const container = document.getElementById('quick-add-container');
 
@@ -710,7 +710,6 @@ function openQuickAddToCartModal(productId) {
         container.classList.add('quick-add-anim-in');
     }
 
-    // Lưu vị trí cuộn trang hiện tại
     quickAddSavedScrollY = window.scrollY || document.documentElement.scrollTop;
     document.body.classList.add('drawer-open');
     document.body.style.top = `-${quickAddSavedScrollY}px`;
@@ -879,11 +878,11 @@ function renderQuickAddToCartModalContent() {
 
         <div id="quick-add-container" onclick="event.stopPropagation()" class="bg-white w-full sm:max-w-2xl rounded-t-2xl sm:rounded-sm overflow-hidden shadow-2xl relative z-[201] max-h-[85vh] sm:max-h-none overflow-y-auto ${animationClass}">
             
-            <!-- Header Modal -->
-                <div class="flex justify-between items-center px-5 py-3.5 sm:px-6 sm:py-4 border-b border-slate-100 sticky top-0 bg-white z-10 w-full">
-                    <h3 class="font-bold text-base sm:text-xl text-slate-900 leading-none">Thêm nhanh vào giỏ</h3>
-                    <button onclick="closeQuickAddToCartModal()" class="text-slate-900 hover:text-black font-bold text-2xl sm:text-3xl cursor-pointer leading-none">&times;</button>
-                </div>
+            <!-- Header Modal: Bỏ px-5 py-3.5 ở mobile, giữ nguyên sm:px-6 sm:py-4 ở PC -->
+            <div class="flex justify-between items-center px-4 py-3 sm:px-6 sm:py-4 border-b border-slate-100 sticky top-0 bg-white z-10 w-full">
+                <h3 class="font-bold text-base sm:text-xl text-slate-900 leading-none">Thêm nhanh vào giỏ</h3>
+                <button onclick="closeQuickAddToCartModal()" class="text-slate-900 hover:text-black font-bold text-2xl sm:text-3xl cursor-pointer leading-none">&times;</button>
+            </div>
 
             <!-- 1. GIAO DIỆN MOBILE -->
             <div class="block sm:hidden px-4 pt-3 pb-4 space-y-4">
