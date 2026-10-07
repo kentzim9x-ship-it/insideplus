@@ -886,7 +886,7 @@ function renderQuickAddToCartModalContent() {
             </div>
 
             <!-- 1. GIAO DIỆN MOBILE -->
-            <div class="block sm:hidden p-0 px-4 pt-3 pb-4 space-y-4">
+            <div class="block sm:hidden w-full p-4 pt-3 space-y-4">
                 <div class="flex gap-4 items-start">
                     <div class="w-28 aspect-[3/4] bg-slate-100 rounded-sm overflow-hidden shrink-0 relative select-none"
                          ontouchstart="handleQuickAddTouchStart(event)" 
@@ -1327,6 +1327,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const style = document.createElement('style');
     style.id = 'quick-add-animation-styles';
     style.innerHTML = `
+        /* Đảm bảo Container trên Mobile luôn sát mép tuyệt đối */
+        @media (max-width: 639px) {
+            #quick-add-cart-modal {
+                padding: 0 !important;
+            }
+            #quick-add-container {
+                width: 100vw !important;
+                max-width: 100vw !important;
+                margin: 0 !important;
+                border-bottom-left-radius: 0 !important;
+                border-bottom-right-radius: 0 !important;
+            }
+        }
+
         /* PC: Nhích nhẹ tại chỗ (Y-offset 24px -> 0) */
         @keyframes pcQuickAddPopIn {
             from { opacity: 0; transform: translateY(24px) scale(0.98); }
@@ -1347,7 +1361,6 @@ document.addEventListener('DOMContentLoaded', () => {
             to { transform: translateY(100%); }
         }
 
-        /* Classes áp dụng Animation theo mốc Responsive */
         .quick-add-anim-in {
             animation: mobileQuickAddSheetIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
