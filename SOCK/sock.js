@@ -754,10 +754,13 @@ function renderCatalog(items, isAppend = false) {
     currentPage = 1;
     const initialItems = items.slice(0, PAGE_SIZE);
     
-    const htmlContent = pagedItems.map(p => {
-        // Truyền tham số 0 làm cIdxActive mặc định
+    // Đã đổi pagedItems thành initialItems
+    const htmlContent = initialItems.map(p => {
         return renderProductCardHTML(p, 0);
     }).join('');
+
+    // Đổ nội dung HTML đã render vào grid
+    grid.innerHTML = htmlContent;
 
     let sentinel = document.getElementById('catalog-sentinel');
     if (!sentinel) {
