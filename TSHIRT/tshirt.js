@@ -862,9 +862,7 @@ function renderDrawerContent(p, colorIdx) {
         const isOutOfStock = selectedSizeObj.outOfStock || selectedSizeObj.stock === 0;
         maxStock = selectedSizeObj.stock !== undefined ? selectedSizeObj.stock : (isOutOfStock ? 0 : 50);
 
-        if (isOutOfStock || maxStock === 0) {
-            stockBadgeHtml = `<span class="text-red-600 font-bold text-[11px] bg-red-50 px-2 py-0.5 rounded-sm"></span>`;
-        } else if (currentQuantity > maxStock) {
+        if (currentQuantity > maxStock) {
             stockBadgeHtml = `<span class="text-red-600 font-bold text-[11px] bg-red-50 px-2 py-0.5 rounded-sm">Còn ${maxStock} SP</span>`;
         } else if (maxStock < 20) {
             stockBadgeHtml = `<span class="text-amber-600 font-bold text-[11px] bg-amber-50 px-2 py-0.5 rounded-sm">Sắp hết hàng</span>`;

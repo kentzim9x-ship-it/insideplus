@@ -672,6 +672,54 @@ let isQuickAddFirstOpen = false;
 
 let quickAddSavedScrollY = 0; // Biến lưu vị trí cuộn
 
+// --- TỰ ĐỘNG NHÚNG CSS ANIMATION CHO QUICK ADD POPUP ---
+(function injectQuickAddStyles() {
+    if (document.getElementById('quick-add-styles')) return;
+
+    const style = document.createElement('style');
+    style.id = 'quick-add-styles';
+    style.textContent = `
+        /* Animation cho Mobile: Trượt lên / Trượt xuống footer */
+        @keyframes quickAddMobileIn {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        @keyframes quickAddMobileOut {
+            from { transform: translateY(0); }
+            to { transform: translateY(100%); }
+        }
+
+        /* Animation cho PC: Trượt nhẹ + Mờ nhẹ */
+        @keyframes quickAddPcIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes quickAddPcOut {
+            from { transform: translateY(0); opacity: 1; }
+            to { transform: translateY(-20px); opacity: 0; }
+        }
+
+        /* Mặc định trên Mobile */
+        .quick-add-modal-content {
+            animation: quickAddMobileIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .quick-add-modal-content.is-closing {
+            animation: quickAddMobileOut 0.25s ease-in forwards !important;
+        }
+
+        /* Trên PC (Màn hình sm >= 640px) */
+        @media (min-width: 640px) {
+            .quick-add-modal-content {
+                animation: quickAddPcIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            }
+            .quick-add-modal-content.is-closing {
+                animation: quickAddPcOut 0.25s ease-in forwards !important;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+})();
+
 function openQuickAddToCartModal(productId) {
     quickAddToCartProduct = typeof findProductAnywhere === 'function'
         ? findProductAnywhere(productId)
@@ -687,14 +735,18 @@ function openQuickAddToCartModal(productId) {
     if (!modal) {
         modal = document.createElement('div');
         modal.id = 'quick-add-cart-modal';
-        modal.className = "fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-4 transition-opacity animate-fade-in";
+        modal.className = "fixed inset-0 z-[9999] bg-black/50 transition-opacity duration-300 opacity-0 hidden";
         document.body.appendChild(modal);
     }
 
     renderQuickAddToCartModalContent();
-    modal.classList.remove('hidden');
 
-    // Khắc phục: Lưu vị trí cuộn trang hiện tại
+    // Hiển thị modal và chạy animation mờ backdrop + trượt content
+    modal.classList.remove('hidden');
+    requestAnimationFrame(() => {
+        modal.classList.remove('opacity-0');
+    });
+
     quickAddSavedScrollY = window.scrollY || document.documentElement.scrollTop;
     document.body.classList.add('drawer-open');
     document.body.style.top = `-${quickAddSavedScrollY}px`;
@@ -702,15 +754,26 @@ function openQuickAddToCartModal(productId) {
 
 function closeQuickAddToCartModal() {
     const modal = document.getElementById('quick-add-cart-modal');
-    if (modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-    }
+    if (!modal || modal.classList.contains('hidden')) return;
+
+    const modalContent = modal.querySelector('.quick-add-modal-content');
     
-    // Khắc phục: Bỏ định vị fixed và khôi phục vị trí cuộn ban đầu
-    document.body.classList.remove('drawer-open');
-    document.body.style.top = '';
-    window.scrollTo(0, quickAddSavedScrollY);
+    // Kích hoạt animation trượt xuống khi đóng
+    if (modalContent) {
+        modalContent.classList.add('is-closing');
+    }
+    modal.classList.add('opacity-0');
+
+    // Chờ animation hoàn tất (250ms) rồi ẩn hẳn
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        if (modalContent) {
+            modalContent.classList.remove('is-closing');
+        }
+        document.body.classList.remove('drawer-open');
+        document.body.style.top = '';
+        window.scrollTo(0, quickAddSavedScrollY);
+    }, 250);
 }
 
 function selectQuickAddColor(colorIdx) {
@@ -787,7 +850,6 @@ function renderQuickAddToCartModalContent() {
     const origPriceFormatted = (p.originalPrice || Math.round(p.price * 1.2)).toLocaleString('vi-VN');
     const discountPercent = p.originalPrice ? Math.round((1 - p.price / p.originalPrice) * 100) : 14;
 
-    // Danh sách chọn màu (Đã thêm p-1 để nút màu không bị khuất/xén viền ring)
     const colorsHtml = p.colors.map((c, idx) => {
         const isSelected = idx === quickAddToCartColorIdx;
         const ring = isSelected ? 'ring-2 ring-slate-900 ring-offset-2' : 'border-slate-300';
@@ -796,7 +858,6 @@ function renderQuickAddToCartModalContent() {
         </div>`;
     }).join('');
 
-    // Danh sách chọn Kích cỡ & Tồn kho
     const defaultSizes = [{ name: 'S', stock: 50 }, { name: 'M', stock: 15 }, { name: 'L', stock: 0 }, { name: 'XL', stock: 30 }, { name: 'XXL', stock: 40 }];
     const availableSizes = activeColor.sizes || defaultSizes;
     const selectedSizeObj = availableSizes.find(s => s.name === quickAddToCartSize);
@@ -804,7 +865,6 @@ function renderQuickAddToCartModalContent() {
     let stockBadgeHtml = '';
     let isBtnDisabled = false;
     let maxStock = 999;
-    let errorMessage = '';
 
     if (!quickAddToCartSize) {
         stockBadgeHtml = `<span class="bg-[#222222] text-white text-[10px] px-2 py-0.5 font-medium rounded-xs">Chọn kích cỡ</span>`;
@@ -817,9 +877,7 @@ function renderQuickAddToCartModalContent() {
             stockBadgeHtml = `<span class="text-red-600 font-bold text-xs">Hết hàng</span>`;
             isBtnDisabled = true;
         } else if (quickAddToCartQty > maxStock) {
-            // CẢNH BÁO KHI VƯỢT QUÁ STOCK
             stockBadgeHtml = `<span class="text-red-600 font-bold text-xs">Chỉ còn ${maxStock} sản phẩm trong kho</span>`;
-            errorMessage = `<p class="text-red-600 text-xs font-bold mt-1">Số lượng chọn (${quickAddToCartQty}) vượt quá tồn kho (${maxStock})!</p>`;
             isBtnDisabled = true;
         } else if (maxStock < 20) {
             stockBadgeHtml = `<span class="text-amber-600 font-bold text-xs">Sắp hết hàng (Còn ${maxStock})</span>`;
@@ -850,12 +908,9 @@ function renderQuickAddToCartModalContent() {
         return `<button onclick="selectQuickAddSize('${s.name}')" class="w-11 h-11 border text-xs sm:text-sm transition flex items-center justify-center cursor-pointer ${style}">${s.name}</button>`;
     }).join('');
 
-    const slideAnimationClass = isQuickAddFirstOpen ? 'animate-slide-up sm:animate-scale-up' : '';
-    isQuickAddFirstOpen = false;
-
     modal.innerHTML = `
-        <div class="fixed inset-0 bg-black/50 z-[200] flex items-end sm:items-center justify-center" onclick="closeQuickAddToCartModal()">
-            <div onclick="event.stopPropagation()" class="bg-white w-full sm:max-w-2xl rounded-none sm:rounded-sm overflow-hidden shadow-2xl relative ${slideAnimationClass} max-h-[90vh] sm:max-h-none overflow-y-auto">
+        <div class="fixed inset-0 z-[200] flex items-end sm:items-center justify-center" onclick="closeQuickAddToCartModal()">
+            <div onclick="event.stopPropagation()" class="quick-add-modal-content bg-white w-full sm:max-w-2xl rounded-none sm:rounded-sm overflow-hidden shadow-2xl relative max-h-[90vh] sm:max-h-none overflow-y-auto">
                 
                 <!-- Header Modal -->
                 <div class="flex justify-between items-center px-5 py-3.5 sm:px-6 sm:py-4 border-b border-slate-100 sticky top-0 bg-white z-10">
@@ -865,7 +920,6 @@ function renderQuickAddToCartModalContent() {
 
                 <!-- 1. GIAO DIỆN MOBILE (Bottom Sheet) -->
                 <div class="block sm:hidden p-4 space-y-4">
-                    <!-- Ảnh sản phẩm -->
                     <div class="flex gap-4 items-start">
                         <div class="w-28 aspect-[3/4] bg-slate-100 rounded-sm overflow-hidden shrink-0 relative select-none"
                              ontouchstart="handleQuickAddTouchStart(event)" 
@@ -887,13 +941,11 @@ function renderQuickAddToCartModalContent() {
                         </div>
                     </div>
 
-                    <!-- Chọn Màu (Đã sửa hiển thị đầy đủ không khuất viền) -->
                     <div>
                         <span class="text-slate-500 text-xs sm:text-sm">Màu: <strong class="text-slate-800 font-bold">${activeColor.name}</strong></span>
                         <div class="flex gap-1 pt-1 overflow-x-auto no-scrollbar items-center">${colorsHtml}</div>
                     </div>
 
-                    <!-- Chọn Size -->
                     <div>
                         <div class="flex items-center gap-2 mb-2">
                             <span class="text-slate-500 text-xs sm:text-sm">Kích cỡ:</span>
@@ -903,7 +955,6 @@ function renderQuickAddToCartModalContent() {
                         <div class="flex gap-2 flex-wrap">${sizesHtml}</div>
                     </div>
 
-                    <!-- Nút Thêm vào giỏ -->
                     <div class="pt-2 pb-1">
                         <button onclick="submitQuickAddToCart()" ${isBtnDisabled ? 'disabled' : ''} class="w-full py-3 text-xs sm:text-sm uppercase tracking-wider transition ${btnClass}">
                             Thêm vào giỏ hàng
@@ -911,17 +962,15 @@ function renderQuickAddToCartModalContent() {
                     </div>
                 </div>
 
-                <!-- 2. GIAO DIỆN DESKTOP (PC: Đã bỏ padding trên/dưới p-0 cho khung ảnh) -->
+                <!-- 2. GIAO DIỆN DESKTOP (PC) -->
                 <div class="hidden sm:block p-6">
                     <div class="grid grid-cols-2 gap-8 items-start">
                         
-                        <!-- Khung Ảnh Bên Trái (Khung nền xám nhẹ p-0 không có padding thừa) -->
                         <div class="flex flex-col items-center">
                             <div class="w-full aspect-[4/5] bg-[#f8f8f8] flex items-center justify-center p-0 overflow-hidden rounded-sm">
                                 <img src="${currentImg}" class="w-full h-full object-cover transition-all duration-300">
                             </div>
 
-                            <!-- Thanh chuyển ảnh (< 1/7 >) -->
                             <div class="flex items-center justify-center gap-4 mt-5 border border-slate-200 rounded-full px-5 py-1.5 text-xs sm:text-sm text-slate-700 bg-white">
                                 <button onclick="changeQuickAddImage(-1)" class="hover:text-black font-bold px-1 cursor-pointer">&lt;</button>
                                 <span class="font-medium">${quickAddImageIdx + 1}/${images.length}</span>
@@ -929,7 +978,6 @@ function renderQuickAddToCartModalContent() {
                             </div>
                         </div>
 
-                        <!-- Khung Thông Tin Bên Phải -->
                         <div class="flex flex-col justify-between h-full space-y-4 text-xs sm:text-sm">
                             <div class="space-y-3">
                                 <div>
@@ -959,7 +1007,6 @@ function renderQuickAddToCartModalContent() {
                                 </div>
                             </div>
 
-                            <!-- Nút Thêm vào giỏ hàng -->
                             <div class="pt-6 mt-4">
                                 <button onclick="submitQuickAddToCart()" ${isBtnDisabled ? 'disabled' : ''} class="w-full py-3.5 text-xs sm:text-sm uppercase tracking-wider transition ${btnClass}">
                                     Thêm vào giỏ hàng
