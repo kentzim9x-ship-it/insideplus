@@ -702,7 +702,7 @@ function openQuickAddToCartModal(productId) {
 
     quickAddToCartColorIdx = 0;
     quickAddToCartSize = null;
-    quickAddImageIdx = 0; 
+    quickAddImageIdx = 0;
     quickAddToCartQty = 1;
 
     let modal = document.getElementById('quick-add-cart-modal');
@@ -772,17 +772,17 @@ function updateQuickAddModalDOM() {
 
     const p = quickAddToCartProduct;
     const activeColor = p.colors[quickAddToCartColorIdx] || p.colors[0];
-    const images = activeColor.images && activeColor.images.length > 0 
-        ? activeColor.images 
+    const images = activeColor.images && activeColor.images.length > 0
+        ? activeColor.images
         : ["https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=600"];
-    
+
     if (quickAddImageIdx >= images.length) quickAddImageIdx = 0;
     const currentImg = images[quickAddImageIdx];
 
     // 1. Cập nhật ảnh đại diện sản phẩm (cả Mobile & PC)
-    modal.querySelectorAll('img').forEach(img => { 
+    modal.querySelectorAll('img').forEach(img => {
         if (!img.classList.contains('pointer-events-none') && img.parentElement.classList.contains('aspect-[4/5]')) {
-            img.src = currentImg; 
+            img.src = currentImg;
         } else if (img.classList.contains('pointer-events-none')) {
             img.src = currentImg;
         }
@@ -872,14 +872,14 @@ function updateQuickAddModalDOM() {
 
         let style = '';
         if (isSelected) {
-            style = 'bg-[#222222] text-white border-[#222222] font-bold';
+            style = 'bg-[#222222] text-white border-[#222222] font-bold ring-2 ring-slate-900 ring-offset-1';
         } else if (isOutOfStock) {
             style = 'bg-slate-50 text-slate-300 border-slate-200 font-normal';
         } else {
             style = 'bg-white text-slate-800 border-slate-200 hover:border-slate-400 font-medium';
         }
 
-        btn.className = `w-11 h-11 border text-xs sm:text-sm transition flex items-center justify-center cursor-pointer ${style}`;
+        btn.className = `w-11 h-11 border text-xs sm:text-sm transition-all flex items-center justify-center cursor-pointer ${style}`;
     });
 
     // 8. Cập nhật Nút Thêm vào giỏ hàng (Active / Disabled)
@@ -946,10 +946,12 @@ function renderQuickAddToCartModalContent() {
 
     const colorsHtml = p.colors.map((c, idx) => {
         const isSelected = idx === quickAddToCartColorIdx;
-        const ring = isSelected ? 'ring-2 ring-slate-900 ring-offset-2' : 'border-slate-300';
+        const ringStyle = isSelected ? 'ring-2 ring-slate-900 ring-offset-2' : 'border-slate-300';
         return `<div class="p-1 shrink-0 flex items-center justify-center">
-            <button onclick="selectQuickAddColor(${idx})" class="w-7 h-7 rounded-full border ${ring} transition cursor-pointer block" style="background-color: ${c.hex || '#000'};" title="${c.name}"></button>
-        </div>`;
+        <button onclick="selectQuickAddColor(${idx})" 
+            class="w-6 h-6 rounded-full border ${ringStyle} transition-all cursor-pointer block" 
+            style="background-color: ${c.hex || '#000'};" title="${c.name}"></button>
+    </div>`;
     }).join('');
 
     const defaultSizes = [{ name: 'S', stock: 50 }, { name: 'M', stock: 15 }, { name: 'L', stock: 0 }, { name: 'XL', stock: 30 }, { name: 'XXL', stock: 40 }];

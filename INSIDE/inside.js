@@ -713,8 +713,7 @@ function renderCatalog(items, isAppend = false) {
                 </button>
             </div>
             
-            <!-- DANH SÁCH MÀU SẮC (p-1 -ml-1 ĐỂ KHÔNG BỊ CẮT XÉN VIỀN DÙNG RING-OFFSET) -->
-            <div class="flex items-center gap-2 p-1 -ml-1 mb-1 flex-wrap" onclick="event.stopPropagation()">
+            <div class="flex items-center gap-2 px-1.5 py-1 mb-1 flex-wrap" onclick="event.stopPropagation()">
                 ${(p.colors || []).map((c, cIdx) => {
             const isColorOutOfStock = c.sizes && c.sizes.length > 0 && c.sizes.every(s => s.outOfStock);
             const activeStyle = cIdx === 0 ? 'ring-2 ring-slate-900 ring-offset-2' : '';
