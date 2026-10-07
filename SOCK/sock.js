@@ -82,13 +82,16 @@ function loadVisualFilterCategories() {
         })
         .then(data => {
             if (Array.isArray(data)) {
-                // CHUẨN HÓA DỮ LIỆU: Bất kể Google Sheet viết styleValue hay stylevalue đều nhận đúng
-                visualFilterCategories = data.map(item => ({
-                    id: item.id || item.ID || '',
-                    type: item.type || item.TYPE || '',
-                    styleValue: item.styleValue || item.stylevalue || item.STYLEVALUE || item.name || '',
-                    image: item.image || item.IMAGE || item.img || ''
-                }));
+                visualFilterCategories = data.map(item => {
+                    const rawId = (item.id || item.ID || 'ALL').toString().trim().toUpperCase();
+                    const rawStyleValue = (item.styleValue || item.stylevalue || item.STYLEVALUE || item.type || '').toString().trim();
+
+                    return {
+                        id: rawId,                           // Ép hoa ID (Ví dụ: "ALL", "BRIEF", "TRUNK")
+                        styleValue: rawStyleValue,           // Tên hiển thị bên dưới ảnh (Ví dụ: "Tất cả", "Quần lót Brief")
+                        image: cleanImageUrl(item.image || item.IMAGE)
+                    };
+                });
 
                 if (typeof renderVisualFilterBar === 'function') {
                     renderVisualFilterBar();
