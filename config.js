@@ -693,30 +693,47 @@ function openQuickAddToCartModal(productId) {
     if (!modal) {
         modal = document.createElement('div');
         modal.id = 'quick-add-cart-modal';
-        modal.className = "fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 p-4 transition-opacity animate-fade-in";
+        modal.className = "fixed inset-0 z-[9999] flex items-end sm:items-center justify-center hidden";
         document.body.appendChild(modal);
     }
 
     renderQuickAddToCartModalContent();
     modal.classList.remove('hidden');
 
-    // Khắc phục: Lưu vị trí cuộn trang hiện tại
+    // Bật hiệu ứng mờ nền Backdrop và trượt Popup
+    const backdrop = document.getElementById('quick-add-backdrop');
+    const container = document.getElementById('quick-add-container');
+
+    if (backdrop) backdrop.classList.remove('opacity-0');
+    if (container) {
+        container.classList.remove('quick-add-anim-out');
+        container.classList.add('quick-add-anim-in');
+    }
+
+    // Lưu vị trí cuộn trang hiện tại
     quickAddSavedScrollY = window.scrollY || document.documentElement.scrollTop;
     document.body.classList.add('drawer-open');
     document.body.style.top = `-${quickAddSavedScrollY}px`;
 }
 
 function closeQuickAddToCartModal() {
+    const backdrop = document.getElementById('quick-add-backdrop');
+    const container = document.getElementById('quick-add-container');
     const modal = document.getElementById('quick-add-cart-modal');
-    if (modal) {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
+
+    if (backdrop) backdrop.classList.add('opacity-0');
+    if (container) {
+        container.classList.remove('quick-add-anim-in');
+        container.classList.add('quick-add-anim-out');
     }
-    
-    // Khắc phục: Bỏ định vị fixed và khôi phục vị trí cuộn ban đầu
-    document.body.classList.remove('drawer-open');
-    document.body.style.top = '';
-    window.scrollTo(0, quickAddSavedScrollY);
+
+    // Chờ 250ms cho animation đóng chạy xong mới ẩn phần tử
+    setTimeout(() => {
+        if (modal) modal.classList.add('hidden');
+        document.body.classList.remove('drawer-open');
+        document.body.style.top = '';
+        window.scrollTo(0, quickAddSavedScrollY);
+    }, 250);
 }
 
 function selectQuickAddColor(colorIdx) {
@@ -793,7 +810,6 @@ function renderQuickAddToCartModalContent() {
     const origPriceFormatted = (p.originalPrice || Math.round(p.price * 1.2)).toLocaleString('vi-VN');
     const discountPercent = p.originalPrice ? Math.round((1 - p.price / p.originalPrice) * 100) : 14;
 
-    // Danh sách chọn màu (Đã thêm p-1 để nút màu không bị khuất/xén viền ring)
     const colorsHtml = p.colors.map((c, idx) => {
         const isSelected = idx === quickAddToCartColorIdx;
         const ring = isSelected ? 'ring-2 ring-slate-900 ring-offset-2' : 'border-slate-300';
@@ -802,7 +818,6 @@ function renderQuickAddToCartModalContent() {
         </div>`;
     }).join('');
 
-    // Danh sách chọn Kích cỡ & Tồn kho
     const defaultSizes = [{ name: 'S', stock: 50 }, { name: 'M', stock: 15 }, { name: 'L', stock: 0 }, { name: 'XL', stock: 30 }, { name: 'XXL', stock: 40 }];
     const availableSizes = activeColor.sizes || defaultSizes;
     const selectedSizeObj = availableSizes.find(s => s.name === quickAddToCartSize);
@@ -810,7 +825,6 @@ function renderQuickAddToCartModalContent() {
     let stockBadgeHtml = '';
     let isBtnDisabled = false;
     let maxStock = 999;
-    let errorMessage = '';
 
     if (!quickAddToCartSize) {
         stockBadgeHtml = `<span class="bg-[#222222] text-white text-[10px] px-2 py-0.5 font-medium rounded-xs">Chọn kích cỡ</span>`;
@@ -823,9 +837,7 @@ function renderQuickAddToCartModalContent() {
             stockBadgeHtml = `<span class="text-red-600 font-bold text-xs">Hết hàng</span>`;
             isBtnDisabled = true;
         } else if (quickAddToCartQty > maxStock) {
-            // CẢNH BÁO KHI VƯỢT QUÁ STOCK
-            stockBadgeHtml = `<span class="text-red-600 font-bold text-xs">Chỉ còn ${maxStock} sản phẩm trong kho</span>`;
-            errorMessage = `<p class="text-red-600 text-xs font-bold mt-1">Số lượng chọn (${quickAddToCartQty}) vượt quá tồn kho (${maxStock})!</p>`;
+            stockBadgeHtml = `<span class="text-red-600 font-bold text-xs">Chỉ còn ${maxStock} sản phẩm</span>`;
             isBtnDisabled = true;
         } else if (maxStock < 20) {
             stockBadgeHtml = `<span class="text-amber-600 font-bold text-xs">Sắp hết hàng (Còn ${maxStock})</span>`;
@@ -856,127 +868,122 @@ function renderQuickAddToCartModalContent() {
         return `<button onclick="selectQuickAddSize('${s.name}')" class="w-11 h-11 border text-xs sm:text-sm transition flex items-center justify-center cursor-pointer ${style}">${s.name}</button>`;
     }).join('');
 
-    const slideAnimationClass = isQuickAddFirstOpen ? 'animate-slide-up sm:animate-scale-up' : '';
-    isQuickAddFirstOpen = false;
+    // Kiểm tra class animation hiện tại để không bị trùng lặp
+    const existingContainer = document.getElementById('quick-add-container');
+    let animationClass = 'quick-add-anim-in';
+    if (existingContainer && existingContainer.classList.contains('quick-add-anim-out')) {
+        animationClass = 'quick-add-anim-out';
+    }
 
     modal.innerHTML = `
-        <div class="fixed inset-0 bg-black/50 z-[200] flex items-end sm:items-center justify-center" onclick="closeQuickAddToCartModal()">
-            <div onclick="event.stopPropagation()" class="bg-white w-full sm:max-w-2xl rounded-none sm:rounded-sm overflow-hidden shadow-2xl relative ${slideAnimationClass} max-h-[90vh] sm:max-h-none overflow-y-auto">
-                
-                <!-- Header Modal -->
-                <div class="flex justify-between items-center px-5 py-3.5 sm:px-6 sm:py-4 border-b border-slate-100 sticky top-0 bg-white z-10">
-                    <h3 class="font-bold text-lg sm:text-xl text-slate-900">Thêm nhanh vào giỏ</h3>
-                    <button onclick="closeQuickAddToCartModal()" class="text-slate-900 hover:text-black font-bold text-3xl cursor-pointer">&times;</button>
+        <div id="quick-add-backdrop" class="fixed inset-0 bg-black/50 transition-opacity duration-300 opacity-0 z-[200]" onclick="closeQuickAddToCartModal()"></div>
+
+        <div id="quick-add-container" onclick="event.stopPropagation()" class="bg-white w-full sm:max-w-2xl rounded-t-2xl sm:rounded-sm overflow-hidden shadow-2xl relative z-[201] max-h-[85vh] sm:max-h-none overflow-y-auto ${animationClass}">
+            
+            <div class="flex justify-between items-center px-5 py-3.5 sm:px-6 sm:py-4 border-b border-slate-100 sticky top-0 bg-white z-10">
+                <h3 class="font-bold text-base sm:text-xl text-slate-900">Thêm nhanh vào giỏ</h3>
+                <button onclick="closeQuickAddToCartModal()" class="text-slate-900 hover:text-black font-bold text-2xl sm:text-3xl cursor-pointer leading-none">&times;</button>
+            </div>
+
+            <!-- 1. GIAO DIỆN MOBILE -->
+            <div class="block sm:hidden p-4 space-y-4">
+                <div class="flex gap-4 items-start">
+                    <div class="w-28 aspect-[3/4] bg-slate-100 rounded-sm overflow-hidden shrink-0 relative select-none"
+                         ontouchstart="handleQuickAddTouchStart(event)" 
+                         ontouchend="handleQuickAddTouchEnd(event)">
+                        <img src="${currentImg}" class="w-full h-full object-cover pointer-events-none">
+                        <span class="absolute bottom-1 right-1 bg-black/60 text-white text-[9px] px-1.5 py-0.5 rounded-full font-medium">${quickAddImageIdx + 1}/${images.length}</span>
+                    </div>
+
+                    <div class="space-y-1 flex-1 min-w-0">
+                        <span class="bg-[#f0f0f0] text-slate-600 px-1.5 py-0.5 text-[9px] font-bold inline-block">INSIDE</span>
+                        <h4 class="font-bold text-xs text-slate-900 uppercase leading-snug line-clamp-2">${p.name}</h4>
+                        <p class="text-slate-400 text-[10px]">SKU: ${typeof formatProductCode === 'function' ? formatProductCode(p.id, p.category) : p.id}</p>
+
+                        <div class="flex items-baseline gap-2 pt-0.5">
+                            <span class="text-slate-400 line-through text-[11px]">${origPriceFormatted} đ</span>
+                            <span class="bg-slate-100 text-slate-600 px-1 py-0.2 font-bold text-[9px]">-${discountPercent}%</span>
+                        </div>
+                        <p class="text-lg font-bold text-slate-900">${p.price.toLocaleString('vi-VN')} đ</p>
+                    </div>
                 </div>
 
-                <!-- 1. GIAO DIỆN MOBILE (Bottom Sheet) -->
-                <div class="block sm:hidden p-4 space-y-4">
-                    <!-- Ảnh sản phẩm -->
-                    <div class="flex gap-4 items-start">
-                        <div class="w-28 aspect-[3/4] bg-slate-100 rounded-sm overflow-hidden shrink-0 relative select-none"
-                             ontouchstart="handleQuickAddTouchStart(event)" 
-                             ontouchend="handleQuickAddTouchEnd(event)">
-                            <img src="${currentImg}" class="w-full h-full object-cover pointer-events-none">
-                            <span class="absolute bottom-1 right-1 bg-black/60 text-white text-[9px] px-1.5 py-0.5 rounded-full font-medium">${quickAddImageIdx + 1}/${images.length}</span>
+                <div>
+                    <span class="text-slate-500 text-xs">Màu: <strong class="text-slate-800 font-bold">${activeColor.name}</strong></span>
+                    <div class="flex gap-1 pt-1 overflow-x-auto no-scrollbar items-center">${colorsHtml}</div>
+                </div>
+
+                <div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-slate-500 text-xs">Kích cỡ:</span>
+                        ${quickAddToCartSize ? `<strong class="text-slate-800 font-bold text-xs">${quickAddToCartSize}</strong>` : ''}
+                        ${stockBadgeHtml}
+                    </div>
+                    <div class="flex gap-2 flex-wrap">${sizesHtml}</div>
+                </div>
+
+                <div class="pt-2 pb-1">
+                    <button onclick="submitQuickAddToCart()" ${isBtnDisabled ? 'disabled' : ''} class="w-full py-3 text-xs uppercase tracking-wider transition ${btnClass}">
+                        Thêm vào giỏ hàng
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. GIAO DIỆN DESKTOP (PC) -->
+            <div class="hidden sm:block p-6">
+                <div class="grid grid-cols-2 gap-8 items-start">
+                    
+                    <div class="flex flex-col items-center">
+                        <div class="w-full aspect-[4/5] bg-[#f8f8f8] flex items-center justify-center p-0 overflow-hidden rounded-sm">
+                            <img src="${currentImg}" class="w-full h-full object-cover transition-all duration-300">
                         </div>
 
-                        <div class="space-y-1 flex-1 min-w-0">
-                            <span class="bg-[#f0f0f0] text-slate-600 px-1.5 py-0.5 text-[9px] font-bold inline-block">INSIDE</span>
-                            <h4 class="font-bold text-xs sm:text-sm text-slate-900 uppercase leading-snug line-clamp-2">${p.name}</h4>
-                            <p class="text-slate-400 text-[10px]">SKU: ${typeof formatProductCode === 'function' ? formatProductCode(p.id, p.category) : p.id}</p>
+                        <div class="flex items-center justify-center gap-4 mt-5 border border-slate-200 rounded-full px-5 py-1.5 text-xs text-slate-700 bg-white">
+                            <button onclick="changeQuickAddImage(-1)" class="hover:text-black font-bold px-1 cursor-pointer">&lt;</button>
+                            <span class="font-medium">${quickAddImageIdx + 1}/${images.length}</span>
+                            <button onclick="changeQuickAddImage(1)" class="hover:text-black font-bold px-1 cursor-pointer">&gt;</button>
+                        </div>
+                    </div>
 
-                            <div class="flex items-baseline gap-2 pt-0.5">
-                                <span class="text-slate-400 line-through text-[11px]">${origPriceFormatted} đ</span>
-                                <span class="bg-slate-100 text-slate-600 px-1 py-0.2 font-bold text-[9px]">-${discountPercent}%</span>
+                    <div class="flex flex-col justify-between h-full space-y-4 text-xs sm:text-sm">
+                        <div class="space-y-3">
+                            <div>
+                                <span class="bg-[#f0f0f0] text-slate-600 px-2 py-0.5 text-[10px] font-bold inline-block mb-1.5">INSIDE</span>
+                                <h4 class="font-bold text-base text-slate-900 uppercase leading-snug">${p.name}</h4>
+                                <p class="text-slate-400 text-[11px] mt-0.5">SKU: ${typeof formatProductCode === 'function' ? formatProductCode(p.id, p.category) : p.id}</p>
+                            </div>
+
+                            <div class="flex items-baseline gap-2 pt-1">
+                                <span class="text-slate-400 line-through text-xs sm:text-sm">${origPriceFormatted} đ</span>
+                                <span class="bg-slate-100 text-slate-600 px-1.5 py-0.5 font-bold text-[10px]">-${discountPercent}%</span>
                             </div>
                             <p class="text-lg font-bold text-slate-900">${p.price.toLocaleString('vi-VN')} đ</p>
+
+                            <div class="pt-2">
+                                <span class="text-slate-500 font-normal">Màu: <strong class="text-slate-800">${activeColor.name}</strong></span>
+                                <div class="flex gap-1 pt-1 items-center">${colorsHtml}</div>
+                            </div>
+
+                            <div class="pt-2">
+                                <div class="flex items-center gap-2 mb-2.5">
+                                    <span class="text-slate-500 font-normal">Kích cỡ:</span>
+                                    ${quickAddToCartSize ? `<strong class="text-slate-800 font-bold text-xs sm:text-sm">${quickAddToCartSize}</strong>` : ''}
+                                    ${stockBadgeHtml}
+                                </div>
+                                <div class="flex gap-2 flex-wrap">${sizesHtml}</div>
+                            </div>
+                        </div>
+
+                        <div class="pt-6 mt-4">
+                            <button onclick="submitQuickAddToCart()" ${isBtnDisabled ? 'disabled' : ''} class="w-full py-3.5 text-xs sm:text-sm uppercase tracking-wider transition ${btnClass}">
+                                Thêm vào giỏ hàng
+                            </button>
                         </div>
                     </div>
 
-                    <!-- Chọn Màu (Đã sửa hiển thị đầy đủ không khuất viền) -->
-                    <div>
-                        <span class="text-slate-500 text-xs sm:text-sm">Màu: <strong class="text-slate-800 font-bold">${activeColor.name}</strong></span>
-                        <div class="flex gap-1 pt-1 overflow-x-auto no-scrollbar items-center">${colorsHtml}</div>
-                    </div>
-
-                    <!-- Chọn Size -->
-                    <div>
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="text-slate-500 text-xs sm:text-sm">Kích cỡ:</span>
-                            ${quickAddToCartSize ? `<strong class="text-slate-800 font-bold text-xs sm:text-sm">${quickAddToCartSize}</strong>` : ''}
-                            ${stockBadgeHtml}
-                        </div>
-                        <div class="flex gap-2 flex-wrap">${sizesHtml}</div>
-                    </div>
-
-                    <!-- Nút Thêm vào giỏ -->
-                    <div class="pt-2 pb-1">
-                        <button onclick="submitQuickAddToCart()" ${isBtnDisabled ? 'disabled' : ''} class="w-full py-3 text-xs sm:text-sm uppercase tracking-wider transition ${btnClass}">
-                            Thêm vào giỏ hàng
-                        </button>
-                    </div>
                 </div>
-
-                <!-- 2. GIAO DIỆN DESKTOP (PC: Đã bỏ padding trên/dưới p-0 cho khung ảnh) -->
-                <div class="hidden sm:block p-6">
-                    <div class="grid grid-cols-2 gap-8 items-start">
-                        
-                        <!-- Khung Ảnh Bên Trái (Khung nền xám nhẹ p-0 không có padding thừa) -->
-                        <div class="flex flex-col items-center">
-                            <div class="w-full aspect-[4/5] bg-[#f8f8f8] flex items-center justify-center p-0 overflow-hidden rounded-sm">
-                                <img src="${currentImg}" class="w-full h-full object-cover transition-all duration-300">
-                            </div>
-
-                            <!-- Thanh chuyển ảnh (< 1/7 >) -->
-                            <div class="flex items-center justify-center gap-4 mt-5 border border-slate-200 rounded-full px-5 py-1.5 text-xs sm:text-sm text-slate-700 bg-white">
-                                <button onclick="changeQuickAddImage(-1)" class="hover:text-black font-bold px-1 cursor-pointer">&lt;</button>
-                                <span class="font-medium">${quickAddImageIdx + 1}/${images.length}</span>
-                                <button onclick="changeQuickAddImage(1)" class="hover:text-black font-bold px-1 cursor-pointer">&gt;</button>
-                            </div>
-                        </div>
-
-                        <!-- Khung Thông Tin Bên Phải -->
-                        <div class="flex flex-col justify-between h-full space-y-4 text-xs sm:text-sm">
-                            <div class="space-y-3">
-                                <div>
-                                    <span class="bg-[#f0f0f0] text-slate-600 px-2 py-0.5 text-[10px] font-bold inline-block mb-1.5">INSIDE</span>
-                                    <h4 class="font-bold text-base text-slate-900 uppercase leading-snug">${p.name}</h4>
-                                    <p class="text-slate-400 text-[11px] mt-0.5">SKU: ${typeof formatProductCode === 'function' ? formatProductCode(p.id, p.category) : p.id}</p>
-                                </div>
-
-                                <div class="flex items-baseline gap-2 pt-1">
-                                    <span class="text-slate-400 line-through text-xs sm:text-sm">${origPriceFormatted} đ</span>
-                                    <span class="bg-slate-100 text-slate-600 px-1.5 py-0.5 font-bold text-[10px]">-${discountPercent}%</span>
-                                </div>
-                                <p class="text-lg font-bold text-slate-900">${p.price.toLocaleString('vi-VN')} đ</p>
-
-                                <div class="pt-2">
-                                    <span class="text-slate-500 font-normal">Màu: <strong class="text-slate-800">${activeColor.name}</strong></span>
-                                    <div class="flex gap-1 pt-1 items-center">${colorsHtml}</div>
-                                </div>
-
-                                <div class="pt-2">
-                                    <div class="flex items-center gap-2 mb-2.5">
-                                        <span class="text-slate-500 font-normal">Kích cỡ:</span>
-                                        ${quickAddToCartSize ? `<strong class="text-slate-800 font-bold text-xs sm:text-sm">${quickAddToCartSize}</strong>` : ''}
-                                        ${stockBadgeHtml}
-                                    </div>
-                                    <div class="flex gap-2 flex-wrap">${sizesHtml}</div>
-                                </div>
-                            </div>
-
-                            <!-- Nút Thêm vào giỏ hàng -->
-                            <div class="pt-6 mt-4">
-                                <button onclick="submitQuickAddToCart()" ${isBtnDisabled ? 'disabled' : ''} class="w-full py-3.5 text-xs sm:text-sm uppercase tracking-wider transition ${btnClass}">
-                                    Thêm vào giỏ hàng
-                                </button>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-
             </div>
+
         </div>
     `;
 }
@@ -1313,3 +1320,49 @@ function openProductDrawerFromCart(productId, colorName, category) {
 document.addEventListener('DOMContentLoaded', () => {
     attachQuickAddHoverEvents();
 });
+
+(function injectQuickAddAnimationStyles() {
+    if (document.getElementById('quick-add-animation-styles')) return;
+    
+    const style = document.createElement('style');
+    style.id = 'quick-add-animation-styles';
+    style.innerHTML = `
+        /* PC: Nhích nhẹ tại chỗ (Y-offset 24px -> 0) */
+        @keyframes pcQuickAddPopIn {
+            from { opacity: 0; transform: translateY(24px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes pcQuickAddPopOut {
+            from { opacity: 1; transform: translateY(0) scale(1); }
+            to { opacity: 0; transform: translateY(24px) scale(0.98); }
+        }
+
+        /* Mobile: Trượt hoàn toàn từ mép dưới màn hình lên */
+        @keyframes mobileQuickAddSheetIn {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        @keyframes mobileQuickAddSheetOut {
+            from { transform: translateY(0); }
+            to { transform: translateY(100%); }
+        }
+
+        /* Classes áp dụng Animation theo mốc Responsive */
+        .quick-add-anim-in {
+            animation: mobileQuickAddSheetIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .quick-add-anim-out {
+            animation: mobileQuickAddSheetOut 0.25s ease-in forwards;
+        }
+
+        @media (min-width: 640px) {
+            .quick-add-anim-in {
+                animation: pcQuickAddPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            }
+            .quick-add-anim-out {
+                animation: pcQuickAddPopOut 0.2s ease-in forwards;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+})();

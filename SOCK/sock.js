@@ -93,90 +93,75 @@ function processRawProductsData(data) {
     });
 }
 
-// 1. Khai báo 2 hàm Cache có giới hạn thời gian (5 phút)
-function setCacheWithExpiry(key, value, ttlMinutes = 5) {
-    const item = {
-        value: value,
-        expiry: new Date().getTime() + (ttlMinutes * 60 * 1000)
-    };
-    sessionStorage.setItem(key, JSON.stringify(item));
-}
+// Biến lưu thông tin phiên bản file JSON (dùng ETag hoặc Last-Modified)
+let currentJsonETag = null;
 
-function getCacheWithExpiry(key) {
-    const itemStr = sessionStorage.getItem(key);
-    if (!itemStr) return null;
-    try {
-        const item = JSON.parse(itemStr);
-        if (new Date().getTime() > item.expiry) {
-            sessionStorage.removeItem(key);
-            return null;
-        }
-        return item.value;
-    } catch (e) {
-        sessionStorage.removeItem(key);
-        return null;
-    }
-}
-
-// 2. Hàm loadProductsData tối ưu tốc độ
 function loadProductsData() {
-    return new Promise((resolve) => {
-        // Lần 1: Đọc từ Session Storage nếu còn hạn (0.01 giây)
-        const cachedData = getCacheWithExpiry('cached_sock_products');
-        if (cachedData) {
-            originalProducts = cachedData;
+    const jsonUrl = '../data/products_sock.json';
+
+    return fetch(jsonUrl)
+        .then(response => {
+            if (!response.ok) throw new Error('Không thể tải file JSON tĩnh');
+            
+            // Lưu lại thông tin phiên bản file (ETag / Last-Modified) của lần load đầu
+            currentJsonETag = response.headers.get('ETag') || response.headers.get('Last-Modified');
+            
+            return response.json();
+        })
+        .then(data => {
+            originalProducts = processRawProductsData(data);
             currentFilteredProducts = [...originalProducts];
+            
+            // Render giao diện LẦN 1 TỨC THÌ (Hiển thị mượt 0.02s)
             renderVisualFilterBar();
             renderCatalog(originalProducts);
             if (typeof updateCartBadge === 'function') updateCartBadge();
             checkAndOpenProductFromUrl();
-            resolve(originalProducts);
-            return;
-        }
-
-        // Lần 2: Đọc ngay từ file JSON Tĩnh trên GitHub (0.05 giây - Hiển thị ngay sản phẩm)
-        fetch('../data/products_sock.json')
-            .then(res => res.json())
-            .then(localData => {
-                if (originalProducts.length === 0) {
-                    originalProducts = processRawProductsData(localData);
-                    currentFilteredProducts = [...originalProducts];
-                    renderVisualFilterBar();
-                    renderCatalog(originalProducts);
-                    if (typeof updateCartBadge === 'function') updateCartBadge();
-                    checkAndOpenProductFromUrl();
-                }
-            })
-            .catch(() => {});
-
-        // Lần 3: Gọi ngầm Google Sheet API để tự cập nhật bộ nhớ tạm mới nhất
-        const callbackName = 'googleSheetCallback_inside_' + Math.round(100000 * Math.random());
-        window[callbackName] = function(data) {
-            delete window[callbackName];
-            if (script && script.parentNode) script.parentNode.removeChild(script);
             
-            const freshProducts = processRawProductsData(data);
-            originalProducts = freshProducts;
+            // Bắt đầu kích hoạt kiểm tra ngầm phiên bản JSON tĩnh trên GitHub
+            checkStaticJsonUpdatesSilently(jsonUrl);
+
+            return originalProducts;
+        })
+        .catch(error => {
+            console.error('Lỗi tải dữ liệu sản phẩm SOCK:', error);
+        });
+}
+
+// Hàm kiểm tra ngầm xem GitHub Actions đã đẩy file JSON tĩnh mới lên chưa
+function checkStaticJsonUpdatesSilently(jsonUrl) {
+    // Chỉ gửi HEAD request ngầm (rất nhẹ, không tải lại toàn bộ nội dung file)
+    fetch(jsonUrl, { method: 'HEAD', cache: 'no-cache' })
+        .then(response => {
+            if (!response.ok) return;
             
-            // Lưu vào cache 5 phút
-            setCacheWithExpiry('cached_sock_products', freshProducts, 5);
-
-            currentFilteredProducts = [...originalProducts];
-            renderVisualFilterBar();
-            renderCatalog(originalProducts);
-            if (typeof updateCartBadge === 'function') updateCartBadge();
-            checkAndOpenProductFromUrl();
-            resolve(data);
-        };
-
-        const script = document.createElement('script');
-        script.src = `${GOOGLE_SHEET_API_URL}&callback=${callbackName}`;
-        script.onerror = () => {
-            delete window[callbackName];
-            if (script && script.parentNode) script.parentNode.removeChild(script);
-        };
-        document.body.appendChild(script);
-    });
+            const newETag = response.headers.get('ETag') || response.headers.get('Last-Modified');
+            
+            // So sánh: Nếu có ETag và ETag mới KHÁC ETag cũ -> GitHub Actions đã cập nhật JSON mới!
+            if (newETag && currentJsonETag && newETag !== currentJsonETag) {
+                console.log('Phát hiện dữ liệu JSON tĩnh mới từ GitHub Actions. Đang âm thầm cập nhật...');
+                currentJsonETag = newETag;
+                
+                // Tải file JSON mới và cập nhật lại giao diện
+                fetch(jsonUrl, { cache: 'no-cache' })
+                    .then(res => res.json())
+                    .then(newData => {
+                        const freshProducts = processRawProductsData(newData);
+                        
+                        // Kiểm tra nếu nội dung sản phẩm thực sự thay đổi mới render lại
+                        if (JSON.stringify(originalProducts) !== JSON.stringify(freshProducts)) {
+                            originalProducts = freshProducts;
+                            currentFilteredProducts = [...originalProducts];
+                            
+                            // Cập nhật giao diện nhẹ nhàng
+                            renderCatalog(originalProducts);
+                        }
+                    });
+            }
+        })
+        .catch(err => {
+            // Lỗi mạng ngầm thì bỏ qua, không ảnh hưởng trải nghiệm người dùng
+        });
 }
 
 function changeQty(delta) {
