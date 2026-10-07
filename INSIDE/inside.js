@@ -432,14 +432,13 @@ function renderRecentViewedSlider(currentProductId) {
         const img2 = (p.images && p.images[1]) || img1;
         const targetPage = getCategoryPageUrl(p.category);
         const isCurrentPage = targetPage.includes('inside.html');
-        const discountPercent = hasDiscount ? Math.round((1 - p.price / p.originalPrice) * 100) : 0;
 
         const clickAction = isCurrentPage
             ? `openProductDrawer('${p.id}', 0)`
             : `window.location.href='${targetPage}?product=${formatProductCode(p.id, p.category)}&color=${formatColorCode(0, p.category)}'`;
 
         const colorsDots = (p.colors || []).map((c, cIdx) =>
-            `<button onclick="event.stopPropagation(); changeRecentThumbColor('${p.id}', ${cIdx})" class="w-5 h-5 rounded-full border border-slate-300" style="background-color: ${c.hex};" title="${c.name}"></button>`
+            `<button onclick="event.stopPropagation(); changeRecentThumbColor('${p.id}', ${cIdx})" class="w-3.5 h-3.5 rounded-full border border-slate-300" style="background-color: ${c.hex};" title="${c.name}"></button>`
         ).join('');
 
         return `<div class="flex-none w-[calc(50%-12px)] lg:w-[calc(25%-18px)] group cursor-pointer" onclick="${clickAction}">
@@ -454,9 +453,6 @@ function renderRecentViewedSlider(currentProductId) {
             <div class="flex items-baseline gap-2">
                 <span class="text-xs sm:text-sm font-medium text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
                 ${p.originalPrice ? `<span class="text-[11px] text-slate-400 line-through font-normal">${p.originalPrice.toLocaleString('vi-VN')}đ</span>` : ''}
-                <span class="bg-[#f1f3f9] text-[#556b92] font-semibold text-[11px] px-1.5 py-0.5 rounded-xs">
-                    -${discountPercent}%
-                </span>
             </div>
         </div>`;
     }).join('');
@@ -713,18 +709,30 @@ function renderCatalog(items, isAppend = false) {
                     </svg>
                 </button>
             </div>
-            <div class="flex items-center gap-1.5 mb-2" onclick="event.stopPropagation()">
+            
+            <!-- DANH SÁCH MÀU SẮC (p-1 -ml-1 ĐỂ KHÔNG BỊ CẮT XÉN VIỀN DÙNG RING-OFFSET) -->
+            <div class="flex items-center gap-2 p-1 -ml-1 mb-1 flex-wrap" onclick="event.stopPropagation()">
                 ${(p.colors || []).map((c, cIdx) => {
             const isColorOutOfStock = c.sizes && c.sizes.length > 0 && c.sizes.every(s => s.outOfStock);
-            return `<button onclick="changeCatalogThumbColor('${p.id}',${cIdx})" class="w-4 h-4 rounded-full border border-slate-300 ${isColorOutOfStock ? 'color-out-of-stock' : ''}" style="background-color: ${c.hex};" title="${c.name}"></button>`;
+            const activeStyle = cIdx === 0 ? 'ring-2 ring-slate-900 ring-offset-2' : '';
+            return `<button onclick="changeCatalogThumbColor('${p.id}',${cIdx})" 
+                        data-color-idx="${cIdx}"
+                        class="color-btn-${p.id} w-5 h-5 rounded-full border border-slate-300 transition-all ${activeStyle}${isColorOutOfStock ? 'color-out-of-stock' : ''}" 
+                        style="background-color: ${c.hex};" title="${c.name}"></button>`;
         }).join('')}
             </div>
+
             <h3 class="font-bold text-slate-900 text-sm uppercase tracking-tight mb-1.5">${p.name}</h3>
-            <div class="flex items-baseline gap-2.5">
-                <span class="text-sm font-medium text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
-                ${(p.originalPrice && p.originalPrice > p.price)
-                ? `<span class="text-xs text-slate-400 line-through font-normal">${p.originalPrice.toLocaleString('vi-VN')}đ</span>`
-                : ''}
+
+            <!-- GIÁ VÀ % GIẢM GIÁ THẲNG HÀNG NẰM CÙNG NHAU (items-center) -->
+            <div class="flex items-center gap-2">
+                <span class="text-sm font-bold text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
+                ${hasDiscount ? `
+                    <span class="text-xs text-slate-400 line-through font-normal">${p.originalPrice.toLocaleString('vi-VN')}đ</span>
+                    <span class="bg-[#f1f3f9] text-[#556b92] font-semibold text-[11px] px-1.5 py-0.5 rounded-xs">
+                        -${discountPercent}%
+                    </span>
+                ` : ''}
             </div>
         </div>`;
     }).join('');
@@ -755,18 +763,32 @@ window.addEventListener('scroll', function () {
     }
 });
 
+// HÀM TỰ ĐỘNG ĐỔI VIỀN ACTIVE VÀ ĐỔI CẢ HÌNH ẢNH KHI CLICK CHỌN MÀU Ở CATEGORY
 function changeCatalogThumbColor(id, colorIdx) {
     const p = originalProducts.find(item => item.id === id);
     if (!p) return;
+
     const targetColor = p.colors[colorIdx];
     const imgEl = document.getElementById('thumb-' + id);
+
     if (imgEl && targetColor) {
-        const newImg1 = targetColor.images[0];
+        const newImg1 = targetColor.images[0] || '';
         const newImg2 = targetColor.images[1] || newImg1;
         imgEl.src = newImg1;
         imgEl.setAttribute('data-img1', newImg1);
         imgEl.setAttribute('data-img2', newImg2);
     }
+
+    // Tự động chuyển đổi viền ring active cho nút được chọn ở Category
+    const colorButtons = document.querySelectorAll(`.color-btn-${id}`);
+    colorButtons.forEach(btn => {
+        const btnIdx = parseInt(btn.getAttribute('data-color-idx'), 10);
+        if (btnIdx === colorIdx) {
+            btn.classList.add('ring-2', 'ring-slate-900', 'ring-offset-2');
+        } else {
+            btn.classList.remove('ring-2', 'ring-slate-900', 'ring-offset-2');
+        }
+    });
 }
 
 function setSortOption(type) {

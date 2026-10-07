@@ -712,14 +712,16 @@ function renderProductCardHTML(p) {
         </div>
 
         <!-- DANH SÁCH MÀU SẮC: Nút to hơn (w-5 h-5), màu active có vòng tròn đen + viền trắng -->
-        <div class="flex items-center gap-2 mb-2" onclick="event.stopPropagation()">
+        <div class="flex items-center gap-1.5 p-1 -ml-1 mb-1 flex-wrap" onclick="event.stopPropagation()">
             ${(p.colors || []).map((c, cIdx) => {
-        const isColorOutOfStock = c.sizes && c.sizes.length > 0 && c.sizes.every(s => s.outOfStock);
-        const activeStyle = cIdx === 0 ? 'ring-2 ring-slate-900 ring-offset-2' : '';
-        return `<button onclick="changeCatalogThumbColor('${p.id}',${cIdx})" 
-                    class="w-5 h-5 rounded-full border border-slate-300 transition-all ${activeStyle}${isColorOutOfStock ? 'color-out-of-stock' : ''}" 
+                const isColorOutOfStock = c.sizes && c.sizes.length > 0 && c.sizes.every(s => s.outOfStock);
+                const activeStyle = cIdx === cIdxActive ? 'ring-2 ring-slate-900 ring-offset-2' : '';
+                
+                return `<button onclick="changeCatalogThumbColor('${p.id}',${cIdx})" 
+                    data-color-idx="${cIdx}"
+                    class="color-btn-${p.id} w-5 h-5 rounded-full border border-slate-300 transition-all ${activeStyle}${isColorOutOfStock ? 'color-out-of-stock' : ''}" 
                     style="background-color: ${c.hex};" title="${c.name}"></button>`;
-    }).join('')}
+            }).join('')}
         </div>
 
         <h3 class="font-bold text-slate-900 text-sm uppercase tracking-tight mb-1.5">${p.name}</h3>
@@ -819,15 +821,29 @@ function setupInfiniteScroll() {
 function changeCatalogThumbColor(id, colorIdx) {
     const p = originalProducts.find(item => item.id === id);
     if (!p) return;
+    
     const targetColor = p.colors[colorIdx];
     const imgEl = document.getElementById('thumb-' + id);
+    
+    // 1. Cập nhật ảnh tương ứng với màu được chọn
     if (imgEl && targetColor) {
-        const newImg1 = targetColor.images[0];
+        const newImg1 = targetColor.images[0] || '';
         const newImg2 = targetColor.images[1] || newImg1;
         imgEl.src = newImg1;
         imgEl.setAttribute('data-img1', newImg1);
         imgEl.setAttribute('data-img2', newImg2);
     }
+
+    // 2. Cập nhật trạng thái vòng tròn viền đen active khi click đổi màu
+    const colorButtons = document.querySelectorAll(`.color-btn-${id}`);
+    colorButtons.forEach(btn => {
+        const btnIdx = parseInt(btn.getAttribute('data-color-idx'), 10);
+        if (btnIdx === colorIdx) {
+            btn.classList.add('ring-2', 'ring-slate-900', 'ring-offset-2');
+        } else {
+            btn.classList.remove('ring-2', 'ring-slate-900', 'ring-offset-2');
+        }
+    });
 }
 
 function setSortOption(type) {
