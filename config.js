@@ -66,7 +66,7 @@ function showCartToast(message) {
     const toast = document.createElement('div');
     toast.id = 'cart-toast-msg';
     toast.className = 'fixed top-16 left-0 right-0 w-full sm:left-auto sm:right-0 sm:w-auto sm:max-w-md z-[9999] bg-[#1d3b8a] text-white px-4 py-3 shadow-2xl flex items-center gap-3 text-xs sm:text-sm animate-slide-in-right rounded-none sm:rounded-l-sm sm:rounded-r-none';
-    
+
     toast.innerHTML = `
         <i data-lucide="info" class="w-4 h-4 shrink-0 text-blue-200"></i>
         <span class="flex-1 font-medium leading-tight">${message}</span>
@@ -306,8 +306,8 @@ function renderCartModalContent() {
                 ? Math.round((currentPriceTotal * activeVoucher.discountValue) / 100)
                 : activeVoucher.discountValue;
 
-            voucherTitleText = activeVoucher.title 
-                ? `${activeVoucher.title} (${activeVoucher.desc || activeVoucher.code})` 
+            voucherTitleText = activeVoucher.title
+                ? `${activeVoucher.title} (${activeVoucher.desc || activeVoucher.code})`
                 : activeVoucher.code;
 
             if (voucherLabel) voucherLabel.innerText = activeVoucher.code;
@@ -408,8 +408,8 @@ function renderCartModalContent() {
 }
 
 function checkProductStock(productId, colorName, sizeName, requestedQty) {
-    const product = typeof findProductAnywhere === 'function' 
-        ? findProductAnywhere(productId) 
+    const product = typeof findProductAnywhere === 'function'
+        ? findProductAnywhere(productId)
         : (typeof originalProducts !== 'undefined' ? originalProducts.find(p => p.id === productId) : null);
 
     if (!product) return { valid: true, maxStock: 999 };
@@ -675,46 +675,20 @@ let quickAddSavedScrollY = 0; // Biến lưu vị trí cuộn
 // --- TỰ ĐỘNG NHÚNG CSS ANIMATION CHO QUICK ADD POPUP ---
 (function injectQuickAddStyles() {
     if (document.getElementById('quick-add-styles')) return;
-
     const style = document.createElement('style');
     style.id = 'quick-add-styles';
     style.textContent = `
-        /* Animation cho Mobile: Trượt lên / Trượt xuống footer */
-        @keyframes quickAddMobileIn {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
-        }
-        @keyframes quickAddMobileOut {
-            from { transform: translateY(0); }
-            to { transform: translateY(100%); }
-        }
+        @keyframes quickAddMobileIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes quickAddMobileOut { from { transform: translateY(0); } to { transform: translateY(100%); } }
+        @keyframes quickAddPcIn { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes quickAddPcOut { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-20px); opacity: 0; } }
 
-        /* Animation cho PC: Trượt nhẹ + Mờ nhẹ */
-        @keyframes quickAddPcIn {
-            from { transform: translateY(-20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-        @keyframes quickAddPcOut {
-            from { transform: translateY(0); opacity: 1; }
-            to { transform: translateY(-20px); opacity: 0; }
-        }
+        .quick-add-modal-content { animation: quickAddMobileIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .quick-add-modal-content.is-closing { animation: quickAddMobileOut 0.25s ease-in forwards !important; }
 
-        /* Mặc định trên Mobile */
-        .quick-add-modal-content {
-            animation: quickAddMobileIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        .quick-add-modal-content.is-closing {
-            animation: quickAddMobileOut 0.25s ease-in forwards !important;
-        }
-
-        /* Trên PC (Màn hình sm >= 640px) */
         @media (min-width: 640px) {
-            .quick-add-modal-content {
-                animation: quickAddPcIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            }
-            .quick-add-modal-content.is-closing {
-                animation: quickAddPcOut 0.25s ease-in forwards !important;
-            }
+            .quick-add-modal-content { animation: quickAddPcIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+            .quick-add-modal-content.is-closing { animation: quickAddPcOut 0.25s ease-in forwards !important; }
         }
     `;
     document.head.appendChild(style);
@@ -723,13 +697,14 @@ let quickAddSavedScrollY = 0; // Biến lưu vị trí cuộn
 function openQuickAddToCartModal(productId) {
     quickAddToCartProduct = typeof findProductAnywhere === 'function'
         ? findProductAnywhere(productId)
-        : originalProducts.find(x => x.id === productId);
+        : (typeof originalProducts !== 'undefined' ? originalProducts.find(x => x.id === productId) : null);
 
     if (!quickAddToCartProduct) return;
 
     quickAddToCartColorIdx = 0;
     quickAddToCartSize = null;
     quickAddImageIdx = 0; 
+    quickAddToCartQty = 1;
 
     let modal = document.getElementById('quick-add-cart-modal');
     if (!modal) {
@@ -741,7 +716,6 @@ function openQuickAddToCartModal(productId) {
 
     renderQuickAddToCartModalContent();
 
-    // Hiển thị modal và chạy animation mờ backdrop + trượt content
     modal.classList.remove('hidden');
     requestAnimationFrame(() => {
         modal.classList.remove('opacity-0');
@@ -757,19 +731,12 @@ function closeQuickAddToCartModal() {
     if (!modal || modal.classList.contains('hidden')) return;
 
     const modalContent = modal.querySelector('.quick-add-modal-content');
-    
-    // Kích hoạt animation trượt xuống khi đóng
-    if (modalContent) {
-        modalContent.classList.add('is-closing');
-    }
+    if (modalContent) modalContent.classList.add('is-closing');
     modal.classList.add('opacity-0');
 
-    // Chờ animation hoàn tất (250ms) rồi ẩn hẳn
     setTimeout(() => {
         modal.classList.add('hidden');
-        if (modalContent) {
-            modalContent.classList.remove('is-closing');
-        }
+        if (modalContent) modalContent.classList.remove('is-closing');
         document.body.classList.remove('drawer-open');
         document.body.style.top = '';
         window.scrollTo(0, quickAddSavedScrollY);
@@ -778,17 +745,13 @@ function closeQuickAddToCartModal() {
 
 function selectQuickAddColor(colorIdx) {
     if (quickAddToCartColorIdx === colorIdx) return;
-    
     quickAddToCartColorIdx = colorIdx;
-    quickAddToCartSize = null; // Reset size khi đổi màu
-    quickAddImageIdx = 0;      // Reset về ảnh đầu tiên của màu mới
-
+    quickAddToCartSize = null; // Reset size
+    quickAddImageIdx = 0;
     updateQuickAddModalDOM();
 }
 
 function selectQuickAddSize(sizeName) {
-    if (quickAddToCartSize === sizeName) return;
-
     quickAddToCartSize = sizeName;
     updateQuickAddModalDOM();
 }
@@ -800,17 +763,15 @@ function changeQuickAddImage(delta) {
     if (images.length === 0) return;
 
     quickAddImageIdx = (quickAddImageIdx + delta + images.length) % images.length;
-    
-    // Cập nhật DOM ảnh trực tiếp thay vì render lại form
-    updateQuickAddImageDOM();
+    updateQuickAddModalDOM();
 }
 
-// Hàm cập nhật riêng phần hiển thị ảnh (Mobile + PC)
-function updateQuickAddImageDOM() {
+function updateQuickAddModalDOM() {
     const modal = document.getElementById('quick-add-cart-modal');
     if (!modal || !quickAddToCartProduct) return;
 
-    const activeColor = quickAddToCartProduct.colors[quickAddToCartColorIdx] || quickAddToCartProduct.colors[0];
+    const p = quickAddToCartProduct;
+    const activeColor = p.colors[quickAddToCartColorIdx] || p.colors[0];
     const images = activeColor.images && activeColor.images.length > 0 
         ? activeColor.images 
         : ["https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=600"];
@@ -818,46 +779,32 @@ function updateQuickAddImageDOM() {
     if (quickAddImageIdx >= images.length) quickAddImageIdx = 0;
     const currentImg = images[quickAddImageIdx];
 
-    // Cập nhật nguồn ảnh Mobile & PC
-    const imgEls = modal.querySelectorAll('img');
-    imgEls.forEach(img => { img.src = currentImg; });
+    // Cập nhật ảnh đại diện (Mobile & PC)
+    modal.querySelectorAll('img').forEach(img => { img.src = currentImg; });
 
-    // Cập nhật chỉ số ảnh (VD: 1/3)
-    const badges = modal.querySelectorAll('.select-none span, .rounded-full span');
-    badges.forEach(b => {
-        if (b.innerText.includes('/')) {
-            b.innerText = `${quickAddImageIdx + 1}/${images.length}`;
-        }
-    });
-}
-
-// Hàm cập nhật trạng thái DOM cực nhanh khi đổi Màu/Size (KHÔNG reload lại Popup)
-function updateQuickAddModalDOM() {
-    const modal = document.getElementById('quick-add-cart-modal');
-    if (!modal || !quickAddToCartProduct) return;
-
-    const p = quickAddToCartProduct;
-    const activeColor = p.colors[quickAddToCartColorIdx] || p.colors[0];
-
-    // 1. Cập nhật Ảnh
-    updateQuickAddImageDOM();
-
-    // 2. Cập nhật Tên Màu hiển thị (Mobile + PC)
-    const colorNameTexts = modal.querySelectorAll('.text-slate-800.font-bold, .text-slate-800');
-    colorNameTexts.forEach(el => {
-        if (el.previousSibling && el.previousSibling.textContent.includes('Màu')) {
-            el.innerText = activeColor.name;
+    // Cập nhật chỉ số ảnh (1/X)
+    modal.querySelectorAll('span').forEach(sp => {
+        if (sp.innerText && sp.innerText.includes('/') && /^\d+\/\d+$/.test(sp.innerText.trim())) {
+            sp.innerText = `${quickAddImageIdx + 1}/${images.length}`;
         }
     });
 
-    // 3. Cập nhật Vòng ring chọn Màu sắc
-    const colorBtns = modal.querySelectorAll('button[onclick^="selectQuickAddColor"]');
-    colorBtns.forEach((btn, idx) => {
+    // Cập nhật tên màu đang chọn
+    modal.querySelectorAll('strong').forEach(str => {
+        if (str.previousSibling && str.previousSibling.textContent && str.previousSibling.textContent.includes('Màu:')) {
+            str.innerText = activeColor.name;
+        } else if (str.parentElement && str.parentElement.textContent.includes('Màu:')) {
+            str.innerText = activeColor.name;
+        }
+    });
+
+    // Cập nhật Vòng chọn màu (Ring active)
+    modal.querySelectorAll('button[onclick^="selectQuickAddColor"]').forEach((btn, idx) => {
         const ring = idx === quickAddToCartColorIdx ? 'ring-2 ring-slate-900 ring-offset-2' : 'border-slate-300';
         btn.className = `w-7 h-7 rounded-full border ${ring} transition cursor-pointer block`;
     });
 
-    // 4. Tính toán Tồn kho & Cập nhật nút chọn Size
+    // Tính toán Tồn Kho
     const defaultSizes = [{ name: 'S', stock: 50 }, { name: 'M', stock: 15 }, { name: 'L', stock: 0 }, { name: 'XL', stock: 30 }, { name: 'XXL', stock: 40 }];
     const availableSizes = activeColor.sizes || defaultSizes;
     const selectedSizeObj = availableSizes.find(s => s.name === quickAddToCartSize);
@@ -869,8 +816,8 @@ function updateQuickAddModalDOM() {
         stockBadgeHtml = `<span class="bg-[#222222] text-white text-[10px] px-2 py-0.5 font-medium rounded-xs">Chọn kích cỡ</span>`;
         isBtnDisabled = true;
     } else if (selectedSizeObj) {
-        const isOutOfStock = selectedSizeObj.outOfStock || selectedSizeObj.stock === 0;
-        const maxStock = selectedSizeObj.stock !== undefined ? selectedSizeObj.stock : (isOutOfStock ? 0 : 50);
+        const isOutOfStock = selectedSizeObj.outOfStock || Number(selectedSizeObj.stock) === 0;
+        const maxStock = selectedSizeObj.stock !== undefined ? Number(selectedSizeObj.stock) : (isOutOfStock ? 0 : 50);
 
         if (isOutOfStock || maxStock === 0) {
             stockBadgeHtml = `<span class="text-red-600 font-bold text-xs">Hết hàng</span>`;
@@ -887,26 +834,21 @@ function updateQuickAddModalDOM() {
         }
     }
 
-    // Cập nhật text Kích cỡ đã chọn + Badge thông báo tồn kho
-    const sizeContainerEls = modal.querySelectorAll('.flex.items-center.gap-2.mb-2, .flex.items-center.gap-2.mb-2.5');
-    sizeContainerEls.forEach(container => {
-        const labelText = container.querySelector('span');
-        if (labelText && labelText.innerText.includes('Kích cỡ')) {
-            container.innerHTML = `
-                <span class="${labelText.className}">Kích cỡ:</span>
-                ${quickAddToCartSize ? `<strong class="text-slate-800 font-bold text-xs sm:text-sm">${quickAddToCartSize}</strong>` : ''}
-                ${stockBadgeHtml}
-            `;
-        }
+    // Cập nhật khu vực hiển thị Tên Kích cỡ + Hint Hết Hàng / Còn hàng
+    modal.querySelectorAll('.flex.items-center.gap-2.mb-2, .flex.items-center.gap-2.mb-2.5').forEach(container => {
+        container.innerHTML = `
+            <span class="text-slate-500 text-xs sm:text-sm">Kích cỡ:</span>
+            ${quickAddToCartSize ? `<strong class="text-slate-800 font-bold text-xs sm:text-sm">${quickAddToCartSize}</strong>` : ''}
+            ${stockBadgeHtml}
+        `;
     });
 
-    // Cập nhật Class và trạng thái active của Nút Size
-    const sizeBtns = modal.querySelectorAll('button[onclick^="selectQuickAddSize"]');
-    sizeBtns.forEach(btn => {
+    // Cập nhật giao diện danh sách nút Size
+    modal.querySelectorAll('button[onclick^="selectQuickAddSize"]').forEach(btn => {
         const sizeName = btn.innerText.trim();
         const sizeObj = availableSizes.find(s => s.name === sizeName);
         const isSelected = quickAddToCartSize === sizeName;
-        const isOutOfStock = sizeObj ? (sizeObj.outOfStock || sizeObj.stock === 0) : false;
+        const isOutOfStock = sizeObj ? (sizeObj.outOfStock || Number(sizeObj.stock) === 0) : false;
 
         let style = '';
         if (isSelected) {
@@ -920,13 +862,12 @@ function updateQuickAddModalDOM() {
         btn.className = `w-11 h-11 border text-xs sm:text-sm transition flex items-center justify-center cursor-pointer ${style}`;
     });
 
-    // 5. Cập nhật Nút Thêm Vào Giỏ Hàng
-    const submitBtns = modal.querySelectorAll('button[onclick="submitQuickAddToCart()"]');
+    // Cập nhật Nút Thêm Vào Giỏ Hàng
     const btnClass = !isBtnDisabled
         ? "bg-[#222222] text-white hover:bg-black cursor-pointer font-bold"
         : "bg-[#cccccc] text-white cursor-not-allowed font-bold";
 
-    submitBtns.forEach(btn => {
+    modal.querySelectorAll('button[onclick="submitQuickAddToCart()"]').forEach(btn => {
         btn.disabled = isBtnDisabled;
         btn.className = `w-full ${btn.classList.contains('py-3.5') ? 'py-3.5' : 'py-3'} text-xs sm:text-sm uppercase tracking-wider transition ${btnClass}`;
     });
@@ -973,10 +914,10 @@ function renderQuickAddToCartModalContent() {
 
     const p = quickAddToCartProduct;
     const activeColor = p.colors[quickAddToCartColorIdx] || p.colors[0];
-    const images = activeColor.images && activeColor.images.length > 0 
-        ? activeColor.images 
+    const images = activeColor.images && activeColor.images.length > 0
+        ? activeColor.images
         : ["https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=600"];
-    
+
     if (quickAddImageIdx >= images.length) quickAddImageIdx = 0;
     const currentImg = images[quickAddImageIdx];
 
@@ -1281,19 +1222,19 @@ function renderQuickEditDrawer() {
     if (!container || editingCartItemIndex === null || !cartItems[editingCartItemIndex]) return;
 
     const item = cartItems[editingCartItemIndex];
-    const product = typeof findProductAnywhere === 'function' 
-        ? findProductAnywhere(item.productId) 
+    const product = typeof findProductAnywhere === 'function'
+        ? findProductAnywhere(item.productId)
         : originalProducts.find(p => p.id === item.productId);
 
     if (!product) return;
 
-    const currentColorIdx = (typeof quickEditColorIdx !== 'undefined' && quickEditColorIdx !== null) 
-        ? quickEditColorIdx 
+    const currentColorIdx = (typeof quickEditColorIdx !== 'undefined' && quickEditColorIdx !== null)
+        ? quickEditColorIdx
         : product.colors.findIndex(c => c.name === item.colorName);
-        
+
     const activeColor = product.colors[currentColorIdx] || product.colors[0];
-    const activeSize = (typeof quickEditSelectedSize !== 'undefined' && quickEditSelectedSize) 
-        ? quickEditSelectedSize 
+    const activeSize = (typeof quickEditSelectedSize !== 'undefined' && quickEditSelectedSize)
+        ? quickEditSelectedSize
         : item.size;
 
     const origPriceFormatted = (product.originalPrice || Math.round(product.price * 1.2)).toLocaleString('vi-VN');
