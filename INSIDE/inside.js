@@ -670,8 +670,8 @@ function selectVisualFilter(styleVal) {
 }
 
 function renderProductCardHTML(p, cIdxActive = 0) {
-    const firstColor = p.colors && p.colors[cIdxActive]
-        ? p.colors[cIdxActive]
+    const firstColor = p.colors && p.colors[cIdxActive] 
+        ? p.colors[cIdxActive] 
         : (p.colors && p.colors[0] ? p.colors[0] : { images: [''] });
 
     const img1 = firstColor.images[0] || '';
@@ -698,13 +698,14 @@ function renderProductCardHTML(p, cIdxActive = 0) {
 
         <div class="flex items-center gap-2 px-1.5 py-1 mb-1 flex-wrap" onclick="event.stopPropagation()">
             ${(p.colors || []).map((c, cIdx) => {
-        const isColorOutOfStock = checkColorOutOfStock(c);
-        const activeStyle = cIdx === cIdxActive ? 'ring-2 ring-slate-900 ring-offset-2' : '';
-        return `<button onclick="changeCatalogThumbColor('${p.id}',${cIdx})" 
+                // Sửa chính tại đây: Gọi kiểm tra riêng cho từng màu c
+                const isColorOutOfStock = checkColorOutOfStock(c);
+                const activeStyle = cIdx === cIdxActive ? 'ring-2 ring-slate-900 ring-offset-2' : '';
+                return `<button onclick="changeCatalogThumbColor('${p.id}',${cIdx})" 
                     data-color-idx="${cIdx}"
                     class="color-btn-${p.id} w-5 h-5 rounded-full border border-slate-300 transition-all ${activeStyle}${isColorOutOfStock ? 'color-out-of-stock' : ''}" 
                     style="background-color: ${c.hex};" title="${c.name}"></button>`;
-    }).join('')}
+            }).join('')}
         </div>
 
         <h3 class="font-bold text-slate-900 text-sm uppercase tracking-tight mb-1.5">${p.name}</h3>
@@ -936,10 +937,10 @@ function changeDrawerColor(productId, colorIdx) {
 
 function checkColorOutOfStock(colorObj) {
     if (!colorObj) return false;
-    // Nếu bản thân đối tượng màu có thuộc tính outOfStock = true
+    // Kiểm tra c.outOfStock trực tiếp ở cấp màu
     if (Boolean(colorObj.outOfStock)) return true;
-
-    // Nếu có mảng sizes, kiểm tra xem tất cả các size thuộc màu này có hết hàng hay không
+    
+    // Kiểm tra danh sách kích cỡ thuộc màu
     if (Array.isArray(colorObj.sizes) && colorObj.sizes.length > 0) {
         return colorObj.sizes.every(s => Boolean(s.outOfStock) || s.stock === 0);
     }
