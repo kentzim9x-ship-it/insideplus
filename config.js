@@ -766,6 +766,7 @@ function changeQuickAddImage(delta) {
 }
 
 // --- HÀM CẬP NHẬT TRỰC TIẾP DOM CHUẨN XÁC CẢ MOBILE VÀ PC ---
+// --- HÀM CẬP NHẬT TRỰC TIẾP DOM CHUẨN XÁC CẢ MOBILE VÀ PC ---
 function updateQuickAddModalDOM() {
     const modal = document.getElementById('quick-add-cart-modal');
     if (!modal || !quickAddToCartProduct) return;
@@ -795,7 +796,7 @@ function updateQuickAddModalDOM() {
         }
     });
 
-    // 3. Cập nhật Tên Màu đang chọn ở tiêu đề Màu
+    // 3. Cập nhật Tên Màu đang chọn
     const colorLabelNodes = modal.querySelectorAll('#quick-add-color-name-mobile, #quick-add-color-name-pc');
     if (colorLabelNodes.length > 0) {
         colorLabelNodes.forEach(node => node.innerText = activeColor.name);
@@ -807,10 +808,12 @@ function updateQuickAddModalDOM() {
         });
     }
 
-    // 4. Cập nhật Vòng tròn chọn Màu (Active ring)
+    // 4. CẬP NHẬT VÒNG TRÒN CHỌN MÀU (GIỮ NGUYÊN RING KHI THAO TÁC)
     modal.querySelectorAll('button[onclick^="selectQuickAddColor"]').forEach((btn, idx) => {
-        const ring = idx === quickAddToCartColorIdx ? 'ring-2 ring-slate-900 ring-offset-2' : 'border-slate-300';
-        btn.className = `w-7 h-7 rounded-full border ${ring} transition cursor-pointer block`;
+        const ring = idx === quickAddToCartColorIdx 
+            ? 'ring-2 ring-slate-900 ring-offset-2' 
+            : 'border-slate-300 hover:border-slate-400';
+        btn.className = `w-6 h-6 rounded-full border ${ring} transition-all cursor-pointer block`;
     });
 
     // 5. Tính toán Tồn kho thực tế
@@ -843,7 +846,7 @@ function updateQuickAddModalDOM() {
         }
     }
 
-    // 6. Cập nhật hiển thị Hint Kích cỡ / Tồn kho (Cả Mobile & PC)
+    // 6. Cập nhật hiển thị Hint Kích cỡ / Tồn kho
     const stockBoxes = modal.querySelectorAll('.quick-add-stock-box');
     if (stockBoxes.length > 0) {
         stockBoxes.forEach(box => {
@@ -853,17 +856,9 @@ function updateQuickAddModalDOM() {
                 ${stockBadgeHtml}
             `;
         });
-    } else {
-        modal.querySelectorAll('.flex.items-center.gap-2.mb-2, .flex.items-center.gap-2.mb-2.5').forEach(container => {
-            container.innerHTML = `
-                <span class="text-slate-500 text-xs sm:text-sm">Kích cỡ:</span>
-                ${quickAddToCartSize ? `<strong class="text-slate-800 font-bold text-xs sm:text-sm">${quickAddToCartSize}</strong>` : ''}
-                ${stockBadgeHtml}
-            `;
-        });
     }
 
-    // 7. Cập nhật giao diện Nút Kích cỡ (Active / Hết hàng / Bình thường)
+    // 7. CẬP NHẬT GIAO DIỆN NÚT KÍCH CỠ (KHÔNG ẢNH HƯỞNG TỚI MÀU SẮC)
     modal.querySelectorAll('button[onclick^="selectQuickAddSize"]').forEach(btn => {
         const sizeName = btn.innerText.trim();
         const sizeObj = availableSizes.find(s => s.name === sizeName);
@@ -872,9 +867,9 @@ function updateQuickAddModalDOM() {
 
         let style = '';
         if (isSelected) {
-            style = 'bg-[#222222] text-white border-[#222222] font-bold ring-2 ring-slate-900 ring-offset-1';
+            style = 'bg-[#222222] text-white border-[#222222] font-bold';
         } else if (isOutOfStock) {
-            style = 'bg-slate-50 text-slate-300 border-slate-200 font-normal';
+            style = 'bg-slate-50 text-slate-300 border-slate-200 font-normal cursor-not-allowed';
         } else {
             style = 'bg-white text-slate-800 border-slate-200 hover:border-slate-400 font-medium';
         }
@@ -882,7 +877,7 @@ function updateQuickAddModalDOM() {
         btn.className = `w-11 h-11 border text-xs sm:text-sm transition-all flex items-center justify-center cursor-pointer ${style}`;
     });
 
-    // 8. Cập nhật Nút Thêm vào giỏ hàng (Active / Disabled)
+    // 8. Cập nhật Nút Thêm vào giỏ hàng
     const btnClass = !isBtnDisabled
         ? "bg-[#222222] text-white hover:bg-black cursor-pointer font-bold"
         : "bg-[#cccccc] text-white cursor-not-allowed font-bold";

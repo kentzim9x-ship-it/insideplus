@@ -686,16 +686,18 @@ function selectVisualFilter(styleVal) {
     renderCatalog(currentFilteredProducts);
 }
 
-function renderProductCardHTML(p) {
-    const firstColor = p.colors && p.colors.length > 0 ? p.colors[0] : { images: [''] };
+function renderProductCardHTML(p, cIdxActive = 0) {
+    const firstColor = p.colors && p.colors[cIdxActive] 
+        ? p.colors[cIdxActive] 
+        : (p.colors && p.colors[0] ? p.colors[0] : { images: [''] });
+
     const img1 = firstColor.images[0] || '';
     const img2 = firstColor.images[1] || img1;
 
-    // Tính toán % giảm giá
     const hasDiscount = p.originalPrice && p.originalPrice > p.price;
     const discountPercent = hasDiscount ? Math.round((1 - p.price / p.originalPrice) * 100) : 0;
 
-    return `<div class="bg-white p-0 overflow-hidden group cursor-pointer transition" onclick="openProductDrawer('${p.id}', 0)">
+    return `<div class="bg-white p-0 overflow-hidden group cursor-pointer transition" onclick="openProductDrawer('${p.id}', ${cIdxActive})">
         <div class="relative w-full aspect-[3/4] bg-slate-100 overflow-hidden mb-3">
             <img id="thumb-${p.id}" src="${img1}" loading="lazy" data-img1="${img1}" data-img2="${img2}" 
             onmouseenter="this.src=this.getAttribute('data-img2'); this.classList.add('scale-105');" 
@@ -711,12 +713,11 @@ function renderProductCardHTML(p) {
             </button>
         </div>
 
-        <!-- DANH SÁCH MÀU SẮC: Nút to hơn (w-5 h-5), màu active có vòng tròn đen + viền trắng -->
-        <div class="flex items-center gap-1.5 p-1 -ml-1 mb-1 flex-wrap" onclick="event.stopPropagation()">
+        <!-- DANH SÁCH MÀU (Có p-1.5 py-1 giúp viền ring-offset tỏa ra không bị xén) -->
+        <div class="flex items-center gap-2 px-1.5 py-1 mb-1 flex-wrap" onclick="event.stopPropagation()">
             ${(p.colors || []).map((c, cIdx) => {
                 const isColorOutOfStock = c.sizes && c.sizes.length > 0 && c.sizes.every(s => s.outOfStock);
                 const activeStyle = cIdx === cIdxActive ? 'ring-2 ring-slate-900 ring-offset-2' : '';
-                
                 return `<button onclick="changeCatalogThumbColor('${p.id}',${cIdx})" 
                     data-color-idx="${cIdx}"
                     class="color-btn-${p.id} w-5 h-5 rounded-full border border-slate-300 transition-all ${activeStyle}${isColorOutOfStock ? 'color-out-of-stock' : ''}" 
@@ -726,7 +727,7 @@ function renderProductCardHTML(p) {
 
         <h3 class="font-bold text-slate-900 text-sm uppercase tracking-tight mb-1.5">${p.name}</h3>
 
-        <!-- KHỐI GIÁ & BADGE % NẰM THẲNG HÀNG (items-center) -->
+        <!-- HIỂN THỊ GIÁ VÀ % NẰM CÙNG HÀNG THẲNG HÀNG -->
         <div class="flex items-center gap-2">
             <span class="text-sm font-bold text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
             ${hasDiscount ? `
@@ -739,7 +740,7 @@ function renderProductCardHTML(p) {
     </div>`;
 }
 
-function renderCatalog(items) {
+function renderCatalog(items, isAppend = false) {
     const grid = document.getElementById('catalog-grid');
     if (!grid) return;
 
@@ -752,8 +753,11 @@ function renderCatalog(items) {
 
     currentPage = 1;
     const initialItems = items.slice(0, PAGE_SIZE);
-    // TRUYỀN THÊM THAM SỐ DỰ PHÒNG 0 CHO cIdxActive ĐỂ TRÁNH LỖI ReferenceError
-    grid.innerHTML = initialItems.map(p => renderProductCardHTML(p, 0)).join('');
+    
+    const htmlContent = pagedItems.map(p => {
+        // Truyền tham số 0 làm cIdxActive mặc định
+        return renderProductCardHTML(p, 0);
+    }).join('');
 
     let sentinel = document.getElementById('catalog-sentinel');
     if (!sentinel) {
