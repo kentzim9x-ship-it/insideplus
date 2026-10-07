@@ -19,6 +19,11 @@ textarea {
     font-family: 'Montserrat', sans-serif !important;
 }
 
+#product-drawer, .drawer-panel {
+    will-change: transform, opacity;
+    contain: content; /* Giúp trình duyệt cô lập việc render lại bên trong drawer mà không ảnh hưởng toàn trang */
+}
+
 .custom-scroll::-webkit-scrollbar {
     width: 5px;
 }

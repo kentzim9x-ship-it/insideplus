@@ -517,13 +517,14 @@ window.addEventListener('popstate', function (e) {
     const urlParams = new URLSearchParams(window.location.search);
     const productParam = urlParams.get('product');
 
-    requestAnimationFrame(() => {
+    // 2. Trì hoãn việc render/cập nhật DOM để trình duyệt xử lý xong animation Back
+    setTimeout(() => {
         if (!productParam) {
             closeProductDrawer(false);
         } else {
             checkAndOpenProductFromUrl();
         }
-    });
+    }, 100); // Trì hoãn nhẹ 100ms
 });
 
 function handleMenuBtnClick(element) {
@@ -722,7 +723,7 @@ function renderCatalog(items, isAppend = false) {
         grid.innerHTML = htmlContent;
     }
 
-    if (window.lucide) lucide.createIcons();
+    if (window.lucide) lucide.createIcons({ root: document.getElementById('catalog-grid') });
     isLoadingMore = false;
 }
 
@@ -1497,6 +1498,8 @@ document.addEventListener('touchstart', function (e) {
 
 document.addEventListener('touchend', function (e) {
     if (isNativeNavigation) return;
+    
+    if (touchStartX < 25) return;
 
     const touchEndX = e.changedTouches[0].screenX;
     const touchEndY = e.changedTouches[0].screenY;
