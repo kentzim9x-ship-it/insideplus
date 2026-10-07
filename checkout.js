@@ -214,13 +214,19 @@ function openVoucherModal() {
 
     if (modal && panel) {
         modal.classList.remove('hidden');
-        modal.classList.add('flex', 'voucher-modal-open');
+        modal.classList.add('flex');
         document.body.classList.add('overflow-hidden');
 
         if (window.innerWidth < 640) {
+            // Hiệu ứng Trượt từ phải sang trên Mobile
             setTimeout(() => {
                 panel.classList.remove('translate-x-full');
                 panel.classList.add('translate-x-0');
+            }, 10);
+        } else {
+            // Hiệu ứng Phóng to nhẹ (Zoom In) + Fade In trên PC
+            setTimeout(() => {
+                modal.classList.add('voucher-pc-open');
             }, 10);
         }
     }
@@ -231,9 +237,8 @@ function closeVoucherModal() {
     const panel = document.getElementById('voucher-panel');
 
     if (modal && panel) {
-        modal.classList.remove('voucher-modal-open');
-        
         if (window.innerWidth < 640) {
+            // Đóng animation trên Mobile
             panel.classList.remove('translate-x-0');
             panel.classList.add('translate-x-full');
             setTimeout(() => {
@@ -242,9 +247,13 @@ function closeVoucherModal() {
                 document.body.classList.remove('overflow-hidden');
             }, 300);
         } else {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            document.body.classList.remove('overflow-hidden');
+            // Đóng animation trên PC (Thu nhỏ nhẹ + Fade Out)
+            modal.classList.remove('voucher-pc-open');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                document.body.classList.remove('overflow-hidden');
+            }, 200); // 200ms khớp với thời gian transition trong CSS
         }
     }
 }

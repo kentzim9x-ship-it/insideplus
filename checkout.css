@@ -96,3 +96,22 @@ body {
 .voucher-card-selected .voucher-card-notch-right {
     border-left: 1.5px solid #059669;
 }
+
+/* Lớp phủ Backdrop hiệu ứng mượt */
+#voucher-modal {
+    transition: opacity 0.25s ease-out;
+}
+
+/* Modal Panel trên PC (Hiệu ứng Zoom-In & Fade-In) */
+@media (min-width: 640px) {
+    #voucher-panel {
+        opacity: 0;
+        transform: scale(0.95);
+        transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+    }
+
+    #voucher-modal.voucher-pc-open #voucher-panel {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
