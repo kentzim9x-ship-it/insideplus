@@ -752,7 +752,8 @@ function renderCatalog(items) {
 
     currentPage = 1;
     const initialItems = items.slice(0, PAGE_SIZE);
-    grid.innerHTML = initialItems.map(p => renderProductCardHTML(p)).join('');
+    // TRUYỀN THÊM THAM SỐ DỰ PHÒNG 0 CHO cIdxActive ĐỂ TRÁNH LỖI ReferenceError
+    grid.innerHTML = initialItems.map(p => renderProductCardHTML(p, 0)).join('');
 
     let sentinel = document.getElementById('catalog-sentinel');
     if (!sentinel) {
@@ -786,7 +787,8 @@ function loadMoreProducts() {
         currentPage++;
         const newItems = currentFilteredProducts.slice(startIndex, currentPage * PAGE_SIZE);
         const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = newItems.map(p => renderProductCardHTML(p)).join('');
+        // TRUYỀN THÊM THAM SỐ 0 CHO cIdxActive TẠI ĐÂY LÔ-GÍC TƯƠNG TỰ
+        tempDiv.innerHTML = newItems.map(p => renderProductCardHTML(p, 0)).join('');
 
         while (tempDiv.firstChild) {
             grid.appendChild(tempDiv.firstChild);

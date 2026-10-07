@@ -694,6 +694,9 @@ function renderCatalog(items, isAppend = false) {
         const img1 = firstColor.images[0] || '';
         const img2 = firstColor.images[1] || img1;
 
+        const hasDiscount = p.originalPrice && p.originalPrice > p.price;
+        const discountPercent = hasDiscount ? Math.round((1 - p.price / p.originalPrice) * 100) : 0;
+
         return `<div class="bg-white p-0 overflow-hidden group cursor-pointer transition" onclick="openProductDrawer('${p.id}', 0)">
             <div class="relative w-full aspect-[3/4] bg-slate-100 overflow-hidden mb-3">
                 <img id="thumb-${p.id}" src="${img1}" loading="lazy" data-img1="${img1}" data-img2="${img2}" 
