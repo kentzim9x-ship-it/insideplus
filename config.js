@@ -693,10 +693,11 @@ function openQuickAddToCartModal(productId) {
     if (!modal) {
         modal = document.createElement('div');
         modal.id = 'quick-add-cart-modal';
-        // Đã sửa p-4 thành p-0 sm:p-4 để Mobile sát rạt viền ngoài
-        modal.className = "fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4 hidden";
         document.body.appendChild(modal);
     }
+
+    // Ép reset class cho Modal: Bỏ hoàn toàn padding p-0 trên Mobile, chỉ giữ sm:p-4 trên PC
+    modal.className = "fixed inset-0 z-[9999] flex items-end sm:items-center justify-center p-0 sm:p-4 hidden";
 
     renderQuickAddToCartModalContent();
     modal.classList.remove('hidden');
@@ -878,8 +879,8 @@ function renderQuickAddToCartModalContent() {
 
         <div id="quick-add-container" onclick="event.stopPropagation()" class="bg-white w-full sm:max-w-2xl rounded-t-2xl sm:rounded-sm overflow-hidden shadow-2xl relative z-[201] max-h-[85vh] sm:max-h-none overflow-y-auto ${animationClass}">
             
-            <!-- Header Modal: Bỏ px-5 py-3.5 ở mobile, giữ nguyên sm:px-6 sm:py-4 ở PC -->
-            <div class="flex justify-between items-center px-4 py-3 sm:px-6 sm:py-4 border-b border-slate-100 sticky top-0 bg-white z-10 w-full">
+            <!-- Header Modal: Đã tối ưu sát rạt viền 2 bên trên Mobile (w-full p-0) -->
+            <div class="flex justify-between items-center w-full px-4 py-3 sm:px-6 sm:py-4 border-b border-slate-100 sticky top-0 bg-white z-10">
                 <h3 class="font-bold text-base sm:text-xl text-slate-900 leading-none">Thêm nhanh vào giỏ</h3>
                 <button onclick="closeQuickAddToCartModal()" class="text-slate-900 hover:text-black font-bold text-2xl sm:text-3xl cursor-pointer leading-none">&times;</button>
             </div>
