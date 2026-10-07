@@ -809,12 +809,22 @@ function updateQuickAddModalDOM() {
     }
 
     // 4. CẬP NHẬT VÒNG TRÒN CHỌN MÀU (GIỮ NGUYÊN VIỀN RING KHI CHỌN MÀU/SIZE)
-    modal.querySelectorAll('button[onclick^="selectQuickAddColor"]').forEach((btn, idx) => {
-        const isSelected = idx === quickAddToCartColorIdx;
+    modal.querySelectorAll('button[onclick^="selectQuickAddColor"]').forEach((btn) => {
+        // Lấy chính xác index của màu từ thuộc tính onclick (VD: selectQuickAddColor(1) -> lấy số 1)
+        const match = btn.getAttribute('onclick').match(/\d+/);
+        if (!match) return;
+        const btnColorIdx = parseInt(match[0], 10);
+
+        const isSelected = btnColorIdx === quickAddToCartColorIdx;
+
+        // Giữ lại trạng thái gạch chéo nếu màu đó đang hết hàng
+        const strikeClass = btn.classList.contains('color-out-of-stock') ? 'color-out-of-stock' : '';
+
+        // Luôn bổ sung class 'relative' để dấu gạch chéo không bị vỡ bố cục
         if (isSelected) {
-            btn.className = 'w-6 h-6 rounded-full border ring-2 ring-slate-900 ring-offset-2 transition-all cursor-pointer block';
+            btn.className = `w-6 h-6 rounded-full border ring-2 ring-slate-900 ring-offset-2 transition-all cursor-pointer block relative ${strikeClass}`;
         } else {
-            btn.className = 'w-6 h-6 rounded-full border border-slate-300 hover:border-slate-400 transition-all cursor-pointer block';
+            btn.className = `w-6 h-6 rounded-full border border-slate-300 hover:border-slate-400 transition-all cursor-pointer block relative ${strikeClass}`;
         }
     });
 
