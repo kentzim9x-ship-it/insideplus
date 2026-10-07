@@ -63,12 +63,29 @@ body.drawer-open {
     justify-content: center;
 }
 
-/* Color Buttons & Out of Stock Indicators */
-.color-btn-wrapper {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+button.color-out-of-stock {
+    position: relative !important;
+}
+
+button.color-out-of-stock::before,
+button.color-out-of-stock::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    width: 140% !important;
+    height: 2px !important;
+    background-color: #0f0e0e !important;
+    z-index: 5 !important;
+    pointer-events: none !important;
+}
+
+button.color-out-of-stock::before {
+    transform: translate(-50%, -50%) rotate(45deg) !important;
+}
+
+button.color-out-of-stock::after {
+    transform: translate(-50%, -50%) rotate(-45deg) !important;
 }
 
 button.color-out-of-stock {

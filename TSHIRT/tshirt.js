@@ -702,8 +702,8 @@ function selectVisualFilter(styleVal) {
 }
 
 function renderProductCardHTML(p, cIdxActive = 0) {
-    const firstColor = p.colors && p.colors[cIdxActive] 
-        ? p.colors[cIdxActive] 
+    const firstColor = p.colors && p.colors[cIdxActive]
+        ? p.colors[cIdxActive]
         : (p.colors && p.colors[0] ? p.colors[0] : { images: [''] });
 
     const img1 = firstColor.images[0] || '';
@@ -731,13 +731,15 @@ function renderProductCardHTML(p, cIdxActive = 0) {
         <!-- DANH SÁCH MÀU (Có p-1.5 py-1 giúp viền ring-offset tỏa ra không bị xén) -->
         <div class="flex items-center gap-2 px-1.5 py-1 mb-1 flex-wrap" onclick="event.stopPropagation()">
             ${(p.colors || []).map((c, cIdx) => {
-                const isColorOutOfStock = c.sizes && c.sizes.length > 0 && c.sizes.every(s => s.outOfStock);
-                const activeStyle = cIdx === cIdxActive ? 'ring-2 ring-slate-900 ring-offset-2' : '';
-                return `<button onclick="changeCatalogThumbColor('${p.id}',${cIdx})" 
-                    data-color-idx="${cIdx}"
-                    class="color-btn-${p.id} w-5 h-5 rounded-full border border-slate-300 transition-all ${activeStyle}${isColorOutOfStock ? 'color-out-of-stock' : ''}" 
-                    style="background-color: ${c.hex};" title="${c.name}"></button>`;
-            }).join('')}
+        const isColorOutOfStock = (c.sizes && c.sizes.length > 0)
+            ? c.sizes.every(s => Boolean(s.outOfStock) || s.stock === 0)
+            : false;
+        const activeStyle = cIdx === cIdxActive ? 'ring-2 ring-slate-900 ring-offset-2' : '';
+        return `<button onclick="changeCatalogThumbColor('${p.id}',${cIdx})" 
+        data-color-idx="${cIdx}"
+        class="color-btn-${p.id} w-5 h-5 rounded-full border border-slate-300 transition-all ${activeStyle} ${isColorOutOfStock ? 'color-out-of-stock' : ''}" 
+        style="background-color: ${c.hex};" title="${c.name}"></button>`;
+    }).join('')}
         </div>
 
         <h3 class="font-bold text-slate-900 text-sm uppercase tracking-tight mb-1.5">${p.name}</h3>
@@ -768,7 +770,7 @@ function renderCatalog(items, isAppend = false) {
 
     currentPage = 1;
     const initialItems = items.slice(0, PAGE_SIZE);
-    
+
     // Đã đổi pagedItems thành initialItems
     const htmlContent = initialItems.map(p => {
         return renderProductCardHTML(p, 0);
@@ -845,10 +847,10 @@ function setupInfiniteScroll() {
 function changeCatalogThumbColor(id, colorIdx) {
     const p = originalProducts.find(item => item.id === id);
     if (!p) return;
-    
+
     const targetColor = p.colors[colorIdx];
     const imgEl = document.getElementById('thumb-' + id);
-    
+
     // 1. Cập nhật ảnh tương ứng với màu được chọn
     if (imgEl && targetColor) {
         const newImg1 = targetColor.images[0] || '';
@@ -966,6 +968,12 @@ function changeDrawerColor(productId, colorIdx) {
     }
 }
 
+function checkColorOutOfStock(colorObj) {
+    if (!colorObj || !Array.isArray(colorObj.sizes) || colorObj.sizes.length === 0) return false;
+    // Kiểm tra tất cả các size thuộc màu này có outOfStock = true hoặc stock = 0 không
+    return colorObj.sizes.every(s => Boolean(s.outOfStock) || s.stock === 0);
+}
+
 function renderDrawerContent(p, colorIdx) {
     const activeColor = p.colors && p.colors[colorIdx] ? p.colors[colorIdx] : { name: '', hex: '', images: [''], sizes: [] };
     const availableSizes = activeColor.sizes || [];
@@ -990,7 +998,7 @@ function renderDrawerContent(p, colorIdx) {
 
         if (currentQuantity > maxStock && maxStock > 0) {
             stockBadgeHtml = `<span class="text-red-600 font-bold text-[11px] bg-red-50 px-2 py-0.5 rounded-sm">Còn ${maxStock} SP</span>`;
-        } else if (maxStock < 20) {
+        } else if (maxStock < 20 && maxStock > 0) {
             stockBadgeHtml = `<span class="text-amber-600 font-bold text-[11px] bg-amber-50 px-2 py-0.5 rounded-sm">Sắp hết hàng</span>`;
         }
     }
@@ -1034,14 +1042,14 @@ function renderDrawerContent(p, colorIdx) {
     </div>`;
 
     const colorsHtml = (p.colors || []).map((c, cIdx) => {
-        const cIsAllOutOfStock = c.sizes && c.sizes.length > 0 && c.sizes.every(s => s.outOfStock);
+        const cIsAllOutOfStock = c.sizes && c.sizes.length > 0 && c.sizes.every(s => Boolean(s.outOfStock) || s.stock === 0);
         const strikeClass = cIsAllOutOfStock ? 'color-out-of-stock' : '';
         const activeClass = cIdx === colorIdx ? 'ring-2 ring-slate-900 ring-offset-2' : '';
 
         return `<div class="color-btn-wrapper p-0.5">
         <button onclick="changeDrawerColor('${p.id}', ${cIdx})" 
-        class="w-6 h-6 rounded-full border border-slate-300 transition-all relative ${strikeClass} ${activeClass}" 
-        style="background-color: ${c.hex};" title="${c.name}">
+            class="w-6 h-6 rounded-full border border-slate-300 transition-all relative ${strikeClass} ${activeClass}" 
+            style="background-color: ${c.hex};" title="${c.name}">
         </button>
     </div>`;
     }).join('');

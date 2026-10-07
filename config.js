@@ -808,12 +808,14 @@ function updateQuickAddModalDOM() {
         });
     }
 
-    // 4. CẬP NHẬT VÒNG TRÒN CHỌN MÀU (GIỮ NGUYÊN RING KHI THAO TÁC)
+    // 4. CẬP NHẬT VÒNG TRÒN CHỌN MÀU (GIỮ NGUYÊN VIỀN RING KHI CHỌN MÀU/SIZE)
     modal.querySelectorAll('button[onclick^="selectQuickAddColor"]').forEach((btn, idx) => {
-        const ring = idx === quickAddToCartColorIdx 
-            ? 'ring-2 ring-slate-900 ring-offset-2' 
-            : 'border-slate-300 hover:border-slate-400';
-        btn.className = `w-6 h-6 rounded-full border ${ring} transition-all cursor-pointer block`;
+        const isSelected = idx === quickAddToCartColorIdx;
+        if (isSelected) {
+            btn.className = 'w-6 h-6 rounded-full border ring-2 ring-slate-900 ring-offset-2 transition-all cursor-pointer block';
+        } else {
+            btn.className = 'w-6 h-6 rounded-full border border-slate-300 hover:border-slate-400 transition-all cursor-pointer block';
+        }
     });
 
     // 5. Tính toán Tồn kho thực tế
@@ -941,10 +943,12 @@ function renderQuickAddToCartModalContent() {
 
     const colorsHtml = p.colors.map((c, idx) => {
         const isSelected = idx === quickAddToCartColorIdx;
+        const isColorOutOfStock = c.sizes && c.sizes.length > 0 && c.sizes.every(s => Boolean(s.outOfStock) || s.stock === 0);
         const ringStyle = isSelected ? 'ring-2 ring-slate-900 ring-offset-2' : 'border-slate-300';
+
         return `<div class="p-1 shrink-0 flex items-center justify-center">
         <button onclick="selectQuickAddColor(${idx})" 
-            class="w-6 h-6 rounded-full border ${ringStyle} transition-all cursor-pointer block" 
+            class="w-6 h-6 rounded-full border ${ringStyle} ${isColorOutOfStock ? 'color-out-of-stock' : ''} transition-all cursor-pointer block relative" 
             style="background-color: ${c.hex || '#000'};" title="${c.name}"></button>
     </div>`;
     }).join('');

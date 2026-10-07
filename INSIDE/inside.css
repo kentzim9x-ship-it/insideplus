@@ -52,6 +52,7 @@ body.drawer-open {
     overflow: hidden !important;
 }
 
+/* Color Buttons & Out of Stock Indicators */
 .color-btn-wrapper {
     position: relative;
     display: inline-flex;
@@ -74,6 +75,14 @@ button.color-out-of-stock::after {
     background-color: #0f0e0e !important;
     z-index: 5 !important;
     pointer-events: none !important;
+}
+
+button.color-out-of-stock::before {
+    transform: translate(-50%, -50%) rotate(45deg) !important;
+}
+
+button.color-out-of-stock::after {
+    transform: translate(-50%, -50%) rotate(-45deg) !important;
 }
 
 button.color-out-of-stock::before {
