@@ -216,7 +216,7 @@ function renderCartModalContent() {
                         Bắt đầu mua sắm
                     </button>
                     <p class="text-center text-[11px] text-slate-500 font-medium mt-3">
-                        // Khi cần trợ giúp vui lòng gọi <a href="tel:18001100" class="font-bold text-slate-900 underline">1800 1100</a> (Miễn phí)
+                        Khi cần trợ giúp vui lòng gọi <a href="tel:18001100" class="font-bold text-slate-900 underline">1800 1100</a> (Miễn phí)
                     </p>
                 </div>
             `;

@@ -438,9 +438,18 @@ function renderRecentViewedSlider(currentProductId) {
             ? `openProductDrawer('${p.id}', 0)`
             : `window.location.href='${targetPage}?product=${formatProductCode(p.id, p.category)}&color=${formatColorCode(0, p.category)}'`;
 
-        const colorsDots = (p.colors || []).map((c, cIdx) =>
-            `<button onclick="event.stopPropagation(); changeRecentThumbColor('${p.id}', ${cIdx})" class="w-3.5 h-3.5 rounded-full border border-slate-300" style="background-color: ${c.hex};" title="${c.name}"></button>`
-        ).join('');
+        // 1. Tính toán % giảm giá
+        const hasDiscount = p.originalPrice && p.originalPrice > p.price;
+        const discountPercent = hasDiscount ? Math.round((1 - p.price / p.originalPrice) * 100) : 0;
+
+        const colorsDots = (p.colors || []).map((c, cIdx) => {
+            // 2. Kiểm tra màu hết hàng
+            const isColorOutOfStock = checkColorOutOfStock(c);
+            const strikeClass = isColorOutOfStock ? 'color-out-of-stock' : '';
+
+            // 3. Tăng kích thước nút màu (w-5 h-5) và thêm class relative
+            return `<button onclick="event.stopPropagation(); changeRecentThumbColor('${p.id}', ${cIdx})" class="w-5 h-5 relative rounded-full border border-slate-300 transition-all ${strikeClass}" style="background-color: ${c.hex};" title="${c.name}"></button>`
+        }).join('');
 
         return `<div class="flex-none w-[calc(50%-12px)] lg:w-[calc(25%-18px)] group cursor-pointer" onclick="${clickAction}">
             <div class="relative aspect-[3/4] bg-slate-100 overflow-hidden mb-3">
@@ -449,11 +458,17 @@ function renderRecentViewedSlider(currentProductId) {
                 onmouseleave="this.src=this.getAttribute('data-img1'); this.classList.remove('scale-105');" 
                 class="w-full h-full object-cover transition-transform duration-500 ease-out">
             </div>
-            <div class="flex items-center gap-1.5 mb-2">${colorsDots}</div>
+            
+            <div class="flex items-center gap-2 mb-2 flex-wrap">${colorsDots}</div>
+            
             <h4 class="font-bold text-slate-900 text-xs sm:text-sm uppercase tracking-tight line-clamp-1 mb-1">${p.name}</h4>
-            <div class="flex items-baseline gap-2">
-                <span class="text-xs sm:text-sm font-medium text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
-                ${p.originalPrice ? `<span class="text-[11px] text-slate-400 line-through font-normal">${p.originalPrice.toLocaleString('vi-VN')}đ</span>` : ''}
+            
+            <div class="flex items-center gap-2">
+                <span class="text-xs sm:text-sm font-bold text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
+                ${hasDiscount ? `
+                    <span class="text-[11px] text-slate-400 line-through font-normal">${p.originalPrice.toLocaleString('vi-VN')}đ</span>
+                    <span class="bg-[#f1f3f9] text-[#556b92] font-semibold text-[11px] px-1.5 py-0.5 rounded-xs">-${discountPercent}%</span>
+                ` : ''}
             </div>
         </div>`;
     }).join('');
