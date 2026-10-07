@@ -877,7 +877,7 @@ function renderQuickAddToCartModalContent() {
     modal.innerHTML = `
         <div id="quick-add-backdrop" class="fixed inset-0 bg-black/50 transition-opacity duration-300 opacity-0 z-[200]" onclick="closeQuickAddToCartModal()"></div>
 
-        <div id="quick-add-container" onclick="event.stopPropagation()" class="bg-white w-full sm:max-w-2xl rounded-t-2xl sm:rounded-sm overflow-hidden shadow-2xl relative z-[201] max-h-[85vh] sm:max-h-none overflow-y-auto ${animationClass}">
+        <div id="quick-add-container" onclick="event.stopPropagation()" class="bg-white w-full sm:max-w-2xl rounded-t-2xl sm:rounded-sm overflow-hidden shadow-2xl relative z-[201] max-h-[85vh] sm:max-h-none overflow-y-auto p-0 ${animationClass}">
             
             <!-- Header Modal -->
                 <div class="flex justify-between items-center px-5 py-3.5 sm:px-6 sm:py-4 border-b border-slate-100 sticky top-0 bg-white z-10">
