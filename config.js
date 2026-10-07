@@ -669,7 +669,6 @@ function attachQuickAddHoverEvents() {
 }
 
 let isQuickAddFirstOpen = false;
-
 let quickAddSavedScrollY = 0; // Biến lưu vị trí cuộn
 
 // --- TỰ ĐỘNG NHÚNG CSS ANIMATION CHO QUICK ADD POPUP ---
@@ -746,8 +745,8 @@ function closeQuickAddToCartModal() {
 function selectQuickAddColor(colorIdx) {
     if (quickAddToCartColorIdx === colorIdx) return;
     quickAddToCartColorIdx = colorIdx;
-    quickAddToCartSize = null; // Reset size
-    quickAddImageIdx = 0;
+    quickAddToCartSize = null; // Reset size khi đổi màu
+    quickAddImageIdx = 0;      // Reset về ảnh đầu tiên
     updateQuickAddModalDOM();
 }
 
@@ -766,6 +765,7 @@ function changeQuickAddImage(delta) {
     updateQuickAddModalDOM();
 }
 
+// --- HÀM CẬP NHẬT TRỰC TIẾP DOM CHUẨN XÁC CẢ MOBILE VÀ PC ---
 function updateQuickAddModalDOM() {
     const modal = document.getElementById('quick-add-cart-modal');
     if (!modal || !quickAddToCartProduct) return;
@@ -779,32 +779,41 @@ function updateQuickAddModalDOM() {
     if (quickAddImageIdx >= images.length) quickAddImageIdx = 0;
     const currentImg = images[quickAddImageIdx];
 
-    // Cập nhật ảnh đại diện (Mobile & PC)
-    modal.querySelectorAll('img').forEach(img => { img.src = currentImg; });
+    // 1. Cập nhật ảnh đại diện sản phẩm (cả Mobile & PC)
+    modal.querySelectorAll('img').forEach(img => { 
+        if (!img.classList.contains('pointer-events-none') && img.parentElement.classList.contains('aspect-[4/5]')) {
+            img.src = currentImg; 
+        } else if (img.classList.contains('pointer-events-none')) {
+            img.src = currentImg;
+        }
+    });
 
-    // Cập nhật chỉ số ảnh (1/X)
+    // 2. Cập nhật chỉ số ảnh (VD: 1/5)
     modal.querySelectorAll('span').forEach(sp => {
-        if (sp.innerText && sp.innerText.includes('/') && /^\d+\/\d+$/.test(sp.innerText.trim())) {
+        if (sp.innerText && /^\d+\/\d+$/.test(sp.innerText.trim())) {
             sp.innerText = `${quickAddImageIdx + 1}/${images.length}`;
         }
     });
 
-    // Cập nhật tên màu đang chọn
-    modal.querySelectorAll('strong').forEach(str => {
-        if (str.previousSibling && str.previousSibling.textContent && str.previousSibling.textContent.includes('Màu:')) {
-            str.innerText = activeColor.name;
-        } else if (str.parentElement && str.parentElement.textContent.includes('Màu:')) {
-            str.innerText = activeColor.name;
-        }
-    });
+    // 3. Cập nhật Tên Màu đang chọn ở tiêu đề Màu
+    const colorLabelNodes = modal.querySelectorAll('#quick-add-color-name-mobile, #quick-add-color-name-pc');
+    if (colorLabelNodes.length > 0) {
+        colorLabelNodes.forEach(node => node.innerText = activeColor.name);
+    } else {
+        modal.querySelectorAll('strong').forEach(str => {
+            if (str.previousSibling && str.previousSibling.textContent && str.previousSibling.textContent.includes('Màu:')) {
+                str.innerText = activeColor.name;
+            }
+        });
+    }
 
-    // Cập nhật Vòng chọn màu (Ring active)
+    // 4. Cập nhật Vòng tròn chọn Màu (Active ring)
     modal.querySelectorAll('button[onclick^="selectQuickAddColor"]').forEach((btn, idx) => {
         const ring = idx === quickAddToCartColorIdx ? 'ring-2 ring-slate-900 ring-offset-2' : 'border-slate-300';
         btn.className = `w-7 h-7 rounded-full border ${ring} transition cursor-pointer block`;
     });
 
-    // Tính toán Tồn Kho
+    // 5. Tính toán Tồn kho thực tế
     const defaultSizes = [{ name: 'S', stock: 50 }, { name: 'M', stock: 15 }, { name: 'L', stock: 0 }, { name: 'XL', stock: 30 }, { name: 'XXL', stock: 40 }];
     const availableSizes = activeColor.sizes || defaultSizes;
     const selectedSizeObj = availableSizes.find(s => s.name === quickAddToCartSize);
@@ -834,16 +843,27 @@ function updateQuickAddModalDOM() {
         }
     }
 
-    // Cập nhật khu vực hiển thị Tên Kích cỡ + Hint Hết Hàng / Còn hàng
-    modal.querySelectorAll('.flex.items-center.gap-2.mb-2, .flex.items-center.gap-2.mb-2.5').forEach(container => {
-        container.innerHTML = `
-            <span class="text-slate-500 text-xs sm:text-sm">Kích cỡ:</span>
-            ${quickAddToCartSize ? `<strong class="text-slate-800 font-bold text-xs sm:text-sm">${quickAddToCartSize}</strong>` : ''}
-            ${stockBadgeHtml}
-        `;
-    });
+    // 6. Cập nhật hiển thị Hint Kích cỡ / Tồn kho (Cả Mobile & PC)
+    const stockBoxes = modal.querySelectorAll('.quick-add-stock-box');
+    if (stockBoxes.length > 0) {
+        stockBoxes.forEach(box => {
+            box.innerHTML = `
+                <span class="text-slate-500 text-xs sm:text-sm">Kích cỡ:</span>
+                ${quickAddToCartSize ? `<strong class="text-slate-800 font-bold text-xs sm:text-sm">${quickAddToCartSize}</strong>` : ''}
+                ${stockBadgeHtml}
+            `;
+        });
+    } else {
+        modal.querySelectorAll('.flex.items-center.gap-2.mb-2, .flex.items-center.gap-2.mb-2.5').forEach(container => {
+            container.innerHTML = `
+                <span class="text-slate-500 text-xs sm:text-sm">Kích cỡ:</span>
+                ${quickAddToCartSize ? `<strong class="text-slate-800 font-bold text-xs sm:text-sm">${quickAddToCartSize}</strong>` : ''}
+                ${stockBadgeHtml}
+            `;
+        });
+    }
 
-    // Cập nhật giao diện danh sách nút Size
+    // 7. Cập nhật giao diện Nút Kích cỡ (Active / Hết hàng / Bình thường)
     modal.querySelectorAll('button[onclick^="selectQuickAddSize"]').forEach(btn => {
         const sizeName = btn.innerText.trim();
         const sizeObj = availableSizes.find(s => s.name === sizeName);
@@ -862,7 +882,7 @@ function updateQuickAddModalDOM() {
         btn.className = `w-11 h-11 border text-xs sm:text-sm transition flex items-center justify-center cursor-pointer ${style}`;
     });
 
-    // Cập nhật Nút Thêm Vào Giỏ Hàng
+    // 8. Cập nhật Nút Thêm vào giỏ hàng (Active / Disabled)
     const btnClass = !isBtnDisabled
         ? "bg-[#222222] text-white hover:bg-black cursor-pointer font-bold"
         : "bg-[#cccccc] text-white cursor-not-allowed font-bold";
@@ -892,7 +912,7 @@ function handleQuickAddTouchEnd(e) {
     }
 }
 
-// Biến lưu số lượng nhập trong popup/chi tiết
+// Biến lưu số lượng nhập trong popup
 let quickAddToCartQty = 1;
 
 function updateQuickAddQty(delta) {
@@ -944,8 +964,8 @@ function renderQuickAddToCartModalContent() {
         stockBadgeHtml = `<span class="bg-[#222222] text-white text-[10px] px-2 py-0.5 font-medium rounded-xs">Chọn kích cỡ</span>`;
         isBtnDisabled = true;
     } else if (selectedSizeObj) {
-        const isOutOfStock = selectedSizeObj.outOfStock || selectedSizeObj.stock === 0;
-        maxStock = selectedSizeObj.stock !== undefined ? selectedSizeObj.stock : (isOutOfStock ? 0 : 50);
+        const isOutOfStock = selectedSizeObj.outOfStock || Number(selectedSizeObj.stock) === 0;
+        maxStock = selectedSizeObj.stock !== undefined ? Number(selectedSizeObj.stock) : (isOutOfStock ? 0 : 50);
 
         if (isOutOfStock || maxStock === 0) {
             stockBadgeHtml = `<span class="text-red-600 font-bold text-xs">Hết hàng</span>`;
@@ -968,7 +988,7 @@ function renderQuickAddToCartModalContent() {
 
     const sizesHtml = availableSizes.map(s => {
         const isSelected = quickAddToCartSize === s.name;
-        const isOutOfStock = s.outOfStock || s.stock === 0;
+        const isOutOfStock = s.outOfStock || Number(s.stock) === 0;
 
         let style = '';
         if (isSelected) {
@@ -1016,12 +1036,12 @@ function renderQuickAddToCartModalContent() {
                     </div>
 
                     <div>
-                        <span class="text-slate-500 text-xs sm:text-sm">Màu: <strong class="text-slate-800 font-bold">${activeColor.name}</strong></span>
+                        <span class="text-slate-500 text-xs sm:text-sm">Màu: <strong id="quick-add-color-name-mobile" class="text-slate-800 font-bold">${activeColor.name}</strong></span>
                         <div class="flex gap-1 pt-1 overflow-x-auto no-scrollbar items-center">${colorsHtml}</div>
                     </div>
 
                     <div>
-                        <div class="flex items-center gap-2 mb-2">
+                        <div class="quick-add-stock-box flex items-center gap-2 mb-2">
                             <span class="text-slate-500 text-xs sm:text-sm">Kích cỡ:</span>
                             ${quickAddToCartSize ? `<strong class="text-slate-800 font-bold text-xs sm:text-sm">${quickAddToCartSize}</strong>` : ''}
                             ${stockBadgeHtml}
@@ -1067,12 +1087,12 @@ function renderQuickAddToCartModalContent() {
                                 <p class="text-lg font-bold text-slate-900">${p.price.toLocaleString('vi-VN')} đ</p>
 
                                 <div class="pt-2">
-                                    <span class="text-slate-500 font-normal">Màu: <strong class="text-slate-800">${activeColor.name}</strong></span>
+                                    <span class="text-slate-500 font-normal">Màu: <strong id="quick-add-color-name-pc" class="text-slate-800 font-bold">${activeColor.name}</strong></span>
                                     <div class="flex gap-1 pt-1 items-center">${colorsHtml}</div>
                                 </div>
 
                                 <div class="pt-2">
-                                    <div class="flex items-center gap-2 mb-2.5">
+                                    <div class="quick-add-stock-box flex items-center gap-2 mb-2.5">
                                         <span class="text-slate-500 font-normal">Kích cỡ:</span>
                                         ${quickAddToCartSize ? `<strong class="text-slate-800 font-bold text-xs sm:text-sm">${quickAddToCartSize}</strong>` : ''}
                                         ${stockBadgeHtml}
@@ -1125,8 +1145,7 @@ function submitQuickAddToCart() {
 
     closeQuickAddToCartModal();
     updateCartBadge();
-    showCartToast(`Đã thêm ${quickAddToCartProduct.name} (Size ${quickAddToCartSize}) vào giỏ hàng`); // Giữ nguyên thông báo xanh
-    // Đã bỏ openCartModal() để không chuyển hướng/mở giỏ hàng
+    showCartToast(`Đã thêm ${quickAddToCartProduct.name} (Size ${quickAddToCartSize}) vào giỏ hàng`);
 }
 
 // --- 7. HÀM HỖ TRỢ QUICK EDIT & ĐIỀU HƯỚNG ---
