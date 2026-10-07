@@ -432,13 +432,14 @@ function renderRecentViewedSlider(currentProductId) {
         const img2 = (p.images && p.images[1]) || img1;
         const targetPage = getCategoryPageUrl(p.category);
         const isCurrentPage = targetPage.includes('inside.html');
+        const discountPercent = hasDiscount ? Math.round((1 - p.price / p.originalPrice) * 100) : 0;
 
         const clickAction = isCurrentPage
             ? `openProductDrawer('${p.id}', 0)`
             : `window.location.href='${targetPage}?product=${formatProductCode(p.id, p.category)}&color=${formatColorCode(0, p.category)}'`;
 
         const colorsDots = (p.colors || []).map((c, cIdx) =>
-            `<button onclick="event.stopPropagation(); changeRecentThumbColor('${p.id}', ${cIdx})" class="w-3.5 h-3.5 rounded-full border border-slate-300" style="background-color: ${c.hex};" title="${c.name}"></button>`
+            `<button onclick="event.stopPropagation(); changeRecentThumbColor('${p.id}', ${cIdx})" class="w-5 h-5 rounded-full border border-slate-300" style="background-color: ${c.hex};" title="${c.name}"></button>`
         ).join('');
 
         return `<div class="flex-none w-[calc(50%-12px)] lg:w-[calc(25%-18px)] group cursor-pointer" onclick="${clickAction}">
@@ -453,6 +454,9 @@ function renderRecentViewedSlider(currentProductId) {
             <div class="flex items-baseline gap-2">
                 <span class="text-xs sm:text-sm font-medium text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
                 ${p.originalPrice ? `<span class="text-[11px] text-slate-400 line-through font-normal">${p.originalPrice.toLocaleString('vi-VN')}đ</span>` : ''}
+                <span class="bg-[#f1f3f9] text-[#556b92] font-semibold text-[11px] px-1.5 py-0.5 rounded-xs">
+                    -${discountPercent}%
+                </span>
             </div>
         </div>`;
     }).join('');
