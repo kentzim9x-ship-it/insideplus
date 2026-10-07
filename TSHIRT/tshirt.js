@@ -399,7 +399,7 @@ function renderDynamicFilterOptions() {
         styleContainer.innerHTML = Array.from(uniqueStyles).map(style => `
             <label class="flex items-center text-xs font-bold text-slate-700 cursor-pointer">
                 <input type="checkbox" onchange="onFilterChange()" name="filter-style" value="${style}" class="mr-2">
-                Quần Lót ${style}
+                ${style}
             </label>
         `).join('');
     } else {
