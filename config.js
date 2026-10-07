@@ -72,7 +72,7 @@ function showCartToast(message) {
     const toast = document.createElement('div');
     toast.id = 'cart-toast-msg';
     toast.className = 'fixed top-16 left-0 right-0 w-full sm:left-auto sm:right-0 sm:w-auto sm:max-w-md z-[9999] bg-[#1d3b8a] text-white px-4 py-3 shadow-2xl flex items-center gap-3 text-xs sm:text-sm animate-slide-in-right rounded-none sm:rounded-l-sm sm:rounded-r-none';
-    
+
     toast.innerHTML = `
         <i data-lucide="info" class="w-4 h-4 shrink-0 text-blue-200"></i>
         <span class="flex-1 font-medium leading-tight">${message}</span>
@@ -312,8 +312,8 @@ function renderCartModalContent() {
                 ? Math.round((currentPriceTotal * activeVoucher.discountValue) / 100)
                 : activeVoucher.discountValue;
 
-            voucherTitleText = activeVoucher.title 
-                ? `${activeVoucher.title} (${activeVoucher.desc || activeVoucher.code})` 
+            voucherTitleText = activeVoucher.title
+                ? `${activeVoucher.title} (${activeVoucher.desc || activeVoucher.code})`
                 : activeVoucher.code;
 
             if (voucherLabel) voucherLabel.innerText = activeVoucher.code;
@@ -414,8 +414,8 @@ function renderCartModalContent() {
 }
 
 function checkProductStock(productId, colorName, sizeName, requestedQty) {
-    const product = typeof findProductAnywhere === 'function' 
-        ? findProductAnywhere(productId) 
+    const product = typeof findProductAnywhere === 'function'
+        ? findProductAnywhere(productId)
         : (typeof originalProducts !== 'undefined' ? originalProducts.find(p => p.id === productId) : null);
 
     if (!product) return { valid: true, maxStock: 999 };
@@ -687,7 +687,7 @@ function openQuickAddToCartModal(productId) {
 
     quickAddToCartColorIdx = 0;
     quickAddToCartSize = null;
-    quickAddImageIdx = 0; 
+    quickAddImageIdx = 0;
 
     let modal = document.getElementById('quick-add-cart-modal');
     if (!modal) {
@@ -800,10 +800,10 @@ function renderQuickAddToCartModalContent() {
 
     const p = quickAddToCartProduct;
     const activeColor = p.colors[quickAddToCartColorIdx] || p.colors[0];
-    const images = activeColor.images && activeColor.images.length > 0 
-        ? activeColor.images 
+    const images = activeColor.images && activeColor.images.length > 0
+        ? activeColor.images
         : ["https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=600"];
-    
+
     if (quickAddImageIdx >= images.length) quickAddImageIdx = 0;
     const currentImg = images[quickAddImageIdx];
 
@@ -880,13 +880,13 @@ function renderQuickAddToCartModalContent() {
         <div id="quick-add-container" onclick="event.stopPropagation()" class="bg-white w-full sm:max-w-2xl rounded-t-2xl sm:rounded-sm overflow-hidden shadow-2xl relative z-[201] max-h-[85vh] sm:max-h-none overflow-y-auto p-0 ${animationClass}">
             
             <!-- Header Modal -->
-                <div class="flex justify-between items-center px-5 py-3.5 sm:px-6 sm:py-4 border-b border-slate-100 sticky top-0 bg-white z-10">
-                    <h3 class="font-bold text-lg sm:text-xl text-slate-900">Thêm nhanh vào giỏ</h3>
-                    <button onclick="closeQuickAddToCartModal()" class="text-slate-900 hover:text-black font-bold text-3xl cursor-pointer">&times;</button>
+                <div class="flex justify-between items-center px-4 py-3 sm:px-6 sm:py-4 border-b border-slate-100 sticky top-0 bg-white z-10">
+                    <h3 class="font-bold text-base sm:text-xl text-slate-900 leading-none">Thêm nhanh vào giỏ</h3>
+                    <button onclick="closeQuickAddToCartModal()" class="text-slate-900 hover:text-black font-bold text-2xl sm:text-3xl cursor-pointer leading-none">&times;</button>
                 </div>
 
             <!-- 1. GIAO DIỆN MOBILE -->
-            <div class="block sm:hidden p-4 space-y-4">
+            <div class="block sm:hidden px-4 pt-3 pb-4 space-y-4">
                 <div class="flex gap-4 items-start">
                     <div class="w-28 aspect-[3/4] bg-slate-100 rounded-sm overflow-hidden shrink-0 relative select-none"
                          ontouchstart="handleQuickAddTouchStart(event)" 
@@ -1114,19 +1114,19 @@ function renderQuickEditDrawer() {
     if (!container || editingCartItemIndex === null || !cartItems[editingCartItemIndex]) return;
 
     const item = cartItems[editingCartItemIndex];
-    const product = typeof findProductAnywhere === 'function' 
-        ? findProductAnywhere(item.productId) 
+    const product = typeof findProductAnywhere === 'function'
+        ? findProductAnywhere(item.productId)
         : originalProducts.find(p => p.id === item.productId);
 
     if (!product) return;
 
-    const currentColorIdx = (typeof quickEditColorIdx !== 'undefined' && quickEditColorIdx !== null) 
-        ? quickEditColorIdx 
+    const currentColorIdx = (typeof quickEditColorIdx !== 'undefined' && quickEditColorIdx !== null)
+        ? quickEditColorIdx
         : product.colors.findIndex(c => c.name === item.colorName);
-        
+
     const activeColor = product.colors[currentColorIdx] || product.colors[0];
-    const activeSize = (typeof quickEditSelectedSize !== 'undefined' && quickEditSelectedSize) 
-        ? quickEditSelectedSize 
+    const activeSize = (typeof quickEditSelectedSize !== 'undefined' && quickEditSelectedSize)
+        ? quickEditSelectedSize
         : item.size;
 
     const origPriceFormatted = (product.originalPrice || Math.round(product.price * 1.2)).toLocaleString('vi-VN');
@@ -1323,7 +1323,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 (function injectQuickAddAnimationStyles() {
     if (document.getElementById('quick-add-animation-styles')) return;
-    
+
     const style = document.createElement('style');
     style.id = 'quick-add-animation-styles';
     style.innerHTML = `
