@@ -307,3 +307,40 @@ button,
         transition: opacity 0.1s ease !important;
     }
 }
+
+/* --- ANIMATION TÌM KIẾM TRƯỢT TỪ HEADER XUỐNG --- */
+@keyframes searchSlideDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes searchSlideUp {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+}
+
+/* Class áp dụng hiệu ứng */
+#search-modal {
+    transition: opacity 0.3s ease;
+}
+
+#search-modal .search-content-wrapper {
+    will-change: transform, opacity;
+    animation: searchSlideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+#search-modal.is-closing .search-content-wrapper {
+    animation: searchSlideUp 0.3s ease-in forwards !important;
+}

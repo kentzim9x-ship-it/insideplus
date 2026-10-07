@@ -1122,9 +1122,13 @@ let savedScrollPositionY = 0;
 function openSearchModal() {
     const searchModal = document.getElementById('search-modal');
     if (!searchModal) return;
+
     savedScrollPositionY = window.scrollY;
-    searchModal.classList.remove('hidden');
+
+    // Reset các trạng thái animation đóng cũ
+    searchModal.classList.remove('is-closing', 'hidden');
     searchModal.scrollTop = 0;
+
     document.body.classList.add('drawer-open');
     document.body.style.top = `-${savedScrollPositionY}px`;
 
@@ -1132,19 +1136,31 @@ function openSearchModal() {
     if (input) {
         input.value = '';
         handleSearchInput('');
+        // Tự động focus vào ô tìm kiếm sau khi hiệu ứng hoàn tất
+        setTimeout(() => input.focus(), 250);
     }
+
     if (window.lucide) lucide.createIcons({ root: searchModal });
 }
 
 function closeSearchModal() {
     const searchModal = document.getElementById('search-modal');
-    if (searchModal) {
+    if (!searchModal || searchModal.classList.contains('hidden')) return;
+
+    // Kích hoạt animation trượt ngược lên trên
+    searchModal.classList.add('is-closing');
+
+    // Chờ animation kéo lên hoàn tất (300ms) rồi mới ẩn modal
+    setTimeout(() => {
         searchModal.classList.add('hidden');
-    }
-    document.body.classList.remove('drawer-open');
-    document.body.style.top = '';
-    window.scrollTo(0, savedScrollPositionY);
-    clearAllBoldActiveStates();
+        searchModal.classList.remove('is-closing');
+
+        document.body.classList.remove('drawer-open');
+        document.body.style.top = '';
+        window.scrollTo(0, savedScrollPositionY);
+
+        clearAllBoldActiveStates();
+    }, 280);
 }
 
 function fillSearch(keyword) {

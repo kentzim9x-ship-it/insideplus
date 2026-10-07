@@ -306,50 +306,55 @@
         </button>
     </div>
 
-    <!-- TÌM KIẾM MỚI -->
+    <!-- TÌM KIẾM MODAL -->
     <div id="search-modal"
-        class="fixed inset-0 z-[110] hidden h-[100dvh] w-full bg-white backdrop-blur-xl overflow-y-auto custom-scroll">
-        <div
-            class="w-full max-w-5xl mx-auto px-4 pt-2 pb-2 md:px-6 md:pt-10 md:pb-8 flex items-center justify-between border-b border-slate-900/10">
-            <div class="flex-1 max-w-3xl relative flex items-center">
-                <i data-lucide="search" class="w-7 h-7 text-slate-900 mr-4 stroke-[2.5]"></i>
-                <input type="text" id="search-input" oninput="handleSearchInput(this.value)"
-                    placeholder="TÌM KIẾM SẢN PHẨM..."
-                    class="w-full bg-transparent text-xl sm:text-2xl font-black text-slate-900 placeholder:text-slate-300 uppercase tracking-tight focus:outline-none">
-            </div>
-            <button onclick="handleCloseSearchBtnClick(this)"
-                class="p-3 -mr-3 text-slate-400 hover:text-slate-900 transition-colors">
-                <i data-lucide="x" class="w-8 h-8 -mr-0.5 text-black stroke-[1.5]"></i>
-            </button>
-        </div>
+        class="fixed inset-0 z-[110] hidden h-[100dvh] w-full bg-black/40 backdrop-blur-sm overflow-y-auto custom-scroll transition-opacity duration-300">
 
-        <div class="w-full max-w-5xl mx-auto px-6 py-10 space-y-12">
-            <div class="space-y-3">
-                <span class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Tìm kiếm phổ biến</span>
-                <div class="flex flex-wrap gap-2 pt-1">
-                    <button onclick="fillSearch('Boxer')"
-                        class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-900 hover:text-white text-xs font-bold text-slate-700 transition">Boxer
-                        Seamless</button>
-                    <button onclick="fillSearch('Brief')"
-                        class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-900 hover:text-white text-xs font-bold text-slate-700 transition">Quần
-                        Brief</button>
-                    <button onclick="fillSearch('Trunk')"
-                        class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-900 hover:text-white text-xs font-bold text-slate-700 transition">Quần
-                        Trunk</button>
+        <!-- WRAPPER CHỨA NỘI DUNG TRƯỢT TỪ TRÊN XUỐNG -->
+        <div class="search-content-wrapper bg-white w-full min-h-screen shadow-2xl">
+            <div
+                class="w-full max-w-5xl mx-auto px-4 pt-2 pb-2 md:px-6 md:pt-10 md:pb-8 flex items-center justify-between border-b border-slate-900/10">
+                <div class="flex-1 max-w-3xl relative flex items-center">
+                    <i data-lucide="search" class="w-7 h-7 text-slate-900 mr-4 stroke-[2.5]"></i>
+                    <input type="text" id="search-input" oninput="handleSearchInput(this.value)"
+                        placeholder="TÌM KIẾM SẢN PHẨM..."
+                        class="w-full bg-transparent text-xl sm:text-2xl font-black text-slate-900 placeholder:text-slate-300 uppercase tracking-tight focus:outline-none">
                 </div>
+                <button onclick="handleCloseSearchBtnClick(this)"
+                    class="p-3 -mr-3 text-slate-400 hover:text-slate-900 transition-colors">
+                    <i data-lucide="x" class="w-8 h-8 -mr-0.5 text-black stroke-[1.5]"></i>
+                </button>
             </div>
 
-            <div>
-                <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
-                    <h4 id="search-results-title"
-                        class="text-xs font-black uppercase text-slate-900 tracking-[0.2em] flex items-center gap-2">
-                        <i data-lucide="history" class="w-4 h-4 text-slate-400"></i> Sản phẩm đã xem
-                    </h4>
-                    <button id="btn-clear-history" onclick="clearViewedProducts()"
-                        class="text-[11px] font-bold text-slate-400 hover:text-slate-900 uppercase tracking-wider transition">Xóa
-                        lịch sử</button>
+            <div class="w-full max-w-5xl mx-auto px-6 py-10 space-y-12">
+                <div class="space-y-3">
+                    <span class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Tìm kiếm phổ
+                        biến</span>
+                    <div class="flex flex-wrap gap-2 pt-1">
+                        <button onclick="fillSearch('Boxer')"
+                            class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-900 hover:text-white text-xs font-bold text-slate-700 transition">Boxer
+                            Seamless</button>
+                        <button onclick="fillSearch('Brief')"
+                            class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-900 hover:text-white text-xs font-bold text-slate-700 transition">Quần
+                            Brief</button>
+                        <button onclick="fillSearch('Trunk')"
+                            class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-900 hover:text-white text-xs font-bold text-slate-700 transition">Quần
+                            Trunk</button>
+                    </div>
                 </div>
-                <div id="viewed-products-container" class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6"></div>
+
+                <div>
+                    <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+                        <h4 id="search-results-title"
+                            class="text-xs font-black uppercase text-slate-900 tracking-[0.2em] flex items-center gap-2">
+                            <i data-lucide="history" class="w-4 h-4 text-slate-400"></i> Sản phẩm đã xem
+                        </h4>
+                        <button id="btn-clear-history" onclick="clearViewedProducts()"
+                            class="text-[11px] font-bold text-slate-400 hover:text-slate-900 uppercase tracking-wider transition">Xóa
+                            lịch sử</button>
+                    </div>
+                    <div id="viewed-products-container" class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6"></div>
+                </div>
             </div>
         </div>
     </div>

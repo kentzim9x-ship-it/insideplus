@@ -777,18 +777,22 @@ function closeQuickAddToCartModal() {
 }
 
 function selectQuickAddColor(colorIdx) {
+    if (quickAddToCartColorIdx === colorIdx) return;
+    
     quickAddToCartColorIdx = colorIdx;
     quickAddToCartSize = null; // Reset size khi đổi màu
     quickAddImageIdx = 0;      // Reset về ảnh đầu tiên của màu mới
-    renderQuickAddToCartModalContent();
+
+    updateQuickAddModalDOM();
 }
 
 function selectQuickAddSize(sizeName) {
+    if (quickAddToCartSize === sizeName) return;
+
     quickAddToCartSize = sizeName;
-    renderQuickAddToCartModalContent();
+    updateQuickAddModalDOM();
 }
 
-// Hàm chuyển ảnh tiếp theo / quay lại trong Popup
 function changeQuickAddImage(delta) {
     if (!quickAddToCartProduct) return;
     const activeColor = quickAddToCartProduct.colors[quickAddToCartColorIdx] || quickAddToCartProduct.colors[0];
@@ -796,7 +800,136 @@ function changeQuickAddImage(delta) {
     if (images.length === 0) return;
 
     quickAddImageIdx = (quickAddImageIdx + delta + images.length) % images.length;
-    renderQuickAddToCartModalContent();
+    
+    // Cập nhật DOM ảnh trực tiếp thay vì render lại form
+    updateQuickAddImageDOM();
+}
+
+// Hàm cập nhật riêng phần hiển thị ảnh (Mobile + PC)
+function updateQuickAddImageDOM() {
+    const modal = document.getElementById('quick-add-cart-modal');
+    if (!modal || !quickAddToCartProduct) return;
+
+    const activeColor = quickAddToCartProduct.colors[quickAddToCartColorIdx] || quickAddToCartProduct.colors[0];
+    const images = activeColor.images && activeColor.images.length > 0 
+        ? activeColor.images 
+        : ["https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&q=80&w=600"];
+    
+    if (quickAddImageIdx >= images.length) quickAddImageIdx = 0;
+    const currentImg = images[quickAddImageIdx];
+
+    // Cập nhật nguồn ảnh Mobile & PC
+    const imgEls = modal.querySelectorAll('img');
+    imgEls.forEach(img => { img.src = currentImg; });
+
+    // Cập nhật chỉ số ảnh (VD: 1/3)
+    const badges = modal.querySelectorAll('.select-none span, .rounded-full span');
+    badges.forEach(b => {
+        if (b.innerText.includes('/')) {
+            b.innerText = `${quickAddImageIdx + 1}/${images.length}`;
+        }
+    });
+}
+
+// Hàm cập nhật trạng thái DOM cực nhanh khi đổi Màu/Size (KHÔNG reload lại Popup)
+function updateQuickAddModalDOM() {
+    const modal = document.getElementById('quick-add-cart-modal');
+    if (!modal || !quickAddToCartProduct) return;
+
+    const p = quickAddToCartProduct;
+    const activeColor = p.colors[quickAddToCartColorIdx] || p.colors[0];
+
+    // 1. Cập nhật Ảnh
+    updateQuickAddImageDOM();
+
+    // 2. Cập nhật Tên Màu hiển thị (Mobile + PC)
+    const colorNameTexts = modal.querySelectorAll('.text-slate-800.font-bold, .text-slate-800');
+    colorNameTexts.forEach(el => {
+        if (el.previousSibling && el.previousSibling.textContent.includes('Màu')) {
+            el.innerText = activeColor.name;
+        }
+    });
+
+    // 3. Cập nhật Vòng ring chọn Màu sắc
+    const colorBtns = modal.querySelectorAll('button[onclick^="selectQuickAddColor"]');
+    colorBtns.forEach((btn, idx) => {
+        const ring = idx === quickAddToCartColorIdx ? 'ring-2 ring-slate-900 ring-offset-2' : 'border-slate-300';
+        btn.className = `w-7 h-7 rounded-full border ${ring} transition cursor-pointer block`;
+    });
+
+    // 4. Tính toán Tồn kho & Cập nhật nút chọn Size
+    const defaultSizes = [{ name: 'S', stock: 50 }, { name: 'M', stock: 15 }, { name: 'L', stock: 0 }, { name: 'XL', stock: 30 }, { name: 'XXL', stock: 40 }];
+    const availableSizes = activeColor.sizes || defaultSizes;
+    const selectedSizeObj = availableSizes.find(s => s.name === quickAddToCartSize);
+
+    let stockBadgeHtml = '';
+    let isBtnDisabled = false;
+
+    if (!quickAddToCartSize) {
+        stockBadgeHtml = `<span class="bg-[#222222] text-white text-[10px] px-2 py-0.5 font-medium rounded-xs">Chọn kích cỡ</span>`;
+        isBtnDisabled = true;
+    } else if (selectedSizeObj) {
+        const isOutOfStock = selectedSizeObj.outOfStock || selectedSizeObj.stock === 0;
+        const maxStock = selectedSizeObj.stock !== undefined ? selectedSizeObj.stock : (isOutOfStock ? 0 : 50);
+
+        if (isOutOfStock || maxStock === 0) {
+            stockBadgeHtml = `<span class="text-red-600 font-bold text-xs">Hết hàng</span>`;
+            isBtnDisabled = true;
+        } else if (quickAddToCartQty > maxStock) {
+            stockBadgeHtml = `<span class="text-red-600 font-bold text-xs">Chỉ còn ${maxStock} sản phẩm trong kho</span>`;
+            isBtnDisabled = true;
+        } else if (maxStock < 20) {
+            stockBadgeHtml = `<span class="text-amber-600 font-bold text-xs">Sắp hết hàng (Còn ${maxStock})</span>`;
+            isBtnDisabled = false;
+        } else {
+            stockBadgeHtml = `<span class="text-emerald-600 font-bold text-xs"></span>`;
+            isBtnDisabled = false;
+        }
+    }
+
+    // Cập nhật text Kích cỡ đã chọn + Badge thông báo tồn kho
+    const sizeContainerEls = modal.querySelectorAll('.flex.items-center.gap-2.mb-2, .flex.items-center.gap-2.mb-2.5');
+    sizeContainerEls.forEach(container => {
+        const labelText = container.querySelector('span');
+        if (labelText && labelText.innerText.includes('Kích cỡ')) {
+            container.innerHTML = `
+                <span class="${labelText.className}">Kích cỡ:</span>
+                ${quickAddToCartSize ? `<strong class="text-slate-800 font-bold text-xs sm:text-sm">${quickAddToCartSize}</strong>` : ''}
+                ${stockBadgeHtml}
+            `;
+        }
+    });
+
+    // Cập nhật Class và trạng thái active của Nút Size
+    const sizeBtns = modal.querySelectorAll('button[onclick^="selectQuickAddSize"]');
+    sizeBtns.forEach(btn => {
+        const sizeName = btn.innerText.trim();
+        const sizeObj = availableSizes.find(s => s.name === sizeName);
+        const isSelected = quickAddToCartSize === sizeName;
+        const isOutOfStock = sizeObj ? (sizeObj.outOfStock || sizeObj.stock === 0) : false;
+
+        let style = '';
+        if (isSelected) {
+            style = 'bg-[#222222] text-white border-[#222222] font-bold';
+        } else if (isOutOfStock) {
+            style = 'bg-slate-50 text-slate-300 border-slate-200 font-normal';
+        } else {
+            style = 'bg-white text-slate-800 border-slate-200 hover:border-slate-400 font-medium';
+        }
+
+        btn.className = `w-11 h-11 border text-xs sm:text-sm transition flex items-center justify-center cursor-pointer ${style}`;
+    });
+
+    // 5. Cập nhật Nút Thêm Vào Giỏ Hàng
+    const submitBtns = modal.querySelectorAll('button[onclick="submitQuickAddToCart()"]');
+    const btnClass = !isBtnDisabled
+        ? "bg-[#222222] text-white hover:bg-black cursor-pointer font-bold"
+        : "bg-[#cccccc] text-white cursor-not-allowed font-bold";
+
+    submitBtns.forEach(btn => {
+        btn.disabled = isBtnDisabled;
+        btn.className = `w-full ${btn.classList.contains('py-3.5') ? 'py-3.5' : 'py-3'} text-xs sm:text-sm uppercase tracking-wider transition ${btnClass}`;
+    });
 }
 
 // Biến hỗ trợ nhận diện thao tác vuốt ảnh trên Mobile
