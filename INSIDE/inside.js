@@ -661,33 +661,71 @@ function selectVisualFilter(styleVal) {
     renderCatalog(currentFilteredProducts);
 }
 
-function renderCatalog(items) {
+// --- HÀM RENDER ĐÃ ĐƯỢC TỐI ƯU LAZY LOADING & INFINITE SCROLL ---
+function renderCatalog(items, isAppend = false) {
     const grid = document.getElementById('catalog-grid');
     if (!grid) return;
 
     document.querySelectorAll('.catalog-count-text').forEach(el => el.innerText = items.length + ' sản phẩm');
+
+    if (!isAppend) {
+        currentPage = 1;
+        grid.innerHTML = '';
+    }
 
     if (items.length === 0) {
         grid.innerHTML = '<p class="col-span-full text-center text-xs text-slate-400 py-12 font-bold uppercase tracking-wider">Không tìm thấy sản phẩm phù hợp.</p>';
         return;
     }
 
-    currentPage = 1;
-    const initialItems = items.slice(0, PAGE_SIZE);
-    grid.innerHTML = initialItems.map(p => renderProductCardHTML(p)).join('');
+    const startIndex = (currentPage - 1) * PRODUCTS_PER_PAGE;
+    const endIndex = currentPage * PRODUCTS_PER_PAGE;
+    const pagedItems = items.slice(startIndex, endIndex);
 
-    let sentinel = document.getElementById('catalog-sentinel');
-    if (!sentinel) {
-        sentinel = document.createElement('div');
-        sentinel.id = 'catalog-sentinel';
-        sentinel.className = 'col-span-full h-10 flex items-center justify-center my-4';
-        grid.after(sentinel);
+    const htmlContent = pagedItems.map(p => {
+        const firstColor = p.colors && p.colors.length > 0 ? p.colors[0] : { images: [''] };
+        const img1 = firstColor.images[0] || '';
+        const img2 = firstColor.images[1] || img1;
+
+        return `<div class="bg-white p-0 overflow-hidden group cursor-pointer transition" onclick="openProductDrawer('${p.id}', 0)">
+            <div class="relative w-full aspect-[3/4] bg-slate-100 overflow-hidden mb-3">
+                <img id="thumb-${p.id}" src="${img1}" loading="lazy" data-img1="${img1}" data-img2="${img2}" 
+                onmouseenter="this.src=this.getAttribute('data-img2'); this.classList.add('scale-105');" 
+                onmouseleave="this.src=this.getAttribute('data-img1'); this.classList.remove('scale-105');" 
+                class="w-full h-full object-cover transition-transform duration-500 ease-out transform">
+                
+                <button onclick="event.stopPropagation(); if(typeof openQuickAddToCartModal==='function') openQuickAddToCartModal('${p.id}')" 
+                        class="quick-add-btn-mobile sm:opacity-0 sm:group-hover:opacity-100 absolute bottom-1.5 right-1.5 w-8 h-8 rounded-full bg-white text-slate-800 flex items-center justify-center transition-all duration-200 shadow-md hover:bg-slate-100 z-10 border border-slate-200" 
+                        title="Thêm nhanh vào giỏ">
+                    <svg class="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="flex items-center gap-1.5 mb-2" onclick="event.stopPropagation()">
+                ${(p.colors || []).map((c, cIdx) => {
+            const isColorOutOfStock = c.sizes && c.sizes.length > 0 && c.sizes.every(s => s.outOfStock);
+            return `<button onclick="changeCatalogThumbColor('${p.id}',${cIdx})" class="w-4 h-4 rounded-full border border-slate-300 ${isColorOutOfStock ? 'color-out-of-stock' : ''}" style="background-color: ${c.hex};" title="${c.name}"></button>`;
+        }).join('')}
+            </div>
+            <h3 class="font-bold text-slate-900 text-sm uppercase tracking-tight mb-1.5">${p.name}</h3>
+            <div class="flex items-baseline gap-2.5">
+                <span class="text-sm font-medium text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
+                ${(p.originalPrice && p.originalPrice > p.price) 
+                    ? `<span class="text-xs text-slate-400 line-through font-normal">${p.originalPrice.toLocaleString('vi-VN')}đ</span>` 
+                    : ''}
+            </div>
+        </div>`;
+    }).join('');
+
+    if (isAppend) {
+        grid.insertAdjacentHTML('beforeend', htmlContent);
+    } else {
+        grid.innerHTML = htmlContent;
     }
-    sentinel.innerHTML = items.length > PAGE_SIZE ? '<span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Đang tải thêm...</span>' : '';
-
-    setupInfiniteScroll();
 
     if (window.lucide) lucide.createIcons();
+    isLoadingMore = false;
 }
 
 // LẮNG NGHE SỰ KIỆN CUỘN TRANG (INFINITE SCROLL)
