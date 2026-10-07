@@ -886,7 +886,7 @@ function renderQuickAddToCartModalContent() {
             </div>
 
             <!-- 1. GIAO DIỆN MOBILE -->
-            <div class="block sm:hidden p-4 space-y-4">
+            <div class="block sm:hidden space-y-4">
                 <div class="flex gap-4 items-start">
                     <div class="w-28 aspect-[3/4] bg-slate-100 rounded-sm overflow-hidden shrink-0 relative select-none"
                          ontouchstart="handleQuickAddTouchStart(event)" 
@@ -930,7 +930,7 @@ function renderQuickAddToCartModalContent() {
             </div>
 
             <!-- 2. GIAO DIỆN DESKTOP (PC) -->
-            <div class="hidden sm:block p-6">
+            <div class="hidden sm:block">
                 <div class="grid grid-cols-2 gap-8 items-start">
                     
                     <div class="flex flex-col items-center">
