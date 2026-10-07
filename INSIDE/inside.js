@@ -81,12 +81,19 @@ function processRawProductsData(data) {
 
         let usageGuideText = parseJsonSafe(item.usageGuideText, []);
 
+        // Đọc giá trị linh hoạt từ nhiều kiểu viết hoa/thường
+        const rawPrice = item.price ?? item.PRICE ?? 0;
+        const rawOrigPrice = item.originalPrice ?? item.originalprice ?? item.ORIGINALPRICE ?? item.original_price ?? 0;
+
+        // Chuyển về kiểu số (loại bỏ dấu chấm, phẩy nếu trong JSON lỡ ghi dạng chuỗi "42.000")
+        const cleanPrice = Number(String(rawPrice).replace(/[^0-9]/g, '')) || 0;
+        const cleanOrigPrice = Number(String(rawOrigPrice).replace(/[^0-9]/g, '')) || 0;
+
         return {
             ...item,
-            // SỬA DÒNG NÀY: Bao quát thêm các trường hợp ID viết hoa hoặc dùng index dự phòng
             id: String(item.id || item.ID || item.productId || `SP_${index}`).trim(),
-            price: Number(item.price) || 0,
-            originalPrice: Number(item.originalPrice) || 0,
+            price: cleanPrice,
+            originalPrice: cleanOrigPrice,
             colors: colors,
             introImages: introImages,
             usageGuideText: usageGuideText
