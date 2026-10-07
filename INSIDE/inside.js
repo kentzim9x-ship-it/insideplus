@@ -29,16 +29,14 @@ function parseJsonSafe(val, fallback) {
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=CATEGORIES_INSIDE";
 
 function loadVisualFilterCategories() {
-    const filterJsonUrl = '../data/categories_inside.json'; // Hoặc categories_sock.json / categories_tshirt.json
-    const sheetName = 'CATEGORIES_INSIDE'; // Hoặc CATEGORIES_SOCK / CATEGORIES_TSHIRT
+    const filterJsonUrl = '../data/categories_inside.json';
+    const sheetName = 'CATEGORIES_INSIDE';
 
-    // 1. Thử tải file JSON tĩnh từ GitHub Pages
     return fetch(filterJsonUrl)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Không tìm thấy file JSON tĩnh trên GitHub, chuyển sang dùng Google Sheet');
             }
-            // Lưu ETag để kiểm tra bản cập nhật về sau
             currentFilterETag = response.headers.get('ETag') || response.headers.get('Last-Modified');
             return response.json();
         })
@@ -46,12 +44,19 @@ function loadVisualFilterCategories() {
             if (Array.isArray(data)) {
                 visualFilterCategories = data.map(item => {
                     const rawId = (item.id || item.ID || 'ALL').toString().trim().toUpperCase();
-                    const rawStyleValue = (item.styleValue || item.stylevalue || item.STYLEVALUE || item.type || '').toString().trim();
+                    // Lấy cột 'type' trên Google Sheet làm nhãn hiển thị bên dưới ảnh
+                    const rawTypeLabel = (item.type || item.TYPE || item.styleValue || item.stylevalue || '').toString().trim();
+                    
+                    // Làm sạch URL ảnh
+                    let rawImg = (item.image || item.IMAGE || item.img || '').toString().trim();
+                    if (rawImg.startsWith('[') && rawImg.endsWith(']')) {
+                        rawImg = rawImg.slice(1, -1).trim();
+                    }
 
                     return {
-                        id: rawId,                           // Ép hoa ID (Ví dụ: "ALL", "BRIEF", "TRUNK")
-                        styleValue: rawStyleValue,           // Tên hiển thị bên dưới ảnh (Ví dụ: "Tất cả", "Quần lót Brief")
-                        image: cleanImageUrl(item.image || item.IMAGE)
+                        id: rawId,                  // Ví dụ: 'ALL', 'BRIEF', 'TRUNK'
+                        typeLabel: rawTypeLabel,    // Ví dụ: 'Tất cả', 'Quần lót Brief', 'Quần lót Trunk'
+                        image: rawImg
                     };
                 });
 
@@ -64,18 +69,32 @@ function loadVisualFilterCategories() {
         .catch(error => {
             console.warn(error.message);
             
-            // 2. FALLBACK: Nếu không có file JSON tĩnh -> Lấy trực tiếp từ Google Sheet API
             return fetch(`${APPS_SCRIPT_URL}?sheet=${sheetName}`)
                 .then(res => {
                     if (!res.ok) throw new Error('Không thể tải dữ liệu từ Google Sheet API');
                     return res.json();
                 })
                 .then(fallbackData => {
-                    console.log('Đã nạp dữ liệu thành công từ Google Sheet API!');
-                    visualFilterCategories = fallbackData;
+                    if (Array.isArray(fallbackData)) {
+                        visualFilterCategories = fallbackData.map(item => {
+                            const rawId = (item.id || item.ID || 'ALL').toString().trim().toUpperCase();
+                            const rawTypeLabel = (item.type || item.TYPE || item.styleValue || item.stylevalue || '').toString().trim();
+                            
+                            let rawImg = (item.image || item.IMAGE || item.img || '').toString().trim();
+                            if (rawImg.startsWith('[') && rawImg.endsWith(']')) {
+                                rawImg = rawImg.slice(1, -1).trim();
+                            }
 
-                    if (typeof renderVisualFilterBar === 'function') {
-                        renderVisualFilterBar();
+                            return {
+                                id: rawId,
+                                typeLabel: rawTypeLabel,
+                                image: rawImg
+                            };
+                        });
+
+                        if (typeof renderVisualFilterBar === 'function') {
+                            renderVisualFilterBar();
+                        }
                     }
                     return visualFilterCategories;
                 })
@@ -656,41 +675,21 @@ function toggleMobileNavDrawer() {
     }
 }
 
-function filterProductsByCategoryId(filterId) {
-    const targetId = (filterId || 'ALL').toString().trim().toUpperCase();
-
-    // 1. Trường hợp ID = "ALL": Hiển thị tất cả sản phẩm
-    if (targetId === 'ALL') {
-        currentFilteredProducts = [...originalProducts];
-    } else {
-        // 2. So sánh UPCASE(id) của filter với UPCASE(style) của sản phẩm
-        currentFilteredProducts = originalProducts.filter(p => {
-            const productStyle = (p.style || p.category || '').toString().trim().toUpperCase();
-            return productStyle === targetId;
-        });
-    }
-
-    // Render lại danh sách sản phẩm ra màn hình
-    if (typeof renderCatalog === 'function') {
-        renderCatalog(currentFilteredProducts);
-    }
-}
-
 function renderVisualFilterBar() {
     const container = document.getElementById('visual-filter-grid');
     if (!container) return;
 
     container.innerHTML = visualFilterCategories.map(item => {
-        // Kiểm tra filter đang active theo ID (UPCASE)
-        const isActive = (typeof activeVisualFilter !== 'undefined') && (activeVisualFilter === item.id);
-        
+        // So sánh trạng thái active theo ID (đã chuẩn hóa hoa/thường)
+        const isActive = (activeVisualFilter || 'ALL').toString().toUpperCase() === item.id;
+
         return `<div onclick="selectVisualFilter('${item.id}')" class="visual-filter-card group flex flex-col cursor-pointer ${isActive ? 'visual-card-active' : ''}">
             <div class="w-full aspect-[4/5] bg-slate-100 overflow-hidden relative">
-                <img src="${item.image}" loading="lazy" alt="${item.styleValue}" class="w-full h-full object-cover transition-transform duration-500">
+                <img src="${item.image}" loading="lazy" alt="${item.typeLabel}" class="w-full h-full object-cover transition-transform duration-500">
             </div>
             <div class="pt-3.5 pb-1 text-left bg-white">
-                <!-- Đã đổi item.title thành item.styleValue để lấy đúng tên hiển thị tiếng Việt từ Google Sheet -->
-                <h4 class="visual-card-title text-sm sm:text-base font-bold text-slate-900 tracking-tight transition-colors group-hover:text-black">${item.styleValue}</h4>
+                <!-- Hiển thị cột type tiếng Việt bên dưới ảnh -->
+                <h4 class="visual-card-title text-sm sm:text-base font-bold text-slate-900 tracking-tight transition-colors group-hover:text-black">${item.typeLabel}</h4>
             </div>
         </div>`;
     }).join('');
@@ -729,25 +728,24 @@ function checkFilterSliderArrows() {
 }
 
 function selectVisualFilter(filterId) {
-    // 1. Chuẩn hóa ID lọc về dạng IN HOA (Ví dụ: 'ALL', 'BRIEF', 'TRUNK')
+    // 1. Chuẩn hóa ID được chọn về dạng IN HOA (Ví dụ: 'ALL', 'BRIEF', 'TRUNK')
     const targetId = (filterId || 'ALL').toString().trim().toUpperCase();
     activeVisualFilter = targetId;
 
-    // 2. Tìm đối tượng danh mục tương ứng trong mảng visualFilterCategories
-    const catObj = visualFilterCategories.find(c => (c.id || '').toString().toUpperCase() === targetId);
+    // 2. Tìm danh mục tương ứng để lấy tiêu đề hiển thị
+    const catObj = visualFilterCategories.find(c => c.id === targetId);
 
-    // 3. Cập nhật Tiêu đề trang (#page-category-title)
     const titleHeading = document.getElementById('page-category-title');
     if (titleHeading) {
         if (targetId === 'ALL') {
             titleHeading.innerText = 'INSIDE (ĐỒ LÓT)';
         } else {
-            // Lấy styleValue tiếng Việt để hiển thị lên tiêu đề (ví dụ: "Quần Lót Brief")
-            titleHeading.innerText = catObj ? catObj.styleValue : ('Quần Lót ' + targetId);
+            // Lấy cột type hiển thị tên danh mục tiếng Việt lên tiêu đề
+            titleHeading.innerText = catObj ? catObj.typeLabel : ('Quần Lót ' + targetId);
         }
     }
 
-    // 4. Reset các bộ lọc checkbox/size/màu nếu chọn 'ALL'
+    // 3. Reset các bộ lọc phụ khi chọn 'ALL'
     if (targetId === 'ALL') {
         document.querySelectorAll('#filter-panel input').forEach(el => el.checked = false);
         document.querySelectorAll('.filter-size-btn').forEach(btn => btn.classList.remove('border-slate-900', 'bg-slate-900', 'text-white', 'selected-size'));
@@ -761,17 +759,15 @@ function selectVisualFilter(filterId) {
             btnClear.disabled = true;
             btnClear.className = "w-full bg-white border border-slate-200 text-slate-400 py-3 font-bold text-xs uppercase tracking-widest transition cursor-not-allowed";
         }
-
         currentFilteredProducts = [...originalProducts];
     } else {
-        // 5. Lọc sản phẩm bằng cách so sánh UPCASE(filterId) với UPCASE(p.style)
+        // 4. Lọc sản phẩm: So sánh UPCASE(filterId) = UPCASE(p.style)
         currentFilteredProducts = originalProducts.filter(p => {
             const productStyle = (p.style || p.category || '').toString().trim().toUpperCase();
             return productStyle === targetId;
         });
     }
 
-    // 6. Re-render lại thanh Visual Filter bar & Danh sách sản phẩm
     renderVisualFilterBar();
     renderCatalog(currentFilteredProducts);
 }
