@@ -886,7 +886,7 @@ function renderQuickAddToCartModalContent() {
             </div>
 
             <!-- 1. GIAO DIỆN MOBILE -->
-            <div class="block sm:hidden px-4 pt-3 pb-4 space-y-4">
+            <div class="block sm:hidden p-0 px-4 pt-3 pb-4 space-y-4">
                 <div class="flex gap-4 items-start">
                     <div class="w-28 aspect-[3/4] bg-slate-100 rounded-sm overflow-hidden shrink-0 relative select-none"
                          ontouchstart="handleQuickAddTouchStart(event)" 
