@@ -1,7 +1,7 @@
 /* Khai báo Variable Font Montserrat duy nhất */
 @font-face {
     font-family: 'Montserrat';
-    src: url('fonts/Montserrat-Medium.ttf') format('truetype');
+    src: url('FONTS/Montserrat-Medium.ttf') format('truetype');
     font-weight: 100 900;
     font-style: normal;
     font-display: block;
