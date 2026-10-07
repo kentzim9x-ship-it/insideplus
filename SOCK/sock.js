@@ -101,7 +101,7 @@ function loadVisualFilterCategories() {
         })
         .catch(error => {
             console.warn(error.message);
-            
+
             // 2. FALLBACK: Nếu không có file JSON tĩnh -> Lấy trực tiếp từ Google Sheet API
             return fetch(`${APPS_SCRIPT_URL}?sheet=${sheetName}`)
                 .then(res => {
@@ -712,18 +712,41 @@ function toggleMobileNavDrawer() {
     }
 }
 
+function filterProductsByCategoryId(filterId) {
+    const targetId = (filterId || 'ALL').toString().trim().toUpperCase();
+
+    // 1. Trường hợp ID = "ALL": Hiển thị tất cả sản phẩm
+    if (targetId === 'ALL') {
+        currentFilteredProducts = [...originalProducts];
+    } else {
+        // 2. So sánh UPCASE(id) của filter với UPCASE(style) của sản phẩm
+        currentFilteredProducts = originalProducts.filter(p => {
+            const productStyle = (p.style || p.category || '').toString().trim().toUpperCase();
+            return productStyle === targetId;
+        });
+    }
+
+    // Render lại danh sách sản phẩm ra màn hình
+    if (typeof renderCatalog === 'function') {
+        renderCatalog(currentFilteredProducts);
+    }
+}
+
 function renderVisualFilterBar() {
     const container = document.getElementById('visual-filter-grid');
     if (!container) return;
 
     container.innerHTML = visualFilterCategories.map(item => {
-        const isActive = activeVisualFilter === item.styleValue;
-        return `<div onclick="selectVisualFilter('${item.styleValue}')" class="visual-filter-card group flex flex-col ${isActive ? 'visual-card-active' : ''}">
+        // Kiểm tra filter đang active theo ID (UPCASE)
+        const isActive = (typeof activeVisualFilter !== 'undefined') && (activeVisualFilter === item.id);
+
+        return `<div onclick="selectVisualFilter('${item.id}')" class="visual-filter-card group flex flex-col cursor-pointer ${isActive ? 'visual-card-active' : ''}">
             <div class="w-full aspect-[4/5] bg-slate-100 overflow-hidden relative">
-                <img src="${item.image}" loading="lazy" alt="${item.title}" class="w-full h-full object-cover transition-transform duration-500">
+                <img src="${item.image}" loading="lazy" alt="${item.styleValue}" class="w-full h-full object-cover transition-transform duration-500">
             </div>
             <div class="pt-3.5 pb-1 text-left bg-white">
-                <h4 class="visual-card-title text-sm sm:text-base font-bold text-slate-900 tracking-tight transition-colors group-hover:text-black">${item.title}</h4>
+                <!-- Đã đổi item.title thành item.styleValue để lấy đúng tên hiển thị tiếng Việt từ Google Sheet -->
+                <h4 class="visual-card-title text-sm sm:text-base font-bold text-slate-900 tracking-tight transition-colors group-hover:text-black">${item.styleValue}</h4>
             </div>
         </div>`;
     }).join('');
@@ -768,8 +791,8 @@ function selectVisualFilter(styleVal) {
         if (styleVal === 'ALL') {
             titleHeading.innerText = 'SOCK (TẤT VỚ)';
         } else {
-            const catObj = visualFilterCategories.find(c => c.styleValue === styleVal);
-            titleHeading.innerText = catObj ? catObj.title : ('Tất Vớ ' + styleVal);
+            // Lấy styleValue tiếng Việt để hiển thị lên tiêu đề (ví dụ: "Quần Lót Brief")
+            titleHeading.innerText = catObj ? catObj.styleValue : ('Tất Vớ  ' + targetId);
         }
     }
 
@@ -788,7 +811,11 @@ function selectVisualFilter(styleVal) {
         }
         currentFilteredProducts = [...originalProducts];
     } else {
-        currentFilteredProducts = originalProducts.filter(p => p.style === styleVal);
+        // 5. Lọc sản phẩm bằng cách so sánh UPCASE(filterId) với UPCASE(p.style)
+        currentFilteredProducts = originalProducts.filter(p => {
+            const productStyle = (p.style || p.category || '').toString().trim().toUpperCase();
+            return productStyle === targetId;
+        });
     }
 
     renderVisualFilterBar();
