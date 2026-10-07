@@ -359,7 +359,7 @@
         </div>
     </div>
 
-    <!-- FILTER DRAWER -->
+    <!-- FILTER DRAWER SIDEBAR -->
     <div id="filter-drawer" class="fixed inset-0 z-[100] hidden">
         <div id="filter-overlay" onclick="closeFilterDrawer()"
             class="absolute inset-0 bg-slate-950/40 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
@@ -371,55 +371,51 @@
                     class="p-2 -mr-2 text-slate-400 hover:text-slate-900 transition"><i data-lucide="x"
                         class="w-5 h-5"></i></button>
             </div>
+
             <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scroll">
+
+                <!-- 1. KIỂU DÁNG (ĐỘNG) -->
                 <div class="border-b border-slate-200 pb-5">
                     <div onclick="toggleFilterAccordion('style-content')"
                         class="flex justify-between items-center cursor-pointer">
                         <span class="text-xs font-black uppercase tracking-widest text-slate-900">Kiểu dáng</span>
                         <i data-lucide="chevron-up" id="style-content-icon" class="w-4 h-4 text-slate-500"></i>
                     </div>
-                    <div id="style-content" class="mt-3 space-y-2">
-                        <label class="flex items-center text-xs font-bold text-slate-700 cursor-pointer"><input
-                                type="checkbox" onchange="onFilterChange()" name="filter-style" value="CoNgan"
-                                class="mr-2"> Tất cổ ngắn / Giấu gót</label>
-                        <label class="flex items-center text-xs font-bold text-slate-700 cursor-pointer"><input
-                                type="checkbox" onchange="onFilterChange()" name="filter-style" value="CoTrung"
-                                class="mr-2"> Tất cổ trung / Thể thao</label>
-                    </div>
+                    <!-- Làm rỗng để JS tự đổ danh sách -->
+                    <div id="style-content" class="mt-3 space-y-2"></div>
                 </div>
+
+                <!-- 2. KÍCH CỠ (ĐỘNG) -->
                 <div class="border-b border-slate-200 pb-5">
                     <div onclick="toggleFilterAccordion('size-content')"
                         class="flex justify-between items-center cursor-pointer">
                         <span class="text-xs font-black uppercase tracking-widest text-slate-900">Kích cỡ</span>
                         <i data-lucide="chevron-up" id="size-content-icon" class="w-4 h-4 text-slate-500"></i>
                     </div>
-                    <div id="size-content" class="grid grid-cols-2 gap-2 mt-3">
-                        <button onclick="toggleSizeSelect(this)" data-val="Freesize"
-                            class="filter-size-btn border border-slate-300 py-2 text-center text-xs font-bold hover:border-slate-900 transition">Freesize</button>
-                    </div>
+                    <!-- Làm rỗng để JS tự đổ danh sách -->
+                    <div id="size-content" class="grid grid-cols-4 gap-2 mt-3"></div>
                 </div>
+
+                <!-- 3. MÀU SẮC (ĐỘNG) -->
                 <div class="border-b border-slate-200 pb-5">
                     <div onclick="toggleFilterAccordion('color-content')"
                         class="flex justify-between items-center cursor-pointer">
                         <span class="text-xs font-black uppercase tracking-widest text-slate-900">Màu sắc</span>
                         <i data-lucide="chevron-up" id="color-content-icon" class="w-4 h-4 text-slate-500"></i>
                     </div>
-                    <div id="color-content" class="flex flex-wrap gap-2.5 mt-3">
-                        <button onclick="toggleColorSelect(this)" data-val="#ffffff"
-                            class="filter-color-btn w-7 h-7 rounded-full border-2 border-slate-300 bg-white transition"
-                            title="Trắng"></button>
-                        <button onclick="toggleColorSelect(this)" data-val="#000000"
-                            class="filter-color-btn w-7 h-7 rounded-full border-2 border-slate-300 bg-black transition"
-                            title="Đen"></button>
-                    </div>
+                    <!-- Làm rỗng để JS tự đổ danh sách -->
+                    <div id="color-content" class="flex flex-wrap gap-2.5 mt-3"></div>
                 </div>
+
             </div>
+
+            <!-- NÚT ÁP DỤNG & XÓA BỘ LỌC -->
             <div class="p-4 border-t border-slate-200 grid grid-cols-2 gap-3 bg-white">
                 <button id="btn-apply-filter" onclick="applyFilters()" disabled
-                    class="w-full bg-slate-300 text-white py-3 font-bold text-xs uppercase tracking-widest transition cursor-not-allowed">Xem</button>
+                    class="w-full bg-slate-300 text-white py-3 font-bold text-xs uppercase tracking-widest transition cursor-not-allowed">XEM</button>
                 <button id="btn-clear-filter" onclick="clearFilters()" disabled
-                    class="w-full bg-white border border-slate-200 text-slate-400 py-3 font-bold text-xs uppercase tracking-widest transition cursor-not-allowed">Xoá
-                    bộ lọc</button>
+                    class="w-full bg-white border border-slate-200 text-slate-400 py-3 font-bold text-xs uppercase tracking-widest transition cursor-not-allowed">XOÁ
+                    BỘ LỌC</button>
             </div>
         </div>
     </div>

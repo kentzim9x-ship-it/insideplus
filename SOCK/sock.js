@@ -116,6 +116,7 @@ function loadProductsData() {
             
             // Render giao diện LẦN 1 TỨC THÌ (Hiển thị mượt 0.02s)
             renderVisualFilterBar();
+            renderDynamicFilterOptions();
             renderCatalog(originalProducts);
             if (typeof updateCartBadge === 'function') updateCartBadge();
             checkAndOpenProductFromUrl();
@@ -337,6 +338,94 @@ function addProductToViewed(product) {
         viewed = viewed.slice(0, 8);
     }
     localStorage.setItem('viewed_products', JSON.stringify(viewed));
+}
+
+// HÀM TỰ ĐỘNG TỔNG HỢP VÀ RENDER TOÀN BỘ BỘ LỌC TỪ DỮ LIỆU SẢN PHẨM
+function renderDynamicFilterOptions() {
+    const styleContainer = document.getElementById('style-content');
+    const sizeContainer = document.getElementById('size-content');
+    const colorContainer = document.getElementById('color-content');
+
+    if (!styleContainer || !sizeContainer || !colorContainer) return;
+
+    // Sử dụng Set/Map để gom các giá trị duy nhất (không trùng lặp)
+    const uniqueStyles = new Set();
+    const uniqueSizes = new Set();
+    const uniqueColorsMap = new Map(); // Key: hex (lowercase), Value: name
+
+    // Duyệt qua toàn bộ sản phẩm đang có từ JSON
+    originalProducts.forEach(product => {
+        // 1. Gom kiểu dáng (Kiểu dáng được lưu ở trường product.style)
+        if (product.style) {
+            uniqueStyles.add(product.style);
+        }
+
+        // 2. Gom Màu sắc và Kích cỡ từ danh sách màu
+        if (Array.isArray(product.colors)) {
+            product.colors.forEach(colorObj => {
+                if (colorObj.hex) {
+                    const cleanHex = colorObj.hex.trim().toLowerCase();
+                    if (!uniqueColorsMap.has(cleanHex)) {
+                        uniqueColorsMap.set(cleanHex, colorObj.name || 'Màu sắc');
+                    }
+                }
+
+                // Gom kích cỡ từ danh sách sizes của từng màu
+                if (Array.isArray(colorObj.sizes)) {
+                    colorObj.sizes.forEach(sizeObj => {
+                        if (sizeObj.name) {
+                            uniqueSizes.add(sizeObj.name.trim().toUpperCase());
+                        }
+                    });
+                }
+            });
+        }
+    });
+
+    // --- 1. RENDER KIỂU DÁNG ---
+    if (uniqueStyles.size > 0) {
+        styleContainer.innerHTML = Array.from(uniqueStyles).map(style => `
+            <label class="flex items-center text-xs font-bold text-slate-700 cursor-pointer">
+                <input type="checkbox" onchange="onFilterChange()" name="filter-style" value="${style}" class="mr-2">
+                Quần Lót ${style}
+            </label>
+        `).join('');
+    } else {
+        styleContainer.innerHTML = '<span class="text-xs text-slate-400">Không có kiểu dáng</span>';
+    }
+
+    // --- 2. RENDER KÍCH CỠ (Sắp xếp theo thứ tự chuẩn: S, M, L, XL, XXL,...) ---
+    const standardSizeOrder = ['S', 'M', 'L', 'XL', '2XL', 'XXL', '3XL', 'FREE'];
+    const sortedSizes = Array.from(uniqueSizes).sort((a, b) => {
+        let idxA = standardSizeOrder.indexOf(a);
+        let idxB = standardSizeOrder.indexOf(b);
+        if (idxA === -1) idxA = 99;
+        if (idxB === -1) idxB = 99;
+        return idxA - idxB;
+    });
+
+    if (sortedSizes.length > 0) {
+        sizeContainer.innerHTML = sortedSizes.map(size => `
+            <button onclick="toggleSizeSelect(this)" data-val="${size}"
+                class="filter-size-btn border border-slate-300 py-2 text-center text-xs font-bold hover:border-slate-900 transition">
+                ${size}
+            </button>
+        `).join('');
+    } else {
+        sizeContainer.innerHTML = '<span class="text-xs text-slate-400 col-span-4">Không có kích cỡ</span>';
+    }
+
+    // --- 3. RENDER MÀU SẮC ---
+    if (uniqueColorsMap.size > 0) {
+        colorContainer.innerHTML = Array.from(uniqueColorsMap.entries()).map(([hex, name]) => `
+            <button onclick="toggleColorSelect(this)" data-val="${hex}"
+                class="filter-color-btn w-7 h-7 rounded-full border-2 border-slate-300 transition"
+                style="background-color: ${hex};" title="${name}">
+            </button>
+        `).join('');
+    } else {
+        colorContainer.innerHTML = '<span class="text-xs text-slate-400">Không có màu sắc</span>';
+    }
 }
 
 function renderRecentViewedSlider(currentProductId) {
