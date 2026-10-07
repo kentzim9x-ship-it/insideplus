@@ -110,23 +110,23 @@ function loadProductsData() {
     return fetch(jsonUrl)
         .then(response => {
             if (!response.ok) throw new Error('Không thể tải file JSON tĩnh');
-            
+
             // Lưu lại thông tin phiên bản file (ETag / Last-Modified) của lần load đầu
             currentJsonETag = response.headers.get('ETag') || response.headers.get('Last-Modified');
-            
+
             return response.json();
         })
         .then(data => {
             originalProducts = processRawProductsData(data);
             currentFilteredProducts = [...originalProducts];
-            
+
             // Render giao diện LẦN 1 TỨC THÌ (Hiển thị mượt 0.02s)
             renderVisualFilterBar();
             renderDynamicFilterOptions();
             renderCatalog(originalProducts);
             if (typeof updateCartBadge === 'function') updateCartBadge();
             checkAndOpenProductFromUrl();
-            
+
             // Bắt đầu kích hoạt kiểm tra ngầm phiên bản JSON tĩnh trên GitHub
             checkStaticJsonUpdatesSilently(jsonUrl);
 
@@ -143,25 +143,25 @@ function checkStaticJsonUpdatesSilently(jsonUrl) {
     fetch(jsonUrl, { method: 'HEAD', cache: 'no-cache' })
         .then(response => {
             if (!response.ok) return;
-            
+
             const newETag = response.headers.get('ETag') || response.headers.get('Last-Modified');
-            
+
             // So sánh: Nếu có ETag và ETag mới KHÁC ETag cũ -> GitHub Actions đã cập nhật JSON mới!
             if (newETag && currentJsonETag && newETag !== currentJsonETag) {
                 console.log('Phát hiện dữ liệu JSON tĩnh mới từ GitHub Actions. Đang âm thầm cập nhật...');
                 currentJsonETag = newETag;
-                
+
                 // Tải file JSON mới và cập nhật lại giao diện
                 fetch(jsonUrl, { cache: 'no-cache' })
                     .then(res => res.json())
                     .then(newData => {
                         const freshProducts = processRawProductsData(newData);
-                        
+
                         // Kiểm tra nếu nội dung sản phẩm thực sự thay đổi mới render lại
                         if (JSON.stringify(originalProducts) !== JSON.stringify(freshProducts)) {
                             originalProducts = freshProducts;
                             currentFilteredProducts = [...originalProducts];
-                            
+
                             // Cập nhật giao diện nhẹ nhàng
                             renderCatalog(originalProducts);
                         }
@@ -276,7 +276,7 @@ function updateProductUrlParam(productId, colorIdx, isReplace = false) {
         const formattedProduct = formatProductCode(productId, category);
         const formattedColor = formatColorCode(colorIdx, category);
         const newUrl = window.location.pathname + '?product=' + encodeURIComponent(formattedProduct) + '&color=' + encodeURIComponent(formattedColor);
-        
+
         if (isReplace) {
             window.history.replaceState({ productId: productId, colorIdx: colorIdx }, '', newUrl);
         } else {
@@ -718,9 +718,9 @@ function renderCatalog(items, isAppend = false) {
             <h3 class="font-bold text-slate-900 text-sm uppercase tracking-tight mb-1.5">${p.name}</h3>
             <div class="flex items-baseline gap-2.5">
                 <span class="text-sm font-medium text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
-                ${(p.originalPrice && p.originalPrice > p.price) 
-                    ? `<span class="text-xs text-slate-400 line-through font-normal">${p.originalPrice.toLocaleString('vi-VN')}đ</span>` 
-                    : ''}
+                ${(p.originalPrice && p.originalPrice > p.price)
+                ? `<span class="text-xs text-slate-400 line-through font-normal">${p.originalPrice.toLocaleString('vi-VN')}đ</span>`
+                : ''}
             </div>
         </div>`;
     }).join('');
@@ -736,9 +736,9 @@ function renderCatalog(items, isAppend = false) {
 }
 
 // LẮNG NGHE SỰ KIỆN CUỘN TRANG (INFINITE SCROLL)
-window.addEventListener('scroll', function() {
+window.addEventListener('scroll', function () {
     if (isLoadingMore) return;
-    
+
     const productDrawer = document.getElementById('product-drawer');
     if (productDrawer && !productDrawer.classList.contains('hidden')) return;
 
@@ -850,7 +850,7 @@ function changeDrawerColor(productId, colorIdx) {
     if (!p) return;
 
     renderDrawerContent(p, colorIdx);
-    updateProductUrlParam(p.id, colorIdx, true); 
+    updateProductUrlParam(p.id, colorIdx, true);
 
     const drawer = document.getElementById('product-drawer');
     if (drawer) {
@@ -870,11 +870,11 @@ function renderDrawerContent(p, colorIdx) {
     }
 
     const selectedSizeObj = availableSizes.find(s => s.name === currentSelectedSize);
-    
+
     // --- THÊM LOGIC TÍNH TOÁN BADGE TỒN KHO ---
     let stockBadgeHtml = '';
     let maxStock = 999;
-    
+
     if (selectedSizeObj) {
         // Đánh giá hết hàng dựa trên thuộc tính outOfStock hoặc stock = 0
         const isOutOfStock = selectedSizeObj.outOfStock || selectedSizeObj.stock === 0;
@@ -930,12 +930,12 @@ function renderDrawerContent(p, colorIdx) {
         const strikeClass = cIsAllOutOfStock ? 'color-out-of-stock' : '';
         const activeClass = cIdx === colorIdx ? 'ring-2 ring-slate-900 ring-offset-2' : '';
 
-        return `<div class="color-btn-wrapper">
-            <button onclick="changeDrawerColor('${p.id}', ${cIdx})" 
-            class="w-7 h-7 rounded-full border border-slate-300 transition-all relative ${strikeClass} ${activeClass}" 
-            style="background-color: ${c.hex};" title="${c.name}">
-            </button>
-        </div>`;
+        return `<div class="color-btn-wrapper p-0.5">
+        <button onclick="changeDrawerColor('${p.id}', ${cIdx})" 
+        class="w-6 h-6 rounded-full border border-slate-300 transition-all relative ${strikeClass} ${activeClass}" 
+        style="background-color: ${c.hex};" title="${c.name}">
+        </button>
+    </div>`;
     }).join('');
 
     const sizesHtml = availableSizes.map(s => {
@@ -1007,7 +1007,7 @@ function renderDrawerContent(p, colorIdx) {
             <div>
                 <span class="text-[10px] font-black uppercase text-slate-400">INSIDE+</span>
                 <h2 class="text-2xl font-black uppercase text-slate-900 mt-1">${p.name}</h2>
-                <div class="flex items-baseline gap-3 mt-3">
+                <div class="flex items-center gap-3 mt-3">
                     <span class="text-2xl font-black text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
                     ${(p.originalPrice && p.originalPrice > p.price) ? `
                         <span class="text-sm text-slate-400 line-through">${p.originalPrice.toLocaleString('vi-VN')}đ</span>
@@ -1352,8 +1352,8 @@ function openIntroDrawer() {
     const p = originalProducts.find(x => x.id === window.currentActiveProductId);
     if (!p) return;
 
-    const imagesToDisplay = (p.introImages && p.introImages.length > 0) 
-        ? p.introImages 
+    const imagesToDisplay = (p.introImages && p.introImages.length > 0)
+        ? p.introImages
         : (p.colors && p.colors[0] ? p.colors[0].images : []);
 
     const contentEl = document.getElementById('intro-drawer-content');

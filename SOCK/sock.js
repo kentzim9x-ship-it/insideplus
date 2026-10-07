@@ -63,7 +63,6 @@ function parseJsonSafe(val, fallback) {
 }
 
 function processRawProductsData(data) {
-    // Sửa thêm tham số index vào map()
     return (Array.isArray(data) ? data : []).map((item, index) => {
         let colors = [];
         if (item.colorsJSON) {
@@ -82,12 +81,18 @@ function processRawProductsData(data) {
 
         let usageGuideText = parseJsonSafe(item.usageGuideText, []);
 
+        // Đọc giá trị linh hoạt từ các kiểu đặt tên trường giá trong JSON
+        const rawPrice = item.price ?? item.PRICE ?? 0;
+        const rawOrigPrice = item.originalPrice ?? item.originalprice ?? item.ORIGINALPRICE ?? item.original_price ?? 0;
+
+        const cleanPrice = Number(String(rawPrice).replace(/[^0-9]/g, '')) || 0;
+        const cleanOrigPrice = Number(String(rawOrigPrice).replace(/[^0-9]/g, '')) || 0;
+
         return {
             ...item,
-            // SỬA DÒNG NÀY: Bao quát thêm các trường hợp ID viết hoa hoặc dùng index dự phòng
             id: String(item.id || item.ID || item.productId || `SP_${index}`).trim(),
-            price: Number(item.price) || 0,
-            originalPrice: Number(item.originalPrice) || 0,
+            price: cleanPrice,
+            originalPrice: cleanOrigPrice,
             colors: colors,
             introImages: introImages,
             usageGuideText: usageGuideText
@@ -104,23 +109,23 @@ function loadProductsData() {
     return fetch(jsonUrl)
         .then(response => {
             if (!response.ok) throw new Error('Không thể tải file JSON tĩnh');
-            
+
             // Lưu lại thông tin phiên bản file (ETag / Last-Modified) của lần load đầu
             currentJsonETag = response.headers.get('ETag') || response.headers.get('Last-Modified');
-            
+
             return response.json();
         })
         .then(data => {
             originalProducts = processRawProductsData(data);
             currentFilteredProducts = [...originalProducts];
-            
+
             // Render giao diện LẦN 1 TỨC THÌ (Hiển thị mượt 0.02s)
             renderVisualFilterBar();
             renderDynamicFilterOptions();
             renderCatalog(originalProducts);
             if (typeof updateCartBadge === 'function') updateCartBadge();
             checkAndOpenProductFromUrl();
-            
+
             // Bắt đầu kích hoạt kiểm tra ngầm phiên bản JSON tĩnh trên GitHub
             checkStaticJsonUpdatesSilently(jsonUrl);
 
@@ -137,25 +142,25 @@ function checkStaticJsonUpdatesSilently(jsonUrl) {
     fetch(jsonUrl, { method: 'HEAD', cache: 'no-cache' })
         .then(response => {
             if (!response.ok) return;
-            
+
             const newETag = response.headers.get('ETag') || response.headers.get('Last-Modified');
-            
+
             // So sánh: Nếu có ETag và ETag mới KHÁC ETag cũ -> GitHub Actions đã cập nhật JSON mới!
             if (newETag && currentJsonETag && newETag !== currentJsonETag) {
                 console.log('Phát hiện dữ liệu JSON tĩnh mới từ GitHub Actions. Đang âm thầm cập nhật...');
                 currentJsonETag = newETag;
-                
+
                 // Tải file JSON mới và cập nhật lại giao diện
                 fetch(jsonUrl, { cache: 'no-cache' })
                     .then(res => res.json())
                     .then(newData => {
                         const freshProducts = processRawProductsData(newData);
-                        
+
                         // Kiểm tra nếu nội dung sản phẩm thực sự thay đổi mới render lại
                         if (JSON.stringify(originalProducts) !== JSON.stringify(freshProducts)) {
                             originalProducts = freshProducts;
                             currentFilteredProducts = [...originalProducts];
-                            
+
                             // Cập nhật giao diện nhẹ nhàng
                             renderCatalog(originalProducts);
                         }
@@ -290,7 +295,7 @@ function updateProductUrlParam(productId, colorIdx, isReplace = false) {
         const formattedProduct = formatProductCode(productId, category);
         const formattedColor = formatColorCode(colorIdx, category);
         const newUrl = window.location.pathname + '?product=' + encodeURIComponent(formattedProduct) + '&color=' + encodeURIComponent(formattedColor);
-        
+
         if (isReplace) {
             window.history.replaceState({ productId: productId, colorIdx: colorIdx }, '', newUrl);
         } else {
@@ -686,6 +691,10 @@ function renderProductCardHTML(p) {
     const img1 = firstColor.images[0] || '';
     const img2 = firstColor.images[1] || img1;
 
+    // Tính toán % giảm giá
+    const hasDiscount = p.originalPrice && p.originalPrice > p.price;
+    const discountPercent = hasDiscount ? Math.round((1 - p.price / p.originalPrice) * 100) : 0;
+
     return `<div class="bg-white p-0 overflow-hidden group cursor-pointer transition" onclick="openProductDrawer('${p.id}', 0)">
         <div class="relative w-full aspect-[3/4] bg-slate-100 overflow-hidden mb-3">
             <img id="thumb-${p.id}" src="${img1}" loading="lazy" data-img1="${img1}" data-img2="${img2}" 
@@ -701,16 +710,29 @@ function renderProductCardHTML(p) {
                 </svg>
             </button>
         </div>
-        <div class="flex items-center gap-1.5 mb-2" onclick="event.stopPropagation()">
+
+        <!-- DANH SÁCH MÀU SẮC: Nút to hơn (w-5 h-5), màu active có vòng tròn đen + viền trắng -->
+        <div class="flex items-center gap-2 mb-2" onclick="event.stopPropagation()">
             ${(p.colors || []).map((c, cIdx) => {
         const isColorOutOfStock = c.sizes && c.sizes.length > 0 && c.sizes.every(s => s.outOfStock);
-        return `<button onclick="changeCatalogThumbColor('${p.id}',${cIdx})" class="w-4 h-4 rounded-full border border-slate-300 ${isColorOutOfStock ? 'color-out-of-stock' : ''}" style="background-color: ${c.hex};" title="${c.name}"></button>`;
+        const activeStyle = cIdx === 0 ? 'ring-2 ring-slate-900 ring-offset-2' : '';
+        return `<button onclick="changeCatalogThumbColor('${p.id}',${cIdx})" 
+                    class="w-5 h-5 rounded-full border border-slate-300 transition-all ${activeStyle}${isColorOutOfStock ? 'color-out-of-stock' : ''}" 
+                    style="background-color: ${c.hex};" title="${c.name}"></button>`;
     }).join('')}
         </div>
+
         <h3 class="font-bold text-slate-900 text-sm uppercase tracking-tight mb-1.5">${p.name}</h3>
-        <div class="flex items-baseline gap-2.5">
-            <span class="text-sm font-medium text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
-            <span class="text-xs text-slate-400 line-through font-normal">${p.originalPrice ? p.originalPrice.toLocaleString('vi-VN') + 'đ' : ''}</span>
+
+        <!-- KHỐI GIÁ & BADGE % NẰM THẲNG HÀNG (items-center) -->
+        <div class="flex items-center gap-2">
+            <span class="text-sm font-bold text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
+            ${hasDiscount ? `
+                <span class="text-xs text-slate-400 line-through font-normal">${p.originalPrice.toLocaleString('vi-VN')}đ</span>
+                <span class="bg-[#f1f3f9] text-[#556b92] font-semibold text-[11px] px-1.5 py-0.5 rounded-xs">
+                    -${discountPercent}%
+                </span>
+            ` : ''}
         </div>
     </div>`;
 }
@@ -893,7 +915,7 @@ function changeDrawerColor(productId, colorIdx) {
     if (!p) return;
 
     renderDrawerContent(p, colorIdx);
-    updateProductUrlParam(p.id, colorIdx, true); 
+    updateProductUrlParam(p.id, colorIdx, true);
 
     const drawer = document.getElementById('product-drawer');
     if (drawer) {
@@ -913,11 +935,11 @@ function renderDrawerContent(p, colorIdx) {
     }
 
     const selectedSizeObj = availableSizes.find(s => s.name === currentSelectedSize);
-    
+
     // --- THÊM LOGIC TÍNH TOÁN BADGE TỒN KHO ---
     let stockBadgeHtml = '';
     let maxStock = 999;
-    
+
     if (selectedSizeObj) {
         // Đánh giá hết hàng dựa trên thuộc tính outOfStock hoặc stock = 0
         const isOutOfStock = selectedSizeObj.outOfStock || selectedSizeObj.stock === 0;
@@ -973,12 +995,12 @@ function renderDrawerContent(p, colorIdx) {
         const strikeClass = cIsAllOutOfStock ? 'color-out-of-stock' : '';
         const activeClass = cIdx === colorIdx ? 'ring-2 ring-slate-900 ring-offset-2' : '';
 
-        return `<div class="color-btn-wrapper">
-            <button onclick="changeDrawerColor('${p.id}', ${cIdx})" 
-            class="w-7 h-7 rounded-full border border-slate-300 transition-all relative ${strikeClass} ${activeClass}" 
-            style="background-color: ${c.hex};" title="${c.name}">
-            </button>
-        </div>`;
+        return `<div class="color-btn-wrapper p-0.5">
+        <button onclick="changeDrawerColor('${p.id}', ${cIdx})" 
+        class="w-6 h-6 rounded-full border border-slate-300 transition-all relative ${strikeClass} ${activeClass}" 
+        style="background-color: ${c.hex};" title="${c.name}">
+        </button>
+    </div>`;
     }).join('');
 
     const sizesHtml = availableSizes.map(s => {
@@ -1050,7 +1072,7 @@ function renderDrawerContent(p, colorIdx) {
             <div>
                 <span class="text-[10px] font-black uppercase text-slate-400">INSIDE+</span>
                 <h2 class="text-2xl font-black uppercase text-slate-900 mt-1">${p.name}</h2>
-                <div class="flex items-baseline gap-3 mt-3">
+                <div class="flex items-center gap-3 mt-3">
                     <span class="text-2xl font-black text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
                     ${(p.originalPrice && p.originalPrice > p.price) ? `
                         <span class="text-sm text-slate-400 line-through">${p.originalPrice.toLocaleString('vi-VN')}đ</span>
@@ -1395,8 +1417,8 @@ function openIntroDrawer() {
     const p = originalProducts.find(x => x.id === window.currentActiveProductId);
     if (!p) return;
 
-    const imagesToDisplay = (p.introImages && p.introImages.length > 0) 
-        ? p.introImages 
+    const imagesToDisplay = (p.introImages && p.introImages.length > 0)
+        ? p.introImages
         : (p.colors && p.colors[0] ? p.colors[0].images : []);
 
     const contentEl = document.getElementById('intro-drawer-content');
