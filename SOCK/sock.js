@@ -63,7 +63,8 @@ function parseJsonSafe(val, fallback) {
 }
 
 function processRawProductsData(data) {
-    return (Array.isArray(data) ? data : []).map(item => {
+    // Sửa thêm tham số index vào map()
+    return (Array.isArray(data) ? data : []).map((item, index) => {
         let colors = [];
         if (item.colorsJSON) {
             colors = parseJsonSafe(item.colorsJSON, []);
@@ -83,7 +84,8 @@ function processRawProductsData(data) {
 
         return {
             ...item,
-            id: String(item.id || '').trim(), // Chuẩn hóa ID
+            // SỬA DÒNG NÀY: Bao quát thêm các trường hợp ID viết hoa hoặc dùng index dự phòng
+            id: String(item.id || item.ID || item.productId || `SP_${index}`).trim(),
             price: Number(item.price) || 0,
             originalPrice: Number(item.originalPrice) || 0,
             colors: colors,
@@ -839,7 +841,7 @@ function renderDrawerContent(p, colorIdx) {
         maxStock = selectedSizeObj.stock !== undefined ? selectedSizeObj.stock : (isOutOfStock ? 0 : 50);
 
         if (isOutOfStock || maxStock === 0) {
-            stockBadgeHtml = `<span class="text-red-600 font-bold text-[11px] bg-red-50 px-2 py-0.5 rounded-sm">Hết hàng</span>`;
+            stockBadgeHtml = `<span class="text-red-600 font-bold text-[11px] bg-red-50 px-2 py-0.5 rounded-sm"></span>`;
         } else if (currentQuantity > maxStock) {
             stockBadgeHtml = `<span class="text-red-600 font-bold text-[11px] bg-red-50 px-2 py-0.5 rounded-sm">Còn ${maxStock} SP</span>`;
         } else if (maxStock < 20) {
