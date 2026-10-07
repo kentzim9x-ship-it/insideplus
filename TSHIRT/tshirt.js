@@ -254,12 +254,6 @@ function getCategoryPageUrl(category) {
     return '../INSIDE/inside.html';
 }
 
-function getCategoryPrefix(category) {
-    if (category === 'sock') return 'SPS';
-    if (category === 'tshirt') return 'SPT';
-    return 'SPI';
-}
-
 function getColorPrefix(category) {
     if (category === 'sock') return 'CS';
     if (category === 'tshirt') return 'CT';
@@ -267,10 +261,7 @@ function getColorPrefix(category) {
 }
 
 function formatProductCode(productId, category) {
-    const prefix = getCategoryPrefix(category);
-    const numMatch = String(productId).match(/\d+/);
-    const num = numMatch ? parseInt(numMatch[0], 10) : 1;
-    return prefix + String(num).padStart(3, '0');
+    return String(productId || '').toUpperCase();
 }
 
 function parseProductIdFromCode(code) {

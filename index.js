@@ -1,25 +1,3 @@
-// Helper lấy tiền tố mã SP
-function formatProductCode(productId, category) {
-    const cat = (category || 'inside').toLowerCase();
-    let prefix = 'SPI';
-    if (cat === 'sock') prefix = 'SPS';
-    if (cat === 'tshirt') prefix = 'SPT';
-
-    const numMatch = (productId || '').match(/\d+/);
-    const num = numMatch ? parseInt(numMatch[0], 10) : 1;
-    return prefix + String(num).padStart(3, '0');
-}
-
-function formatColorCode(colorIdx, category) {
-    const cat = (category || 'inside').toLowerCase();
-    let prefix = 'CI';
-    if (cat === 'sock') prefix = 'CS';
-    if (cat === 'tshirt') prefix = 'CT';
-
-    const num = (typeof colorIdx === 'number' ? colorIdx : 0) + 1;
-    return prefix + String(num).padStart(2, '0');
-}
-
 function getCategoryPageUrl(category) {
     const cat = (category || 'inside').toLowerCase();
     if (cat === 'sock') return 'SOCK/sock.html';

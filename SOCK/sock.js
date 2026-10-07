@@ -252,12 +252,6 @@ function getCategoryPageUrl(category) {
     return '../INSIDE/inside.html';
 }
 
-function getCategoryPrefix(category) {
-    if (category === 'sock') return 'SPS';
-    if (category === 'tshirt') return 'SPT';
-    return 'SPI';
-}
-
 function getColorPrefix(category) {
     if (category === 'sock') return 'CS';
     if (category === 'tshirt') return 'CT';
