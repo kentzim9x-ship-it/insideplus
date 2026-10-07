@@ -28,14 +28,8 @@ let quickAddToCartSize = null;
 
 // --- 3. HÀM HỖ TRỢ ĐỊNH DẠNG MÃ SP & MÀU SẮC (DÙNG CHUNG) ---
 function formatProductCode(productId, category) {
-    const cat = (category || 'inside').toLowerCase();
-    let prefix = 'SPI';
-    if (cat === 'sock') prefix = 'SPS';
-    if (cat === 'tshirt') prefix = 'SPT';
-
-    const numMatch = (productId || '').match(/\d+/);
-    const num = numMatch ? parseInt(numMatch[0], 10) : 1;
-    return prefix + String(num).padStart(3, '0');
+    if (!productId) return '';
+    return String(productId).trim().toUpperCase();
 }
 
 function formatColorCode(colorIdx, category) {

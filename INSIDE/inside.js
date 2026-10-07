@@ -770,8 +770,28 @@ function renderDrawerContent(p, colorIdx) {
     }
 
     const selectedSizeObj = availableSizes.find(s => s.name === currentSelectedSize);
-    const isSelectedSizeOutOfStock = selectedSizeObj ? selectedSizeObj.outOfStock : false;
-    const isAllSizesOutOfStock = availableSizes.length > 0 && availableSizes.every(s => s.outOfStock);
+    
+    // --- THÊM LOGIC TÍNH TOÁN BADGE TỒN KHO ---
+    let stockBadgeHtml = '';
+    let maxStock = 999;
+    
+    if (selectedSizeObj) {
+        // Đánh giá hết hàng dựa trên thuộc tính outOfStock hoặc stock = 0
+        const isOutOfStock = selectedSizeObj.outOfStock || selectedSizeObj.stock === 0;
+        maxStock = selectedSizeObj.stock !== undefined ? selectedSizeObj.stock : (isOutOfStock ? 0 : 50);
+
+        if (isOutOfStock || maxStock === 0) {
+            stockBadgeHtml = `<span class="text-red-600 font-bold text-[11px] bg-red-50 px-2 py-0.5 rounded-sm">Hết hàng</span>`;
+        } else if (currentQuantity > maxStock) {
+            stockBadgeHtml = `<span class="text-red-600 font-bold text-[11px] bg-red-50 px-2 py-0.5 rounded-sm">Còn ${maxStock} SP</span>`;
+        } else if (maxStock < 20) {
+            stockBadgeHtml = `<span class="text-amber-600 font-bold text-[11px] bg-amber-50 px-2 py-0.5 rounded-sm">Sắp hết hàng</span>`;
+        }
+    }
+
+    // Cập nhật lại điều kiện vô hiệu hóa nút bấm nếu stock = 0
+    const isSelectedSizeOutOfStock = selectedSizeObj ? (selectedSizeObj.outOfStock || selectedSizeObj.stock === 0) : false;
+    const isAllSizesOutOfStock = availableSizes.length > 0 && availableSizes.every(s => (s.outOfStock || s.stock === 0));
     const showOutOfStockBtn = isSelectedSizeOutOfStock || isAllSizesOutOfStock;
 
     const activeShopeeUrl = activeColor.shopeeUrl || "https://shopee.vn";
@@ -822,8 +842,10 @@ function renderDrawerContent(p, colorIdx) {
 
     const sizesHtml = availableSizes.map(s => {
         const isSelected = currentSelectedSize === s.name;
+        // Bổ sung kiểm tra s.stock === 0
+        const isOutOfStock = s.outOfStock || s.stock === 0;
 
-        const btnStyle = s.outOfStock
+        const btnStyle = isOutOfStock
             ? (isSelected
                 ? 'bg-slate-100 text-slate-400 border-slate-900 ring-2 ring-slate-900'
                 : 'bg-slate-100 text-slate-300 border-slate-200')
@@ -898,7 +920,11 @@ function renderDrawerContent(p, colorIdx) {
             </div>
             <div class="space-y-2" id="size-selection-container">
                 <div class="flex justify-between items-center">
-                    <span class="text-xs font-bold uppercase text-slate-700">KÍCH CỠ</span>
+                    <!-- SỬA LẠI KHỐI NÀY ĐỂ HIỂN THỊ BADGE -->
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold uppercase text-slate-700">KÍCH CỠ: <span class="font-black text-slate-900">${currentSelectedSize || ''}</span></span>
+                        ${stockBadgeHtml}
+                    </div>
                     <button onclick="openSizeModal()" class="text-xs font-bold text-blue-600 hover:underline">Hướng dẫn chọn size</button>
                 </div>
                 <div class="flex gap-2 flex-wrap">${sizesHtml}</div>
