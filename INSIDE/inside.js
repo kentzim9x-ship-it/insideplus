@@ -670,8 +670,8 @@ function selectVisualFilter(styleVal) {
 }
 
 function renderProductCardHTML(p, cIdxActive = 0) {
-    const firstColor = p.colors && p.colors[cIdxActive] 
-        ? p.colors[cIdxActive] 
+    const firstColor = p.colors && p.colors[cIdxActive]
+        ? p.colors[cIdxActive]
         : (p.colors && p.colors[0] ? p.colors[0] : { images: [''] });
 
     const img1 = firstColor.images[0] || '';
@@ -698,15 +698,13 @@ function renderProductCardHTML(p, cIdxActive = 0) {
 
         <div class="flex items-center gap-2 px-1.5 py-1 mb-1 flex-wrap" onclick="event.stopPropagation()">
             ${(p.colors || []).map((c, cIdx) => {
-                const isColorOutOfStock = (c.sizes && c.sizes.length > 0) 
-                    ? c.sizes.every(s => Boolean(s.outOfStock) || s.stock === 0) 
-                    : false;
-                const activeStyle = cIdx === cIdxActive ? 'ring-2 ring-slate-900 ring-offset-2' : '';
-                return `<button onclick="changeCatalogThumbColor('${p.id}',${cIdx})" 
+        const isColorOutOfStock = checkColorOutOfStock(c);
+        const activeStyle = cIdx === cIdxActive ? 'ring-2 ring-slate-900 ring-offset-2' : '';
+        return `<button onclick="changeCatalogThumbColor('${p.id}',${cIdx})" 
                     data-color-idx="${cIdx}"
                     class="color-btn-${p.id} w-5 h-5 rounded-full border border-slate-300 transition-all ${activeStyle}${isColorOutOfStock ? 'color-out-of-stock' : ''}" 
                     style="background-color: ${c.hex};" title="${c.name}"></button>`;
-            }).join('')}
+    }).join('')}
         </div>
 
         <h3 class="font-bold text-slate-900 text-sm uppercase tracking-tight mb-1.5">${p.name}</h3>
@@ -736,7 +734,7 @@ function renderCatalog(items, isAppend = false) {
 
     currentPage = 1;
     const initialItems = items.slice(0, PAGE_SIZE);
-    
+
     const htmlContent = initialItems.map(p => {
         return renderProductCardHTML(p, 0);
     }).join('');
@@ -825,6 +823,16 @@ function changeCatalogThumbColor(id, colorIdx) {
     const colorButtons = document.querySelectorAll(`.color-btn-${id}`);
     colorButtons.forEach(btn => {
         const btnIdx = parseInt(btn.getAttribute('data-color-idx'), 10);
+        const colorData = p.colors[btnIdx];
+        const isOutOfStock = checkColorOutOfStock(colorData);
+
+        // Đảm bảo class gạch chéo không bị mất khi toggle trạng thái active
+        if (isOutOfStock) {
+            btn.classList.add('color-out-of-stock');
+        } else {
+            btn.classList.remove('color-out-of-stock');
+        }
+
         if (btnIdx === colorIdx) {
             btn.classList.add('ring-2', 'ring-slate-900', 'ring-offset-2');
         } else {
@@ -926,6 +934,18 @@ function changeDrawerColor(productId, colorIdx) {
     }
 }
 
+function checkColorOutOfStock(colorObj) {
+    if (!colorObj) return false;
+    // Nếu bản thân đối tượng màu có thuộc tính outOfStock = true
+    if (Boolean(colorObj.outOfStock)) return true;
+
+    // Nếu có mảng sizes, kiểm tra xem tất cả các size thuộc màu này có hết hàng hay không
+    if (Array.isArray(colorObj.sizes) && colorObj.sizes.length > 0) {
+        return colorObj.sizes.every(s => Boolean(s.outOfStock) || s.stock === 0);
+    }
+    return false;
+}
+
 function renderDrawerContent(p, colorIdx) {
     const activeColor = p.colors && p.colors[colorIdx] ? p.colors[colorIdx] : { name: '', hex: '', images: [''], sizes: [] };
     const availableSizes = activeColor.sizes || [];
@@ -991,14 +1011,14 @@ function renderDrawerContent(p, colorIdx) {
     </div>`;
 
     const colorsHtml = (p.colors || []).map((c, cIdx) => {
-        const cIsAllOutOfStock = c.sizes && c.sizes.length > 0 && c.sizes.every(s => Boolean(s.outOfStock) || s.stock === 0);
+        const cIsAllOutOfStock = checkColorOutOfStock(c);
         const strikeClass = cIsAllOutOfStock ? 'color-out-of-stock' : '';
         const activeClass = cIdx === colorIdx ? 'ring-2 ring-slate-900 ring-offset-2' : '';
 
         return `<div class="color-btn-wrapper p-0.5">
         <button onclick="changeDrawerColor('${p.id}', ${cIdx})" 
-        class="w-6 h-6 rounded-full border border-slate-300 transition-all relative ${strikeClass} ${activeClass}" 
-        style="background-color: ${c.hex};" title="${c.name}">
+            class="w-6 h-6 rounded-full border border-slate-300 transition-all relative ${strikeClass} ${activeClass}" 
+            style="background-color: ${c.hex};" title="${c.name}">
         </button>
     </div>`;
     }).join('');
