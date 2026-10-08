@@ -46,7 +46,7 @@ function loadVisualFilterCategories() {
                     const rawId = (item.id || item.ID || 'ALL').toString().trim().toUpperCase();
                     // Lấy cột 'type' trên Google Sheet làm nhãn hiển thị bên dưới ảnh
                     const rawTypeLabel = (item.type || item.TYPE || item.styleValue || item.stylevalue || '').toString().trim();
-                    
+
                     // Làm sạch URL ảnh
                     let rawImg = (item.image || item.IMAGE || item.img || '').toString().trim();
                     if (rawImg.startsWith('[') && rawImg.endsWith(']')) {
@@ -68,7 +68,7 @@ function loadVisualFilterCategories() {
         })
         .catch(error => {
             console.warn(error.message);
-            
+
             return fetch(`${APPS_SCRIPT_URL}?sheet=${sheetName}`)
                 .then(res => {
                     if (!res.ok) throw new Error('Không thể tải dữ liệu từ Google Sheet API');
@@ -79,7 +79,7 @@ function loadVisualFilterCategories() {
                         visualFilterCategories = fallbackData.map(item => {
                             const rawId = (item.id || item.ID || 'ALL').toString().trim().toUpperCase();
                             const rawTypeLabel = (item.type || item.TYPE || item.styleValue || item.stylevalue || '').toString().trim();
-                            
+
                             let rawImg = (item.image || item.IMAGE || item.img || '').toString().trim();
                             if (rawImg.startsWith('[') && rawImg.endsWith(']')) {
                                 rawImg = rawImg.slice(1, -1).trim();
@@ -1703,6 +1703,12 @@ document.addEventListener('keydown', function (e) {
         const productDrawer = document.getElementById('product-drawer');
         if (productDrawer && !productDrawer.classList.contains('hidden')) {
             closeProductDrawer(true);
+            return;
+        }
+
+        const badgeModal = document.getElementById('voucher-badge-modal');
+        if (badgeModal && !badgeModal.classList.contains('hidden')) {
+            closeVoucherBadgeModal();
             return;
         }
     }

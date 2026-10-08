@@ -68,6 +68,8 @@ function processRawVouchersData(data) {
     if (typeof renderVoucherList === 'function') renderVoucherList();
     if (typeof renderCartModalContent === 'function') renderCartModalContent();
 
+    checkAndShowVoucherBadgeModal();
+
     return availableVouchers;
 }
 
@@ -85,6 +87,124 @@ function checkVouchersUpdatesSilently(vouchersJsonUrl) {
             }
         })
         .catch(() => { });
+}
+
+// --- 8. HIỂN THỊ VOUCHER BADGE POPUP KHI BẮT ĐẦU SESSION ---
+
+function checkAndShowVoucherBadgeModal() {
+    // 1. Kiểm tra xem session này đã hiển thị badge chưa
+    if (sessionStorage.getItem('voucher_badge_shown') === 'true') {
+        return;
+    }
+
+    // 2. Tìm các voucher có isBadge = true
+    const badgeVouchers = availableVouchers.filter(v => v.isBadge === true);
+    if (badgeVouchers.length === 0) return;
+
+    // Lấy voucher badge đầu tiên để hiển thị
+    const v = badgeVouchers[0];
+
+    // 3. Tạo DOM Popup nếu chưa có
+    let modal = document.getElementById('voucher-badge-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'voucher-badge-modal';
+        modal.className = "fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs transition-opacity duration-300 opacity-0 hidden";
+        document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+        <div onclick="event.stopPropagation()" class="bg-white w-full max-w-sm sm:max-w-md rounded-xs overflow-hidden shadow-2xl relative transform transition-all duration-300 scale-95 border border-slate-100 font-['Montserrat']">
+            
+            <!-- Nút đóng X -->
+            <button onclick="closeVoucherBadgeModal()" class="absolute top-3 right-3 text-slate-400 hover:text-black font-bold text-2xl leading-none cursor-pointer z-10 w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 transition">&times;</button>
+
+            <div class="p-6 text-center space-y-4">
+                
+                <!-- Tag Badge nhỏ -->
+                <div class="inline-flex items-center gap-1.5 bg-blue-50 text-[#1d3b8a] text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+                    <span>Ưu đãi dành riêng cho bạn</span>
+                </div>
+
+                <!-- Tiêu đề & Mô tả -->
+                <div>
+                    <h3 class="font-black text-2xl uppercase text-slate-900 tracking-tight">${v.title}</h3>
+                    <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">${v.desc}</p>
+                </div>
+
+                <!-- Khung Mã Voucher dạng tấm vé -->
+                <div class="bg-slate-50 border-2 border-dashed border-slate-300 p-3.5 my-2 rounded-xs flex items-center justify-between gap-3 relative">
+                    <div class="text-left">
+                        <span class="block text-[9px] font-bold uppercase text-slate-400 tracking-wider">MÃ GIẢM GIÁ</span>
+                        <span class="text-xl font-mono font-black text-[#1d3b8a] tracking-wider">${v.code}</span>
+                    </div>
+
+                    <button onclick="copyAndApplyBadgeVoucher('${v.code}')" id="btn-copy-badge-code" class="bg-[#1d3b8a] text-white px-4 py-2 text-xs font-bold uppercase tracking-wider hover:bg-blue-900 transition shrink-0 cursor-pointer shadow-sm">
+                        Sao chép
+                    </button>
+                </div>
+
+                <!-- Nút Lưu & Mua sắm ngay -->
+                <button onclick="copyAndApplyBadgeVoucher('${v.code}')" class="w-full bg-[#222222] text-white py-3.5 text-xs font-bold uppercase tracking-widest hover:bg-black transition cursor-pointer">
+                    Áp dụng ngay & Mua sắm
+                </button>
+
+                <p class="text-[10px] text-slate-400 font-medium">Bấm ESC hoặc nhấp ra ngoài để đóng lại</p>
+            </div>
+        </div>
+    `;
+
+    // 4. Hiển thị Popup mượt mà
+    modal.classList.remove('hidden');
+    if (window.lucide) lucide.createIcons({ root: modal });
+
+    requestAnimationFrame(() => {
+        modal.classList.remove('opacity-0');
+        const content = modal.firstElementChild;
+        if (content) content.classList.remove('scale-95');
+    });
+
+    // Bắt sự kiện click ngoài background để đóng
+    modal.onclick = closeVoucherBadgeModal;
+
+    // Đánh dấu session đã hiển thị
+    sessionStorage.setItem('voucher_badge_shown', 'true');
+}
+
+function closeVoucherBadgeModal() {
+    const modal = document.getElementById('voucher-badge-modal');
+    if (!modal || modal.classList.contains('hidden')) return;
+
+    modal.classList.add('opacity-0');
+    const content = modal.firstElementChild;
+    if (content) content.classList.add('scale-95');
+
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 300);
+}
+
+function copyAndApplyBadgeVoucher(code) {
+    // Sao chép vào bộ nhớ tạm
+    navigator.clipboard.writeText(code).then(() => {
+        const btn = document.getElementById('btn-copy-badge-code');
+        if (btn) {
+            btn.innerText = 'ĐÃ CHÉP ✓';
+            btn.className = 'bg-emerald-600 text-white px-4 py-2 text-xs font-bold uppercase tracking-wider shrink-0';
+        }
+
+        // Áp dụng voucher vào giỏ nếu thỏa mãn
+        if (typeof selectVoucher === 'function') {
+            selectVoucher(code);
+        }
+
+        if (typeof showCartToast === 'function') {
+            showCartToast(`Đã sao chép mã ${code} vào bộ nhớ tạm!`);
+        }
+
+        setTimeout(closeVoucherBadgeModal, 800);
+    });
 }
 
 // --- 2. TRẠNG THÁI TOÀN CỤC GIỎ HÀNG & VOUCHER ---
