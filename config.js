@@ -98,7 +98,7 @@ function checkVouchersUpdatesSilently(vouchersJsonUrl) {
         .catch(() => { });
 }
 
-// --- HIỂN THỊ VOUCHER BADGE POPUP (LIMIT 1 BADGE + TĂNG KÍCH THƯỚC MODAL) ---
+// --- HIỂN THỊ VOUCHER BADGE POPUP (CHUẨN DESIGN MINIMALIST GIFT VOUCHER) ---
 
 function checkAndShowVoucherBadgeModal() {
     // 1. Kiểm tra session
@@ -106,7 +106,7 @@ function checkAndShowVoucherBadgeModal() {
         return;
     }
 
-    // 2. LIMIT 1: Dùng .find() để chỉ lấy đúng 1 Voucher đầu tiên có isBadge = true
+    // 2. LIMIT 1: Chỉ lấy đúng 1 Voucher đầu tiên có isBadge = true
     const badgeVoucher = availableVouchers.find(v => v.isBadge === true);
     if (!badgeVoucher) return;
 
@@ -122,30 +122,31 @@ function checkAndShowVoucherBadgeModal() {
         document.body.appendChild(modal);
     }
 
-    // 4. Render HTML: Tăng max-w từ max-w-xl lên max-w-2xl sm:max-w-3xl
+    // 4. Render HTML chuẩn theo giao diện ảnh mẫu
     modal.innerHTML = `
         <div onclick="event.stopPropagation()" class="relative w-full max-w-2xl sm:max-w-3xl bg-[#e2e2e2] text-[#111111] shadow-2xl rounded-none transform transition-all duration-300 scale-95 font-['Montserrat'] overflow-hidden border border-slate-300">
             
             <!-- Nút đóng X dạng Text tối giản góc trên bên phải -->
             <button onclick="closeVoucherBadgeModal()" class="absolute top-3 right-4 text-slate-400 hover:text-black font-light text-3xl leading-none cursor-pointer z-30 transition" title="Đóng (ESC)">&times;</button>
 
-            <!-- BỐ CỤC TẤM TICKET / VOUCHER MỞ RỘNG KÍCH THƯỚC -->
+            <!-- BỐ CỤC KHUNG TICKET / VOUCHER -->
             <div class="grid grid-cols-12 min-h-[340px] sm:min-h-[380px]">
                 
-                <!-- BÊN TRÁI: KHỐI CHỨA ẢNH HIỂN THỊ RỘNG RÃI & ĐẸP HƠN -->
-                <div class="col-span-5 sm:col-span-6 relative bg-slate-300 overflow-hidden">
+                <!-- BÊN TRÁI: KHỐI CHỨA ẢNH ĐẦY ĐỦ MÀU SẮC & STORE NAME -->
+                <div class="col-span-5 sm:col-span-6 relative bg-[#e2e2e2] overflow-hidden">
                     
-                    <!-- Dải nhãn đen xoay dọc chữ STORE NAME sát lề trái -->
-                    <div class="absolute left-0 top-0 bottom-0 w-8 sm:w-10 bg-[#111111] text-white flex items-center justify-center z-20">
+                    <!-- Khung chứa ảnh hiển thị đầy đủ màu sắc (Đã bỏ grayscale) -->
+                    <div class="absolute inset-0 z-10 w-full h-full" style="clip-path: polygon(0 0, 82% 0, 100% 50%, 82% 100%, 0 100%);">
+                        <img src="${bgImage}" class="w-full h-full object-cover">
+                    </div>
+
+                    <!-- Dải nhãn đen xoay dọc chữ STORE NAME đè trực tiếp trong lòng ảnh -->
+                    <div class="absolute left-0 top-12 bottom-12 w-9 sm:w-10 bg-[#111111] text-white flex items-center justify-center z-20 shadow-md">
                         <span class="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.25em] -rotate-90 whitespace-nowrap">
-                            STORE NAME
+                            INSIDE+
                         </span>
                     </div>
 
-                    <!-- Khối chứa ảnh ghép từ Google Sheet (url_img) với góc vát Clip-path lớn -->
-                    <div class="absolute inset-0 left-8 sm:left-10 z-10" style="clip-path: polygon(0 0, 82% 0, 100% 50%, 82% 100%, 0 100%);">
-                        <img src="${bgImage}" class="w-full h-full object-cover filter grayscale contrast-110 hover:grayscale-0 transition-all duration-700">
-                    </div>
                 </div>
 
                 <!-- BÊN PHẢI: CÁC THÔNG TIN VOUCHER & NÚT THAO TÁC -->
