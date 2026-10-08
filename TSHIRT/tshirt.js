@@ -627,14 +627,12 @@ function clearAllBoldActiveStates() {
 window.addEventListener('pageshow', clearAllBoldActiveStates);
 
 window.addEventListener('pageshow', function (event) {
-    // Nếu trang được tải lại từ BFCache (vuốt back/forward)
     if (event.persisted) {
         clearAllBoldActiveStates();
     }
 });
 
 window.addEventListener('popstate', function (e) {
-    // Đóng nhanh các drawer phụ mà không cần chờ animation
     const infoDrawer = document.getElementById('info-drawer');
     if (infoDrawer && !infoDrawer.classList.contains('hidden')) closeInfoDrawer();
 
@@ -647,7 +645,6 @@ window.addEventListener('popstate', function (e) {
     const urlParams = new URLSearchParams(window.location.search);
     const productParam = urlParams.get('product');
 
-    // Dùng requestAnimationFrame để đẩy việc xử lý DOM sang frame tiếp theo, giúp thao tác vuốt back phản hồi lập tức
     requestAnimationFrame(() => {
         if (!productParam) {
             closeProductDrawer(false);
@@ -1070,7 +1067,6 @@ function closeProductDrawer(shouldUpdateUrl) {
 
     document.body.classList.remove('drawer-open');
 
-    // Khôi phục lại đúng vị trí cuộn trang Category ban đầu
     window.scrollTo(0, savedCategoryScrollY);
 
     if (shouldUpdateUrl !== false) {
@@ -1735,15 +1731,12 @@ document.addEventListener('keydown', function (e) {
 // Biến lưu tọa độ thao tác vuốt
 let touchStartX = 0;
 let touchStartY = 0;
-let isNativeNavigation = false; // Biến cờ đánh dấu thao tác Back/Forward native
+let isNativeNavigation = false;
 
 document.addEventListener('touchstart', function (e) {
     const startX = e.touches[0].clientX;
     const windowWidth = window.innerWidth;
 
-    // TÁCH BIỆT THAO TÁC BACK / FORWARD:
-    // Nếu điểm chạm xuất phát từ sát mép trái (< 35px) hoặc sát mép phải (> windowWidth - 35px)
-    // -> Đây là thao tác Vuốt Back/Forward của trình duyệt/Hệ điều hành, đánh dấu bỏ qua JS.
     if (startX < 35 || startX > (windowWidth - 35)) {
         isNativeNavigation = true;
         return;
@@ -1753,7 +1746,6 @@ document.addEventListener('touchstart', function (e) {
     touchStartX = e.changedTouches[0].screenX;
     touchStartY = e.changedTouches[0].screenY;
 
-    // Lưu tọa độ riêng cho Modal Thêm Nhanh
     const quickModal = document.getElementById('quick-add-cart-modal');
     if (quickModal && !quickModal.classList.contains('hidden')) {
         quickModalTouchStartY = e.touches[0].clientY;
@@ -1761,8 +1753,6 @@ document.addEventListener('touchstart', function (e) {
 }, { passive: true });
 
 document.addEventListener('touchend', function (e) {
-    // NẾU LÀ THAO TÁC BACK/FORWARD NATIVE: THOÁT NGAY LẬP TỨC
-    // Trình duyệt sẽ thực thi hành động Back cực kỳ mượt mà không bị delay 1ms nào
     if (isNativeNavigation) return;
 
     const touchEndX = e.changedTouches[0].screenX;
@@ -1771,7 +1761,6 @@ document.addEventListener('touchend', function (e) {
     const deltaX = touchEndX - touchStartX;
     const deltaY = Math.abs(touchEndY - touchStartY);
 
-    // Xử lý đóng Quick Add Modal khi vuốt xuống
     const quickModal = document.getElementById('quick-add-cart-modal');
     if (quickModal && !quickModal.classList.contains('hidden')) {
         const currentTouchEndY = e.changedTouches[0].clientY;
@@ -1785,7 +1774,6 @@ document.addEventListener('touchend', function (e) {
         }
     }
 
-    // Xử lý vuốt mở/đóng Navigation Mobile
     const mobileNav = document.getElementById('mobile-nav-drawer');
     if (mobileNav && !mobileNav.classList.contains('hidden')) {
         if (deltaX < -50 && Math.abs(deltaX) > deltaY) {
@@ -1795,7 +1783,6 @@ document.addEventListener('touchend', function (e) {
         }
     }
 
-    // Tối ưu các Drawer phụ khi Swipe Right
     if (deltaX > 60 && deltaX > deltaY) {
         const drawers = ['quick-edit-drawer', 'voucher-drawer', 'cart-modal', 'info-drawer', 'intro-drawer', 'search-modal'];
         for (let id of drawers) {
@@ -1812,7 +1799,6 @@ document.addEventListener('touchend', function (e) {
         }
     }
 
-    // Xử lý Gallery ảnh
     const galleryModal = document.getElementById('gallery-modal');
     if (galleryModal && !galleryModal.classList.contains('hidden')) {
         if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > deltaY) {

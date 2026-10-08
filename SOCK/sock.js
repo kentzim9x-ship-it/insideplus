@@ -1601,7 +1601,7 @@ function openIntroDrawer() {
 }
 
 function closeIntroDrawer() {
-    const overlay = document.getElementById('intro-overlay');
+    const overlay = document.getElementById('info-overlay');
     const panel = document.getElementById('intro-panel');
     const drawer = document.getElementById('intro-drawer');
 
