@@ -163,21 +163,17 @@ function renderAndShowBadgeModalContent(badgeVoucher) {
     modal.innerHTML = `
         <div onclick="event.stopPropagation()" class="relative w-full max-w-lg sm:max-w-3xl bg-[#e2e2e2] text-[#111111] shadow-2xl rounded-none transform transition-all duration-300 scale-95 font-['Montserrat'] overflow-hidden border border-slate-300">
             
-            <!-- Nút đóng X dạng Text tối giản -->
             <button onclick="closeVoucherBadgeModal()" class="absolute top-0.5 right-1 sm:top-2 sm:right-4 text-slate-400 hover:text-black font-light text-2xl sm:text-3xl leading-none cursor-pointer z-30 transition" title="Đóng (ESC)">&times;</button>
 
-            <!-- BỐ CỤC KHUNG TICKET / VOUCHER -->
             <div class="grid grid-cols-12 min-h-[260px] sm:min-h-[380px]">
                 
                 <!-- BÊN TRÁI: KHỐI CHỨA ẢNH & STORE NAME -->
                 <div class="col-span-5 sm:col-span-6 relative bg-[#e2e2e2] overflow-hidden">
                     
-                    <!-- Khung chứa ảnh hiển thị đầy đủ màu sắc -->
                     <div class="absolute inset-0 z-10 w-full h-full" style="clip-path: polygon(0 0, 82% 0, 100% 50%, 82% 100%, 0 100%);">
                         <img src="${bgImage}" class="w-full h-full object-cover">
                     </div>
 
-                    <!-- Dải nhãn đen xoay dọc chữ STORE NAME đè trực tiếp trong lòng ảnh -->
                     <div class="absolute left-0 top-1/3 bottom-1/3 w-8 sm:w-9 bg-[#111111] text-white flex items-center justify-center z-20 shadow-md">
                         <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] -rotate-90 whitespace-nowrap">
                             INSIDE+
