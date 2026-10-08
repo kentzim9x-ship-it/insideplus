@@ -89,7 +89,7 @@ function checkVouchersUpdatesSilently(vouchersJsonUrl) {
         .catch(() => { });
 }
 
-// --- HIỂN THỊ VOUCHER BADGE POPUP (POSTER VOUCHER VIỀN RĂNG CƯA & XUYÊN THẤU chuẩn 100%) ---
+// --- HIỂN THỊ VOUCHER BADGE POPUP (VIỀN RĂNG CƯA MÉP TRÊN/DƯỚI + OVAL XUYÊN THẤU) ---
 
 function checkAndShowVoucherBadgeModal() {
     // 1. Kiểm tra session
@@ -103,7 +103,10 @@ function checkAndShowVoucherBadgeModal() {
 
     const v = badgeVouchers[0];
 
-    // 3. Tạo Modal Container
+    // 3. Đảm bảo inject CSS Răng cưa vào trang
+    injectZigzagStyles();
+
+    // 4. Tạo Modal Container
     let modal = document.getElementById('voucher-badge-modal');
     if (!modal) {
         modal = document.createElement('div');
@@ -113,8 +116,8 @@ function checkAndShowVoucherBadgeModal() {
     }
 
     modal.innerHTML = `
-        <!-- Khung Poster Xanh Navy -->
-        <div onclick="event.stopPropagation()" class="relative w-full max-w-sm sm:max-w-md bg-[#1d3b8a] text-white p-7 sm:p-9 shadow-2xl rounded-none transform transition-all duration-300 scale-95 font-['Montserrat'] overflow-hidden">
+        <!-- Khung Poster Xanh Navy áp dụng Viền Răng Cưa zigzag-edge -->
+        <div onclick="event.stopPropagation()" class="zigzag-edge relative w-full max-w-sm sm:max-w-md bg-[#1d3b8a] text-white p-7 sm:p-9 shadow-2xl rounded-none transform transition-all duration-300 scale-95 font-['Montserrat'] overflow-hidden">
             
             <!-- Vết khuyết đục lỗ tròn 2 bên sườn (Left & Right Notches) -->
             <div class="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-black/50 backdrop-blur-sm rounded-full z-20 pointer-events-none"></div>
@@ -181,7 +184,7 @@ function checkAndShowVoucherBadgeModal() {
         </div>
     `;
 
-    // 4. Kích hoạt hiển thị
+    // 5. Kích hoạt hiển thị
     modal.classList.remove('hidden');
     if (window.lucide) lucide.createIcons({ root: modal });
 
@@ -196,6 +199,33 @@ function checkAndShowVoucherBadgeModal() {
 
     modal.onclick = closeVoucherBadgeModal;
     sessionStorage.setItem('voucher_badge_shown', 'true');
+}
+
+// Hàm tự động nhúng Style viền răng cưa CSS vào trang web
+function injectZigzagStyles() {
+    if (document.getElementById('zigzag-badge-style')) return;
+    const style = document.createElement('style');
+    style.id = 'zigzag-badge-style';
+    style.textContent = `
+        /* CSS MASK TẠO VIỀN RĂNG CƯA MÉP TRÊN VÀ DƯỚI */
+        .zigzag-edge {
+            --s: 10px; /* Kích thước nửa răng cưa */
+            --g: 0px;
+            --c: #0000;
+            --m: 100%/#{$var};
+            
+            mask: 
+                conic-gradient(from 135deg at top   ,var(--c) 90deg,#000 0) 0 0/calc(2*var(--s)) var(--s) repeat-x,
+                conic-gradient(from -45deg at bottom,var(--c) 90deg,#000 0) 0 100%/calc(2*var(--s)) var(--s) repeat-x,
+                linear-gradient(#000 0 0) 0 var(--s)/100% calc(100% - 2*var(--s)) no-repeat;
+            
+            -webkit-mask: 
+                conic-gradient(from 135deg at top   ,#0000 90deg,#000 0) 0 0/20px 10px repeat-x,
+                conic-gradient(from -45deg at bottom,#0000 90deg,#000 0) 0 100%/20px 10px repeat-x,
+                linear-gradient(#000 0 0) 0 10px/100% calc(100% - 20px) no-repeat;
+        }
+    `;
+    document.head.appendChild(style);
 }
 
 function closeVoucherBadgeModal() {
