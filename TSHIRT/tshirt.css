@@ -46,9 +46,13 @@ textarea {
 /* KHÓA SCROLLBAR BÊN DƯỚI KHI MỞ CÁC LỚP OVERLAY / DRAWER / MODAL (ÁP DỤNG CHUẨN CẢ MOBILE) */
 body.drawer-open {
     overflow: hidden !important;
-    position: fixed !important;
-    width: 100% !important;
-    height: 100% !important;
+}
+
+#product-drawer {
+    overscroll-behavior-y: contain;
+    /* Ngăn cuộn dội lây sang trang bên dưới */
+    -webkit-overflow-scrolling: touch;
+    /* Bật mượt cuộn iOS */
 }
 
 #product-drawer.drawer-open {
@@ -111,11 +115,15 @@ button.color-out-of-stock::after {
 }
 
 .floating-widget {
-    width: 2.75rem;          /* Chiều rộng nút (44px) */
-    height: 2.75rem;         /* Chiều cao nút (44px) */
-    border-radius: 9999px;   /* Bo tròn tuyệt đối thành hình tròn */
+    width: 2.75rem;
+    /* Chiều rộng nút (44px) */
+    height: 2.75rem;
+    /* Chiều cao nút (44px) */
+    border-radius: 9999px;
+    /* Bo tròn tuyệt đối thành hình tròn */
     background-color: #ffffff;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Đổ bóng dưới nút */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    /* Đổ bóng dưới nút */
     border-width: 1px;
     border-color: #f1f5f9;
     display: flex;
@@ -127,7 +135,8 @@ button.color-out-of-stock::after {
 }
 
 .floating-widget:hover {
-    transform: scale(1.05);  /* Hiệu ứng phóng to nhẹ khi rê chuột vào */
+    transform: scale(1.05);
+    /* Hiệu ứng phóng to nhẹ khi rê chuột vào */
 }
 
 /* BIỂU TƯỢNG KÍNH LÚP Ở GÓC DƯỚI PHẢI HÌNH ẢNH */
@@ -265,9 +274,9 @@ button.color-out-of-stock::after {
 }
 
 /* TẮT BÓNG MỜ MẶC ĐỊNH CỦA TRÌNH DUYỆT MOBILE TRÊN TOÀN TRANG */
-*, 
-a, 
-button, 
+*,
+a,
+button,
 [onclick] {
     -webkit-tap-highlight-color: transparent !important;
 }
@@ -276,23 +285,23 @@ button,
 @media (max-width: 767px) {
     /* 1. Nút Logo */
     #header-logo-link:active,
-    
+
     /* 2. Nút Hamburger Menu bên trái */
     #btn-mobile-menu:active,
-    
+
     /* 3. Nút Tìm kiếm trên header */
     #btn-search-mobile:active,
-    
+
     /* 4. Nút Giỏ hàng trên header */
     #btn-cart-mobile:active,
-    
+
     /* 5. Nút 'X' đóng các Modal / Drawer */
     button[onclick*="close"]:active,
     button[onclick*="Close"]:active,
     button[onclick*="toggleMobileNavDrawer"]:active,
     #search-modal button[onclick*="closeSearchModal"]:active,
     #cart-modal button[onclick*="closeCartModal"]:active,
-    
+
     /* 6. 3 nút điều hướng bên trong Menu Mobile */
     .drawer-nav-item:active {
         opacity: 0.5 !important;
@@ -306,6 +315,7 @@ button,
         transform: translateY(-100%);
         opacity: 0;
     }
+
     to {
         transform: translateY(0);
         opacity: 1;
@@ -317,6 +327,7 @@ button,
         transform: translateY(0);
         opacity: 1;
     }
+
     to {
         transform: translateY(-100%);
         opacity: 0;
