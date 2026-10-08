@@ -628,8 +628,6 @@ function clearAllBoldActiveStates() {
     document.querySelectorAll('.btn-bold-active, .active-bold').forEach(el => el.classList.remove('btn-bold-active', 'active-bold'));
 }
 
-window.addEventListener('pageshow', clearAllBoldActiveStates);
-
 window.addEventListener('pageshow', function (event) {
     if (event.persisted) {
         clearAllBoldActiveStates();
