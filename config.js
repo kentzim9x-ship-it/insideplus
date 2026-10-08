@@ -1,16 +1,84 @@
-// --- 1. CẤU HÌNH TĨNH ---
-const SHIPPING_CONFIG = {
-    shippingFee: 30000, // Phí vận chuyển mặc định
-    freeShippingThreshold: 399000,
-    freeShippingMessage: "Bạn đã được miễn phí vận chuyển"
-};
+// Thay đổi khai báo const thành let để có thể gán dữ liệu động từ JSON
+let availableVouchers = [];
+let currentVouchersETag = null;
 
-const availableVouchers = [
-    { code: "INSIDE10", title: "Giảm 10%", desc: "Đơn hàng tối thiểu 500.000đ", minOrder: 500000, discountType: "percent", discountValue: 10 },
-    { code: "INSIDE20", title: "Giảm 20.000đ", desc: "Đơn hàng tối thiểu 200.000đ", minOrder: 200000, discountType: "fixed", discountValue: 20000 },
-    { code: "INSIDE50", title: "Giảm 50.000đ", desc: "Đơn hàng tối thiểu 300.000đ", minOrder: 300000, discountType: "fixed", discountValue: 50000 },
-    { code: "INSIDE100", title: "Giảm 100.000đ", desc: "Đơn hàng tối thiểu 500.000đ", minOrder: 500000, discountType: "fixed", discountValue: 100000 }
-];
+// URL Apps Script dự phòng
+const VOUCHERS_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=VOUCHERS";
+
+function loadVouchersData() {
+    const vouchersJsonUrl = '../data/vouchers.json';
+
+    return fetch(vouchersJsonUrl)
+        .then(response => {
+            if (!response.ok) throw new Error('Không tìm thấy vouchers.json, chuyển sang dùng Apps Script API');
+            currentVouchersETag = response.headers.get('ETag') || response.headers.get('Last-Modified');
+            return response.json();
+        })
+        .then(data => {
+            processRawVouchersData(data);
+            checkVouchersUpdatesSilently(vouchersJsonUrl);
+            return availableVouchers;
+        })
+        .catch(() => {
+            // FALLBACK: Tải trực tiếp từ Google Sheet API nếu chưa có JSON tĩnh
+            return fetch(VOUCHERS_APPS_SCRIPT_URL)
+                .then(res => res.json())
+                .then(data => processRawVouchersData(data))
+                .catch(err => console.error('Lỗi nạp Vouchers:', err));
+        });
+}
+
+function processRawVouchersData(data) {
+    if (!Array.isArray(data)) return [];
+
+    // Chỉ lọc lấy các Voucher có is_available = TRUE
+    const activeVouchers = data.filter(item => {
+        const avail = item.is_available ?? item.IS_AVAILABLE ?? true;
+        return String(avail).trim().toUpperCase() === 'TRUE' || avail === true;
+    });
+
+    availableVouchers = activeVouchers.map(item => {
+        const isBadge = item.is_badge ?? item.IS_BADGE ?? false;
+        const hasBadge = String(isBadge).trim().toUpperCase() === 'TRUE' || isBadge === true;
+
+        return {
+            code: String(item.code || '').trim().toUpperCase(),
+            title: String(item.title || item.code || ''),
+            desc: String(item.desc || ''),
+            minOrder: Number(String(item.minOrder || 0).replace(/[^0-9]/g, '')) || 0,
+            discountType: String(item.discountType || 'fixed').trim().toLowerCase(),
+            discountValue: Number(String(item.discountValue || 0).replace(/[^0-9]/g, '')) || 0,
+            isBadge: hasBadge // Thêm thuộc tính isBadge nếu muốn dùng về sau
+        };
+    });
+
+    // Nếu voucher đang lưu trong LocalStorage bị vô hiệu hóa trên Sheet, tiến hành hủy bỏ voucher đó
+    if (activeVoucher && !availableVouchers.some(v => v.code === activeVoucher.code)) {
+        activeVoucher = null;
+        localStorage.removeItem('inside_active_voucher');
+    }
+
+    if (typeof renderVoucherList === 'function') renderVoucherList();
+    if (typeof renderCartModalContent === 'function') renderCartModalContent();
+
+    return availableVouchers;
+}
+
+// Kiểm tra ngầm ETag cập nhật Voucher từ GitHub Actions
+function checkVouchersUpdatesSilently(vouchersJsonUrl) {
+    fetch(vouchersJsonUrl, { method: 'HEAD', cache: 'no-cache' })
+        .then(response => {
+            if (!response.ok) return;
+            const newETag = response.headers.get('ETag') || response.headers.get('Last-Modified');
+            if (newETag && currentVouchersETag && newETag !== currentVouchersETag) {
+                currentVouchersETag = newETag;
+                fetch(vouchersJsonUrl, { cache: 'no-cache' })
+                    .then(res => res.json())
+                    .then(newData => processRawVouchersData(newData));
+            }
+        })
+        .catch(() => { });
+}
 
 // --- 2. TRẠNG THÁI TOÀN CỤC GIỎ HÀNG & VOUCHER ---
 let cartItems = JSON.parse(localStorage.getItem('inside_cart') || '[]');
@@ -1466,4 +1534,5 @@ function openProductDrawerFromCart(productId, colorName, category) {
 // Tự động kích hoạt gán sự kiện hover khi trang load xong
 document.addEventListener('DOMContentLoaded', () => {
     attachQuickAddHoverEvents();
+    loadVouchersData();
 });

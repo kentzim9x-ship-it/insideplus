@@ -14,7 +14,7 @@ const PAGE_SIZE = 12;
 let isLoadingProducts = false;
 let catalogIntersectionObserver = null;
 
-const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbyl0IDuPpwEtHpQJOU5uONu5Oc50A8Yrk5lUMSwT0u_4VgSNmhUYCBIKX9OOFC5zTDS/exec?sheet=INSIDE';
+const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=INSIDE';
 
 function parseJsonSafe(val, fallback) {
     if (typeof val !== 'string') return val || fallback;

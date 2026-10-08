@@ -8,7 +8,7 @@ let currentGalleryIndex = 0;
 let currentQuantity = 1;
 let currentFilterETag = null;
 
-const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbyl0IDuPpwEtHpQJOU5uONu5Oc50A8Yrk5lUMSwT0u_4VgSNmhUYCBIKX9OOFC5zTDS/exec?sheet=TSHIRT';
+const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=TSHIRT';
 
 // --- Cấu hình Phân trang / Infinite Scroll ---
 let currentPage = 1;
