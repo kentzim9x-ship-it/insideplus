@@ -325,7 +325,7 @@ function showAddedNotification(item) {
 function navigateToProduct(productId, category, colorIdx = 0) {
     const cleanCat = String(category || '').trim().toLowerCase();
     const targetPage = getCategoryPageUrl(cleanCat);
-    const isCurrentPage = targetPage.includes('sock.html');
+    const isCurrentPage = targetPage.includes('inside.html');
 
     if (isCurrentPage) {
         const searchModal = document.getElementById('search-modal');
