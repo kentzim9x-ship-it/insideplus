@@ -89,7 +89,7 @@ function checkVouchersUpdatesSilently(vouchersJsonUrl) {
         .catch(() => { });
 }
 
-// --- HIỂN THỊ VOUCHER BADGE POPUP KHI BẮT ĐẦU SESSION (CONCEPT POSTER LOOKBOOK VOUCHER) ---
+// --- HIỂN THỊ VOUCHER BADGE POPUP (POSTER VOUCHER VIỀN RĂNG CƯA & XUYÊN THẤU chuẩn 100%) ---
 
 function checkAndShowVoucherBadgeModal() {
     // 1. Kiểm tra session
@@ -108,81 +108,49 @@ function checkAndShowVoucherBadgeModal() {
     if (!modal) {
         modal = document.createElement('div');
         modal.id = 'voucher-badge-modal';
-        modal.className = "fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm transition-all duration-300 opacity-0 hidden";
+        modal.className = "fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-all duration-300 opacity-0 hidden";
         document.body.appendChild(modal);
     }
 
     modal.innerHTML = `
-        <!-- Khung ngoài của Ticket Poster -->
-        <div onclick="event.stopPropagation()" class="relative w-full max-w-sm sm:max-w-md bg-[#1d3b8a] text-white p-7 sm:p-9 shadow-2xl rounded-none transform transition-all duration-300 scale-95 font-['Montserrat'] overflow-hidden"
-             style="mask-image: radial-gradient(circle at 0% 50%, transparent 12px, black 13px), radial-gradient(circle at 100% 50%, transparent 12px, black 13px); -webkit-mask-image: radial-gradient(circle at 0% 50%, transparent 12px, black 13px), radial-gradient(circle at 100% 50%, transparent 12px, black 13px);">
+        <!-- Khung Poster Xanh Navy -->
+        <div onclick="event.stopPropagation()" class="relative w-full max-w-sm sm:max-w-md bg-[#1d3b8a] text-white p-7 sm:p-9 shadow-2xl rounded-none transform transition-all duration-300 scale-95 font-['Montserrat'] overflow-hidden">
             
-            <!-- SVG Cutout Oval + Viền Răng Cưa Cạnh Trên/Dưới -->
-            <div class="absolute inset-0 pointer-events-none">
-                <svg class="w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
-                    <defs>
-                        <mask id="poster-ticket-mask">
-                            <!-- Nền trắng giữ lại màu sắc -->
-                            <rect width="100" height="100" fill="white" />
-                            
-                            <!-- Hình Oval xuyên thấu ở trung tâm -->
-                            <ellipse cx="50" cy="46" rx="36" ry="28" fill="black" />
-                            
-                            <!-- Hàng lỗ răng cưa / đục lỗ nhỏ mép trên -->
-                            <circle cx="10" cy="0" r="2" fill="black" />
-                            <circle cx="20" cy="0" r="2" fill="black" />
-                            <circle cx="30" cy="0" r="2" fill="black" />
-                            <circle cx="40" cy="0" r="2" fill="black" />
-                            <circle cx="50" cy="0" r="2" fill="black" />
-                            <circle cx="60" cy="0" r="2" fill="black" />
-                            <circle cx="70" cy="0" r="2" fill="black" />
-                            <circle cx="80" cy="0" r="2" fill="black" />
-                            <circle cx="90" cy="0" r="2" fill="black" />
+            <!-- Vết khuyết đục lỗ tròn 2 bên sườn (Left & Right Notches) -->
+            <div class="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-black/50 backdrop-blur-sm rounded-full z-20 pointer-events-none"></div>
+            <div class="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-black/50 backdrop-blur-sm rounded-full z-20 pointer-events-none"></div>
 
-                            <!-- Hàng lỗ răng cưa / đục lỗ nhỏ mép dưới -->
-                            <circle cx="10" cy="100" r="2" fill="black" />
-                            <circle cx="20" cy="100" r="2" fill="black" />
-                            <circle cx="30" cy="100" r="2" fill="black" />
-                            <circle cx="40" cy="100" r="2" fill="black" />
-                            <circle cx="50" cy="100" r="2" fill="black" />
-                            <circle cx="60" cy="100" r="2" fill="black" />
-                            <circle cx="70" cy="100" r="2" fill="black" />
-                            <circle cx="80" cy="100" r="2" fill="black" />
-                            <circle cx="90" cy="100" r="2" fill="black" />
-                        </mask>
-                    </defs>
-                    
-                    <!-- Phủ màu xanh mảng tường với Mask đục lỗ -->
-                    <rect width="100" height="100" fill="#1d3b8a" mask="url(#poster-ticket-mask)" />
-                </svg>
+            <!-- Khung Oval trong suốt ở trung tâm nhìn xuyên qua trang web -->
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div class="w-[72%] h-[58%] rounded-[100%] border-2 border-white/30 bg-black/20 backdrop-blur-[2px] shadow-inner"></div>
             </div>
 
-            <!-- Đường nét đứt xé vé nằm ngang phia dưới -->
-            <div class="absolute left-4 right-4 bottom-[88px] border-b border-dashed border-white/25 pointer-events-none"></div>
+            <!-- Đường xé vé nét đứt ngang -->
+            <div class="absolute left-6 right-6 bottom-[85px] border-b border-dashed border-white/30 pointer-events-none z-10"></div>
 
-            <!-- Nút đóng X dạng Text tối giản -->
-            <button onclick="closeVoucherBadgeModal()" class="absolute top-4 right-5 text-white/70 hover:text-white font-light text-2xl leading-none cursor-pointer z-20" title="Đóng (ESC)">&times;</button>
+            <!-- Nút đóng X tối giản -->
+            <button onclick="closeVoucherBadgeModal()" class="absolute top-4 right-5 text-white/70 hover:text-white font-light text-2xl leading-none cursor-pointer z-30" title="Đóng (ESC)">&times;</button>
 
             <!-- BỐ CỤC CHỮ LOOKBOOK POSTER TỐI GIẢN -->
-            <div class="relative z-10 flex flex-col justify-between min-h-[390px] sm:min-h-[430px]">
+            <div class="relative z-20 flex flex-col justify-between min-h-[390px] sm:min-h-[430px]">
                 
                 <!-- 1. Góc trên bên trái -->
-                <div class="space-y-1 text-left max-w-[68%]">
+                <div class="space-y-1 text-left max-w-[70%]">
                     <span class="block text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] text-blue-200">INSIDE+ SPECIAL</span>
                     <p class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-white/90 leading-tight">TẤM VÉ ƯU ĐÃI</p>
                     <p class="text-[9px] text-blue-200/80 uppercase tracking-widest font-mono pt-1">${v.desc || 'DÀNH RIÊNG CHO BẠN'}</p>
                 </div>
 
-                <!-- 2. Vùng trung tâm (Trong suốt nhìn thấy ảnh sản phẩm phía sau) -->
+                <!-- 2. Vùng trung tâm (Hiển thị nổi trên nền Oval nhìn xuyên thấu) -->
                 <div class="my-auto py-6 text-center space-y-2 pointer-events-auto">
                     <span class="text-[9px] font-bold uppercase tracking-[0.25em] text-blue-200 block">VOUCHER CODE</span>
                     
-                    <!-- Mã Voucher hiển thị font Mono lớn -->
-                    <h2 class="text-3xl sm:text-4xl font-mono font-black tracking-widest text-white drop-shadow-md">
+                    <!-- Mã Voucher -->
+                    <h2 class="text-3xl sm:text-4xl font-mono font-black tracking-widest text-white drop-shadow-lg">
                         ${v.code}
                     </h2>
 
-                    <!-- Nút Sao chép dạng Text Link Gạch chân -->
+                    <!-- Nút Sao chép dạng Text Link -->
                     <button onclick="copyAndApplyBadgeVoucher('${v.code}')" id="btn-copy-badge-code" class="inline-block pt-1 text-xs font-bold uppercase tracking-widest text-blue-200 hover:text-white underline underline-offset-4 decoration-1 cursor-pointer transition">
                         [ SAO CHÉP MÃ ]
                     </button>
