@@ -1,3 +1,10 @@
+// --- 1. CẤU HÌNH TĨNH ---
+const SHIPPING_CONFIG = {
+    shippingFee: 30000, // Phí vận chuyển mặc định
+    freeShippingThreshold: 399000,
+    freeShippingMessage: "Bạn đã được miễn phí vận chuyển"
+};
+
 // Thay đổi khai báo const thành let để có thể gán dữ liệu động từ JSON
 let availableVouchers = [];
 let currentVouchersETag = null;
