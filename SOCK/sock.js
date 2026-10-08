@@ -1,7 +1,4 @@
-if ('scrollRestoration' in history) {
-    history.scrollRestoration = 'manual';
-}
-
+// --- Cấu hình Khai báo Biến Toàn cục ---
 let visualFilterCategories = [];
 let activeVisualFilter = "ALL";
 let originalProducts = [];
@@ -11,6 +8,17 @@ let currentGalleryImages = [];
 let currentGalleryIndex = 0;
 let currentQuantity = 1;
 let currentFilterETag = null;
+let currentJsonETag = null;
+
+let quickModalTouchStartY = 0;
+let touchStartX = 0;
+let touchStartY = 0;
+let isNativeNavigation = false;
+
+// Tắt khôi phục cuộn tự động của trình duyệt để vuốt Swipe Back không bị nhảy vị trí
+if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+}
 
 // --- Cấu hình Phân trang / Infinite Scroll ---
 let currentPage = 1;
@@ -19,6 +27,7 @@ let isLoadingProducts = false;
 let catalogIntersectionObserver = null;
 
 const GOOGLE_SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=SOCK';
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=CATEGORIES_SOCK";
 
 function parseJsonSafe(val, fallback) {
     if (typeof val !== 'string') return val || fallback;
@@ -28,9 +37,6 @@ function parseJsonSafe(val, fallback) {
         return fallback;
     }
 }
-
-// URL API Google Apps Script dự phòng (Thay URL thực tế của bạn vào đây)
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=CATEGORIES_SOCK";
 
 function loadVisualFilterCategories() {
     const filterJsonUrl = '../data/categories_sock.json';
@@ -48,18 +54,16 @@ function loadVisualFilterCategories() {
             if (Array.isArray(data)) {
                 visualFilterCategories = data.map(item => {
                     const rawId = (item.id || item.ID || 'ALL').toString().trim().toUpperCase();
-                    // Lấy cột 'type' trên Google Sheet làm nhãn hiển thị bên dưới ảnh
                     const rawTypeLabel = (item.type || item.TYPE || item.styleValue || item.stylevalue || '').toString().trim();
 
-                    // Làm sạch URL ảnh
                     let rawImg = (item.image || item.IMAGE || item.img || '').toString().trim();
                     if (rawImg.startsWith('[') && rawImg.endsWith(']')) {
                         rawImg = rawImg.slice(1, -1).trim();
                     }
 
                     return {
-                        id: rawId,                  // Ví dụ: 'ALL', 'BRIEF', 'TRUNK'
-                        typeLabel: rawTypeLabel,    // Ví dụ: 'Tất cả', 'Quần lót Brief', 'Quần lót Trunk'
+                        id: rawId,
+                        typeLabel: rawTypeLabel,
                         image: rawImg
                     };
                 });
@@ -67,6 +71,9 @@ function loadVisualFilterCategories() {
                 if (typeof renderVisualFilterBar === 'function') {
                     renderVisualFilterBar();
                 }
+
+                // Kích hoạt kiểm tra ETag ngầm cho Filter
+                checkFilterUpdatesSilently(filterJsonUrl);
             }
             return visualFilterCategories;
         })
@@ -108,25 +115,20 @@ function loadVisualFilterCategories() {
         });
 }
 
-// Hàm kiểm tra ngầm xem GitHub Actions đã đẩy file JSON tĩnh mới lên chưa
 function checkFilterUpdatesSilently(jsonUrl) {
-    // Chỉ gửi HEAD request ngầm (siêu nhẹ, không tải lại nội dung file)
     fetch(jsonUrl, { method: 'HEAD', cache: 'no-cache' })
         .then(response => {
             if (!response.ok) return;
 
             const newETag = response.headers.get('ETag') || response.headers.get('Last-Modified');
 
-            // So sánh ETag: Nếu khác ETag cũ -> GitHub Actions đã cập nhật JSON mới trên server!
             if (newETag && currentFilterETag && newETag !== currentFilterETag) {
                 console.log('Phát hiện dữ liệu Filter mới từ Google Sheet. Đang cập nhật...');
                 currentFilterETag = newETag;
 
-                // Âm thầm tải file JSON mới về
                 fetch(jsonUrl, { cache: 'no-cache' })
                     .then(res => res.json())
                     .then(newData => {
-                        // So sánh dữ liệu thực tế: Nếu thực sự khác mảng hiện tại mới tiến hành render lại
                         if (JSON.stringify(visualFilterCategories) !== JSON.stringify(newData)) {
                             visualFilterCategories = newData;
                             if (typeof renderVisualFilterBar === 'function') {
@@ -136,9 +138,7 @@ function checkFilterUpdatesSilently(jsonUrl) {
                     });
             }
         })
-        .catch(() => {
-            // Lỗi mạng ngầm thì bỏ qua, hoàn toàn không làm giật lag giao diện người dùng
-        });
+        .catch(() => {});
 }
 
 function processRawProductsData(data) {
@@ -160,7 +160,6 @@ function processRawProductsData(data) {
 
         let usageGuideText = parseJsonSafe(item.usageGuideText, []);
 
-        // Đọc giá trị linh hoạt từ các kiểu đặt tên trường giá trong JSON
         const rawPrice = item.price ?? item.PRICE ?? 0;
         const rawOrigPrice = item.originalPrice ?? item.originalprice ?? item.ORIGINALPRICE ?? item.original_price ?? 0;
 
@@ -179,33 +178,25 @@ function processRawProductsData(data) {
     });
 }
 
-// Biến lưu thông tin phiên bản file JSON (dùng ETag hoặc Last-Modified)
-let currentJsonETag = null;
-
 function loadProductsData() {
     const jsonUrl = '../data/products_sock.json';
 
     return fetch(jsonUrl)
         .then(response => {
             if (!response.ok) throw new Error('Không thể tải file JSON tĩnh');
-
-            // Lưu lại thông tin phiên bản file (ETag / Last-Modified) của lần load đầu
             currentJsonETag = response.headers.get('ETag') || response.headers.get('Last-Modified');
-
             return response.json();
         })
         .then(data => {
             originalProducts = processRawProductsData(data);
             currentFilteredProducts = [...originalProducts];
 
-            // Render giao diện LẦN 1 TỨC THÌ (Hiển thị mượt 0.02s)
             renderVisualFilterBar();
             renderDynamicFilterOptions();
             renderCatalog(originalProducts);
             if (typeof updateCartBadge === 'function') updateCartBadge();
             checkAndOpenProductFromUrl();
 
-            // Bắt đầu kích hoạt kiểm tra ngầm phiên bản JSON tĩnh trên GitHub
             checkStaticJsonUpdatesSilently(jsonUrl);
 
             return originalProducts;
@@ -215,40 +206,30 @@ function loadProductsData() {
         });
 }
 
-// Hàm kiểm tra ngầm xem GitHub Actions đã đẩy file JSON tĩnh mới lên chưa
 function checkStaticJsonUpdatesSilently(jsonUrl) {
-    // Chỉ gửi HEAD request ngầm (rất nhẹ, không tải lại toàn bộ nội dung file)
     fetch(jsonUrl, { method: 'HEAD', cache: 'no-cache' })
         .then(response => {
             if (!response.ok) return;
 
             const newETag = response.headers.get('ETag') || response.headers.get('Last-Modified');
 
-            // So sánh: Nếu có ETag và ETag mới KHÁC ETag cũ -> GitHub Actions đã cập nhật JSON mới!
             if (newETag && currentJsonETag && newETag !== currentJsonETag) {
                 console.log('Phát hiện dữ liệu JSON tĩnh mới từ GitHub Actions. Đang âm thầm cập nhật...');
                 currentJsonETag = newETag;
 
-                // Tải file JSON mới và cập nhật lại giao diện
                 fetch(jsonUrl, { cache: 'no-cache' })
                     .then(res => res.json())
                     .then(newData => {
                         const freshProducts = processRawProductsData(newData);
-
-                        // Kiểm tra nếu nội dung sản phẩm thực sự thay đổi mới render lại
                         if (JSON.stringify(originalProducts) !== JSON.stringify(freshProducts)) {
                             originalProducts = freshProducts;
                             currentFilteredProducts = [...originalProducts];
-
-                            // Cập nhật giao diện nhẹ nhàng
                             renderCatalog(originalProducts);
                         }
                     });
             }
         })
-        .catch(err => {
-            // Lỗi mạng ngầm thì bỏ qua, không ảnh hưởng trải nghiệm người dùng
-        });
+        .catch(() => {});
 }
 
 function changeQty(delta) {
@@ -291,14 +272,16 @@ function addToCart(productId, colorIdx) {
         colorsData: p.colors
     };
 
-    const existingIndex = cartItems.findIndex(i => i.productId === newItem.productId && i.colorName === newItem.colorName && i.size === newItem.size);
-    if (existingIndex > -1) {
-        cartItems[existingIndex].quantity += currentQuantity;
-    } else {
-        cartItems.push(newItem);
+    if (typeof cartItems !== 'undefined') {
+        const existingIndex = cartItems.findIndex(i => i.productId === newItem.productId && i.colorName === newItem.colorName && i.size === newItem.size);
+        if (existingIndex > -1) {
+            cartItems[existingIndex].quantity += currentQuantity;
+        } else {
+            cartItems.push(newItem);
+        }
     }
 
-    updateCartBadge();
+    if (typeof updateCartBadge === 'function') updateCartBadge();
     showAddedNotification(newItem);
 }
 
@@ -313,7 +296,7 @@ function showAddedNotification(item) {
     toast.innerHTML = `
         <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
             <span class="text-xs font-black uppercase text-slate-900 tracking-wider">Đã thêm vào giỏ hàng</span>
-            <button onclick="document.getElementById('added-toast-popup').remove(); updateCartBadge();" class="text-slate-400 hover:text-slate-900"><i data-lucide="x" class="w-4 h-4"></i></button>
+            <button onclick="document.getElementById('added-toast-popup').remove(); if(typeof updateCartBadge==='function') updateCartBadge();" class="text-slate-400 hover:text-slate-900"><i data-lucide="x" class="w-4 h-4"></i></button>
         </div>
         <div class="flex gap-3 items-center mb-4">
             <img src="${item.image}" loading="lazy" class="w-14 h-16 object-cover bg-slate-100">
@@ -323,8 +306,8 @@ function showAddedNotification(item) {
             </div>
         </div>
         <div class="grid grid-cols-2 gap-2">
-            <button onclick="document.getElementById('added-toast-popup').remove(); updateCartBadge();" class="w-full bg-white border border-slate-300 text-slate-800 py-2.5 font-bold text-[11px] uppercase tracking-wider hover:border-slate-900 transition">Đóng</button>
-            <button onclick="document.getElementById('added-toast-popup').remove(); updateCartBadge(); openCartModal();" class="w-full bg-slate-900 text-white py-2.5 font-bold text-[11px] uppercase tracking-wider hover:bg-slate-800 transition">Xem giỏ hàng</button>
+            <button onclick="document.getElementById('added-toast-popup').remove(); if(typeof updateCartBadge==='function') updateCartBadge();" class="w-full bg-white border border-slate-300 text-slate-800 py-2.5 font-bold text-[11px] uppercase tracking-wider hover:border-slate-900 transition">Đóng</button>
+            <button onclick="document.getElementById('added-toast-popup').remove(); if(typeof updateCartBadge==='function') updateCartBadge(); if(typeof openCartModal==='function') openCartModal();" class="w-full bg-slate-900 text-white py-2.5 font-bold text-[11px] uppercase tracking-wider hover:bg-slate-800 transition">Xem giỏ hàng</button>
         </div>
     `;
     document.body.appendChild(toast);
@@ -370,7 +353,7 @@ function parseColorIndexFromCode(colorCode) {
 function updateProductUrlParam(productId, colorIdx, isReplace = false) {
     if (productId) {
         const p = originalProducts.find(item => item.id === productId);
-        const category = p ? p.category : 'inside';
+        const category = p ? p.category : 'sock';
         const formattedProduct = formatProductCode(productId, category);
         const formattedColor = formatColorCode(colorIdx, category);
         const newUrl = window.location.pathname + '?product=' + encodeURIComponent(formattedProduct) + '&color=' + encodeURIComponent(formattedColor);
@@ -424,7 +407,6 @@ function addProductToViewed(product) {
     localStorage.setItem('viewed_products', JSON.stringify(viewed));
 }
 
-// HÀM TỰ ĐỘNG TỔNG HỢP VÀ RENDER TOÀN BỘ BỘ LỌC TỪ DỮ LIỆU SẢN PHẨM
 function renderDynamicFilterOptions() {
     const styleContainer = document.getElementById('style-content');
     const sizeContainer = document.getElementById('size-content');
@@ -432,19 +414,15 @@ function renderDynamicFilterOptions() {
 
     if (!styleContainer || !sizeContainer || !colorContainer) return;
 
-    // Sử dụng Set/Map để gom các giá trị duy nhất (không trùng lặp)
     const uniqueStyles = new Set();
     const uniqueSizes = new Set();
-    const uniqueColorsMap = new Map(); // Key: hex (lowercase), Value: name
+    const uniqueColorsMap = new Map();
 
-    // Duyệt qua toàn bộ sản phẩm đang có từ JSON
     originalProducts.forEach(product => {
-        // 1. Gom kiểu dáng (Kiểu dáng được lưu ở trường product.style)
         if (product.style) {
             uniqueStyles.add(product.style);
         }
 
-        // 2. Gom Màu sắc và Kích cỡ từ danh sách màu
         if (Array.isArray(product.colors)) {
             product.colors.forEach(colorObj => {
                 if (colorObj.hex) {
@@ -454,7 +432,6 @@ function renderDynamicFilterOptions() {
                     }
                 }
 
-                // Gom kích cỡ từ danh sách sizes của từng màu
                 if (Array.isArray(colorObj.sizes)) {
                     colorObj.sizes.forEach(sizeObj => {
                         if (sizeObj.name) {
@@ -466,7 +443,6 @@ function renderDynamicFilterOptions() {
         }
     });
 
-    // --- 1. RENDER KIỂU DÁNG ---
     if (uniqueStyles.size > 0) {
         styleContainer.innerHTML = Array.from(uniqueStyles).map(style => `
             <label class="flex items-center text-xs font-bold text-slate-700 cursor-pointer">
@@ -478,7 +454,6 @@ function renderDynamicFilterOptions() {
         styleContainer.innerHTML = '<span class="text-xs text-slate-400">Không có kiểu dáng</span>';
     }
 
-    // --- 2. RENDER KÍCH CỠ (Sắp xếp theo thứ tự chuẩn: S, M, L, XL, XXL,...) ---
     const standardSizeOrder = ['S', 'M', 'L', 'XL', '2XL', 'XXL', '3XL', 'FREE'];
     const sortedSizes = Array.from(uniqueSizes).sort((a, b) => {
         let idxA = standardSizeOrder.indexOf(a);
@@ -499,7 +474,6 @@ function renderDynamicFilterOptions() {
         sizeContainer.innerHTML = '<span class="text-xs text-slate-400 col-span-4">Không có kích cỡ</span>';
     }
 
-    // --- 3. RENDER MÀU SẮC ---
     if (uniqueColorsMap.size > 0) {
         colorContainer.innerHTML = Array.from(uniqueColorsMap.entries()).map(([hex, name]) => `
             <button onclick="toggleColorSelect(this)" data-val="${hex}"
@@ -529,23 +503,20 @@ function renderRecentViewedSlider(currentProductId) {
         const img1 = (p.images && p.images[0]) || '';
         const img2 = (p.images && p.images[1]) || img1;
         const targetPage = getCategoryPageUrl(p.category);
-        const isCurrentPage = targetPage.includes('inside.html');
+        const isCurrentPage = targetPage.includes('sock.html');
 
         const clickAction = isCurrentPage
             ? `openProductDrawer('${p.id}', 0)`
             : `window.location.href='${targetPage}?product=${formatProductCode(p.id, p.category)}&color=${formatColorCode(0, p.category)}'`;
 
-        // 1. Tính toán % giảm giá
         const hasDiscount = p.originalPrice && p.originalPrice > p.price;
         const discountPercent = hasDiscount ? Math.round((1 - p.price / p.originalPrice) * 100) : 0;
 
         const colorsDots = (p.colors || []).map((c, cIdx) => {
-            // 2. Kiểm tra màu hết hàng
             const isColorOutOfStock = checkColorOutOfStock(c);
             const strikeClass = isColorOutOfStock ? 'color-out-of-stock' : '';
 
-            // 3. Tăng kích thước nút màu (w-5 h-5) và thêm class relative
-            return `<button onclick="event.stopPropagation(); changeRecentThumbColor('${p.id}', ${cIdx})" class="w-5 h-5 relative rounded-full border border-slate-300 transition-all ${strikeClass}" style="background-color: ${c.hex};" title="${c.name}"></button>`
+            return `<button onclick="event.stopPropagation(); changeRecentThumbColor('${p.id}', ${cIdx})" class="w-5 h-5 relative rounded-full border border-slate-300 transition-all ${strikeClass}" style="background-color: ${c.hex};" title="${c.name}"></button>`;
         }).join('');
 
         return `<div class="flex-none w-[calc(50%-12px)] lg:w-[calc(25%-18px)] group cursor-pointer" onclick="${clickAction}">
@@ -616,12 +587,9 @@ function clearAllBoldActiveStates() {
     document.querySelectorAll('.btn-bold-active, .active-bold').forEach(el => el.classList.remove('btn-bold-active', 'active-bold'));
 }
 
-window.addEventListener('pageshow', clearAllBoldActiveStates);
-
+// Gộp sự kiện pageshow vào duy nhất 1 listener
 window.addEventListener('pageshow', function (event) {
-    if (event.persisted) {
-        clearAllBoldActiveStates();
-    }
+    clearAllBoldActiveStates();
 });
 
 window.addEventListener('popstate', function (e) {
@@ -702,7 +670,6 @@ function renderVisualFilterBar() {
     if (!container) return;
 
     container.innerHTML = visualFilterCategories.map(item => {
-        // So sánh trạng thái active theo ID (đã chuẩn hóa hoa/thường)
         const isActive = (activeVisualFilter || 'ALL').toString().toUpperCase() === item.id;
 
         return `<div onclick="selectVisualFilter('${item.id}')" class="visual-filter-card group flex flex-col cursor-pointer ${isActive ? 'visual-card-active' : ''}">
@@ -710,7 +677,6 @@ function renderVisualFilterBar() {
                 <img src="${item.image}" loading="lazy" alt="${item.typeLabel}" class="w-full h-full object-cover transition-transform duration-500">
             </div>
             <div class="pt-3.5 pb-1 text-left bg-white">
-                <!-- Hiển thị cột type tiếng Việt bên dưới ảnh -->
                 <h4 class="visual-card-title text-sm sm:text-base font-bold text-slate-900 tracking-tight transition-colors group-hover:text-black">${item.typeLabel}</h4>
             </div>
         </div>`;
@@ -750,11 +716,9 @@ function checkFilterSliderArrows() {
 }
 
 function selectVisualFilter(filterId) {
-    // 1. Chuẩn hóa ID được chọn về dạng IN HOA (Ví dụ: 'ALL', 'BRIEF', 'TRUNK')
     const targetId = (filterId || 'ALL').toString().trim().toUpperCase();
     activeVisualFilter = targetId;
 
-    // 2. Tìm danh mục tương ứng để lấy tiêu đề hiển thị
     const catObj = visualFilterCategories.find(c => c.id === targetId);
 
     const titleHeading = document.getElementById('page-category-title');
@@ -762,12 +726,10 @@ function selectVisualFilter(filterId) {
         if (targetId === 'ALL') {
             titleHeading.innerText = 'SOCK (TẤT VỚ)';
         } else {
-            // Lấy cột type hiển thị tên danh mục tiếng Việt lên tiêu đề
             titleHeading.innerText = catObj ? catObj.typeLabel : ('Tất Vớ ' + targetId);
         }
     }
 
-    // 3. Reset các bộ lọc phụ khi chọn 'ALL'
     if (targetId === 'ALL') {
         document.querySelectorAll('#filter-panel input').forEach(el => el.checked = false);
         document.querySelectorAll('.filter-size-btn').forEach(btn => btn.classList.remove('border-slate-900', 'bg-slate-900', 'text-white', 'selected-size'));
@@ -783,7 +745,6 @@ function selectVisualFilter(filterId) {
         }
         currentFilteredProducts = [...originalProducts];
     } else {
-        // 4. Lọc sản phẩm: So sánh UPCASE(filterId) = UPCASE(p.style)
         currentFilteredProducts = originalProducts.filter(p => {
             const productStyle = (p.style || p.category || '').toString().trim().toUpperCase();
             return productStyle === targetId;
@@ -821,23 +782,19 @@ function renderProductCardHTML(p, cIdxActive = 0) {
             </button>
         </div>
 
-        <!-- DANH SÁCH MÀU (Có p-1.5 py-1 giúp viền ring-offset tỏa ra không bị xén) -->
         <div class="flex items-center gap-2 px-1.5 py-1 mb-1 flex-wrap" onclick="event.stopPropagation()">
             ${(p.colors || []).map((c, cIdx) => {
-        const isColorOutOfStock = (c.sizes && c.sizes.length > 0)
-            ? c.sizes.every(s => Boolean(s.outOfStock) || s.stock === 0)
-            : false;
-        const activeStyle = cIdx === cIdxActive ? 'ring-2 ring-slate-900 ring-offset-2' : '';
-        return `<button onclick="changeCatalogThumbColor('${p.id}',${cIdx})" 
-        data-color-idx="${cIdx}"
-        class="color-btn-${p.id} w-5 h-5 rounded-full border border-slate-300 transition-all ${activeStyle} ${isColorOutOfStock ? 'color-out-of-stock' : ''}" 
-        style="background-color: ${c.hex};" title="${c.name}"></button>`;
-    }).join('')}
+                const isColorOutOfStock = checkColorOutOfStock(c);
+                const activeStyle = cIdx === cIdxActive ? 'ring-2 ring-slate-900 ring-offset-2' : '';
+                return `<button onclick="changeCatalogThumbColor('${p.id}',${cIdx})" 
+                data-color-idx="${cIdx}"
+                class="color-btn-${p.id} w-5 h-5 rounded-full border border-slate-300 transition-all ${activeStyle}${isColorOutOfStock ? 'color-out-of-stock' : ''}" 
+                style="background-color: ${c.hex};" title="${c.name}"></button>`;
+            }).join('')}
         </div>
 
         <h3 class="font-bold text-slate-900 text-sm uppercase tracking-tight mb-1.5">${p.name}</h3>
 
-        <!-- HIỂN THỊ GIÁ VÀ % NẰM CÙNG HÀNG THẲNG HÀNG -->
         <div class="flex items-center gap-2">
             <span class="text-sm font-bold text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
             ${hasDiscount ? `
@@ -864,12 +821,7 @@ function renderCatalog(items, isAppend = false) {
     currentPage = 1;
     const initialItems = items.slice(0, PAGE_SIZE);
 
-    // Đã đổi pagedItems thành initialItems
-    const htmlContent = initialItems.map(p => {
-        return renderProductCardHTML(p, 0);
-    }).join('');
-
-    // Đổ nội dung HTML đã render vào grid
+    const htmlContent = initialItems.map(p => renderProductCardHTML(p, 0)).join('');
     grid.innerHTML = htmlContent;
 
     let sentinel = document.getElementById('catalog-sentinel');
@@ -883,7 +835,7 @@ function renderCatalog(items, isAppend = false) {
 
     setupInfiniteScroll();
 
-    if (window.lucide) lucide.createIcons();
+    if (window.lucide) lucide.createIcons({ root: grid });
 }
 
 function loadMoreProducts() {
@@ -904,7 +856,6 @@ function loadMoreProducts() {
         currentPage++;
         const newItems = currentFilteredProducts.slice(startIndex, currentPage * PAGE_SIZE);
         const tempDiv = document.createElement('div');
-        // TRUYỀN THÊM THAM SỐ 0 CHO cIdxActive TẠI ĐÂY LÔ-GÍC TƯƠNG TỰ
         tempDiv.innerHTML = newItems.map(p => renderProductCardHTML(p, 0)).join('');
 
         while (tempDiv.firstChild) {
@@ -915,7 +866,8 @@ function loadMoreProducts() {
             if (sentinel) sentinel.innerHTML = '';
         }
 
-        if (window.lucide) lucide.createIcons();
+        // Tối ưu: Chỉ quét lại icon trong lưới sản phẩm
+        if (window.lucide) lucide.createIcons({ root: grid });
         isLoadingProducts = false;
     }, 300);
 }
@@ -958,7 +910,6 @@ function changeCatalogThumbColor(id, colorIdx) {
         const colorData = p.colors[btnIdx];
         const isOutOfStock = checkColorOutOfStock(colorData);
 
-        // Đảm bảo class gạch chéo không bị mất khi toggle trạng thái active
         if (isOutOfStock) {
             btn.classList.add('color-out-of-stock');
         } else {
@@ -991,15 +942,12 @@ function toggleSortDropdown(device) {
     if (drop) drop.classList.toggle('hidden');
 }
 
-let savedCategoryScrollY = 0;
-
 function openProductDrawer(id, colorIdx, shouldUpdateUrl) {
     const p = originalProducts.find(item => String(item.id).trim() === String(id).trim());
     if (!p) return;
 
     const drawer = document.getElementById('product-drawer');
-    
-    // KHÔNG cần lưu savedCategoryScrollY nữa vì body không bị mất vị trí cuộn
+
     window.currentActiveProductId = p.id;
     const initialColorIdx = (typeof colorIdx === 'number') ? colorIdx : 0;
     currentSelectedSize = null;
@@ -1015,7 +963,7 @@ function openProductDrawer(id, colorIdx, shouldUpdateUrl) {
     }
 
     drawer.classList.add('is-active');
-    document.body.classList.add('drawer-open'); // Chỉ gán khóa overflow
+    document.body.classList.add('drawer-open');
 
     if (shouldUpdateUrl !== false) {
         updateProductUrlParam(p.id, initialColorIdx);
@@ -1030,11 +978,7 @@ function closeProductDrawer(shouldUpdateUrl) {
         drawer.classList.remove('drawer-open');
     }
 
-    // Bỏ khóa cuộn body
     document.body.classList.remove('drawer-open');
-
-    // KHÔNG CẦN gọi window.scrollTo(0, savedCategoryScrollY) nữa!
-    // Vị trí cuộn của trang danh mục bên dưới VẪN GIỮ NGUYÊN 100%.
 
     if (shouldUpdateUrl !== false) {
         updateProductUrlParam(null, null);
@@ -1056,7 +1000,8 @@ function changeDrawerColor(productId, colorIdx) {
 
 function checkColorOutOfStock(colorObj) {
     if (!colorObj) return false;
-    if (Boolean(colorObj.outOfStock)) return true; // Kiểm tra trực tiếp cấp màu
+    if (Boolean(colorObj.outOfStock)) return true;
+
     if (Array.isArray(colorObj.sizes) && colorObj.sizes.length > 0) {
         return colorObj.sizes.every(s => Boolean(s.outOfStock) || s.stock === 0);
     }
@@ -1076,12 +1021,10 @@ function renderDrawerContent(p, colorIdx) {
 
     const selectedSizeObj = availableSizes.find(s => s.name === currentSelectedSize);
 
-    // --- THÊM LOGIC TÍNH TOÁN BADGE TỒN KHO ---
     let stockBadgeHtml = '';
     let maxStock = 999;
 
     if (selectedSizeObj) {
-        // Đánh giá hết hàng dựa trên thuộc tính outOfStock hoặc stock = 0
         const isOutOfStock = selectedSizeObj.outOfStock || selectedSizeObj.stock === 0;
         maxStock = selectedSizeObj.stock !== undefined ? selectedSizeObj.stock : (isOutOfStock ? 0 : 50);
 
@@ -1092,7 +1035,6 @@ function renderDrawerContent(p, colorIdx) {
         }
     }
 
-    // Cập nhật lại điều kiện vô hiệu hóa nút bấm nếu stock = 0
     const isSelectedSizeOutOfStock = selectedSizeObj ? (selectedSizeObj.outOfStock || selectedSizeObj.stock === 0) : false;
     const isAllSizesOutOfStock = availableSizes.length > 0 && availableSizes.every(s => (s.outOfStock || s.stock === 0));
     const showOutOfStockBtn = isSelectedSizeOutOfStock || isAllSizesOutOfStock;
@@ -1131,7 +1073,7 @@ function renderDrawerContent(p, colorIdx) {
     </div>`;
 
     const colorsHtml = (p.colors || []).map((c, cIdx) => {
-        const cIsAllOutOfStock = c.sizes && c.sizes.length > 0 && c.sizes.every(s => Boolean(s.outOfStock) || s.stock === 0);
+        const cIsAllOutOfStock = checkColorOutOfStock(c);
         const strikeClass = cIsAllOutOfStock ? 'color-out-of-stock' : '';
         const activeClass = cIdx === colorIdx ? 'ring-2 ring-slate-900 ring-offset-2' : '';
 
@@ -1145,7 +1087,6 @@ function renderDrawerContent(p, colorIdx) {
 
     const sizesHtml = availableSizes.map(s => {
         const isSelected = currentSelectedSize === s.name;
-        // Bổ sung kiểm tra s.stock === 0
         const isOutOfStock = s.outOfStock || s.stock === 0;
 
         const btnStyle = isOutOfStock
@@ -1228,7 +1169,6 @@ function renderDrawerContent(p, colorIdx) {
             </div>
             <div class="space-y-2" id="size-selection-container">
                 <div class="flex justify-between items-center">
-                    <!-- SỬA LẠI KHỐI NÀY ĐỂ HIỂN THỊ BADGE -->
                     <div class="flex items-center gap-2">
                         <span class="text-xs font-bold uppercase text-slate-700">KÍCH CỠ: <span class="font-black text-slate-900">${currentSelectedSize || ''}</span></span>
                         ${stockBadgeHtml}
@@ -1353,18 +1293,15 @@ function openSearchModal() {
 
     savedScrollPositionY = window.scrollY;
 
-    // Reset các trạng thái animation đóng cũ
     searchModal.classList.remove('is-closing', 'hidden');
     searchModal.scrollTop = 0;
 
     document.body.classList.add('drawer-open');
-    document.body.style.top = `-${savedScrollPositionY}px`;
 
     const input = document.getElementById('search-input');
     if (input) {
         input.value = '';
         handleSearchInput('');
-        // Tự động focus vào ô tìm kiếm sau khi hiệu ứng hoàn tất
         setTimeout(() => input.focus(), 250);
     }
 
@@ -1375,18 +1312,13 @@ function closeSearchModal() {
     const searchModal = document.getElementById('search-modal');
     if (!searchModal || searchModal.classList.contains('hidden')) return;
 
-    // Kích hoạt animation trượt ngược lên trên
     searchModal.classList.add('is-closing');
 
-    // Chờ animation kéo lên hoàn tất (300ms) rồi mới ẩn modal
     setTimeout(() => {
         searchModal.classList.add('hidden');
         searchModal.classList.remove('is-closing');
 
         document.body.classList.remove('drawer-open');
-        document.body.style.top = '';
-        window.scrollTo(0, savedScrollPositionY);
-
         clearAllBoldActiveStates();
     }, 280);
 }
@@ -1585,7 +1517,7 @@ function openIntroDrawer() {
 
 function closeIntroDrawer() {
     const overlay = document.getElementById('info-overlay');
-    const panel = document.getElementById('intro-panel');
+    const panel = document.getElementById('info-panel');
     const drawer = document.getElementById('intro-drawer');
 
     if (overlay && panel && drawer) {
@@ -1697,10 +1629,6 @@ document.addEventListener('keydown', function (e) {
     }
 });
 
-let touchStartX = 0;
-let touchStartY = 0;
-let isNativeNavigation = false;
-
 document.addEventListener('touchstart', function (e) {
     const startX = e.touches[0].clientX;
     const windowWidth = window.innerWidth;
@@ -1780,18 +1708,18 @@ document.addEventListener('touchend', function (e) {
 document.addEventListener('DOMContentLoaded', function () {
     if (sessionStorage.getItem('auto_open_cart') === 'true') {
         sessionStorage.removeItem('auto_open_cart');
-        openCartModal();
+        if (typeof openCartModal === 'function') openCartModal();
 
         const pendingQuickEditIdx = sessionStorage.getItem('auto_open_quick_edit');
         if (pendingQuickEditIdx !== null) {
             sessionStorage.removeItem('auto_open_quick_edit');
             const idx = parseInt(pendingQuickEditIdx, 10);
             setTimeout(() => {
-                openQuickEdit(idx);
+                if (typeof openQuickEdit === 'function') openQuickEdit(idx);
             }, 350);
         }
     }
 
-    loadVisualFilterCategories()
+    loadVisualFilterCategories();
     loadProductsData();
 });
