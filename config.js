@@ -141,8 +141,8 @@ function checkAndShowVoucherBadgeModal() {
                     </div>
 
                     <!-- Dải nhãn đen xoay dọc chữ STORE NAME đè trực tiếp trong lòng ảnh -->
-                    <div class="absolute left-0 top-12 bottom-12 w-9 sm:w-10 bg-[#111111] text-white flex items-center justify-center z-20 shadow-md">
-                        <span class="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.25em] -rotate-90 whitespace-nowrap">
+                    <div class="absolute left-0 top-1/2 -translate-y-1/2 h-auto py-4 w-8 sm:w-9 bg-[#111111] text-white flex items-center justify-center z-20 shadow-md">
+                        <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] -rotate-90 whitespace-nowrap">
                             INSIDE+
                         </span>
                     </div>
