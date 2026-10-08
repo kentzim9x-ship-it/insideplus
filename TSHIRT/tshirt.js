@@ -559,27 +559,17 @@ function renderRecentViewedSlider(currentProductId) {
     container.innerHTML = viewedFiltered.map(p => {
         const img1 = (p.images && p.images[0]) || '';
         const img2 = (p.images && p.images[1]) || img1;
-        const targetPage = getCategoryPageUrl(p.category);
-        const isCurrentPage = targetPage.includes('inside.html');
-
-        const clickAction = isCurrentPage
-            ? `openProductDrawer('${p.id}', 0)`
-            : `window.location.href='${targetPage}?product=${formatProductCode(p.id, p.category)}&color=${formatColorCode(0, p.category)}'`;
-
-        // 1. Tính toán % giảm giá
         const hasDiscount = p.originalPrice && p.originalPrice > p.price;
         const discountPercent = hasDiscount ? Math.round((1 - p.price / p.originalPrice) * 100) : 0;
 
         const colorsDots = (p.colors || []).map((c, cIdx) => {
-            // 2. Kiểm tra màu hết hàng
             const isColorOutOfStock = checkColorOutOfStock(c);
             const strikeClass = isColorOutOfStock ? 'color-out-of-stock' : '';
 
-            // 3. Tăng kích thước nút màu (w-5 h-5) và thêm class relative
-            return `<button onclick="event.stopPropagation(); changeRecentThumbColor('${p.id}', ${cIdx})" class="w-5 h-5 relative rounded-full border border-slate-300 transition-all ${strikeClass}" style="background-color: ${c.hex};" title="${c.name}"></button>`
+            return `<button onclick="event.stopPropagation(); changeRecentThumbColor('${p.id}', ${cIdx})" class="w-5 h-5 relative rounded-full border border-slate-300 transition-all ${strikeClass}" style="background-color: ${c.hex};" title="${c.name}"></button>`;
         }).join('');
 
-        return `<div class="flex-none w-[calc(50%-12px)] lg:w-[calc(25%-18px)] group cursor-pointer" onclick="${clickAction}">
+        return `<div class="flex-none w-[calc(50%-12px)] lg:w-[calc(25%-18px)] group cursor-pointer" onclick="navigateToProduct('${p.id}', '${p.category || 'sock'}', 0)">
             <div class="relative aspect-[3/4] bg-slate-100 overflow-hidden mb-3">
                 <img id="recent-thumb-${p.id}" src="${img1}" loading="lazy" data-img1="${img1}" data-img2="${img2}" 
                 onmouseenter="this.src=this.getAttribute('data-img2'); this.classList.add('scale-105');" 
