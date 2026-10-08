@@ -333,9 +333,28 @@ function showAddedNotification(item) {
     if (window.lucide) lucide.createIcons({ root: toast });
 }
 
+function navigateToProduct(productId, category, colorIdx = 0) {
+    const cleanCat = String(category || '').trim().toLowerCase();
+    const targetPage = getCategoryPageUrl(cleanCat);
+    const isCurrentPage = targetPage.includes('sock.html');
+
+    if (isCurrentPage) {
+        const searchModal = document.getElementById('search-modal');
+        if (searchModal && !searchModal.classList.contains('hidden')) {
+            closeSearchModal();
+        }
+        openProductDrawer(productId, colorIdx);
+    } else {
+        const code = formatProductCode(productId, cleanCat);
+        const color = formatColorCode(colorIdx, cleanCat);
+        window.location.href = `${targetPage}?product=${encodeURIComponent(code)}&color=${encodeURIComponent(color)}`;
+    }
+}
+
 function getCategoryPageUrl(category) {
-    if (category === 'sock') return 'sock.html';
-    if (category === 'tshirt') return '../TSHIRT/tshirt.html';
+    const cleanCat = String(category || '').trim().toLowerCase();
+    if (cleanCat === 'sock') return 'sock.html';
+    if (cleanCat === 'tshirt') return '../TSHIRT/tshirt.html';
     return '../INSIDE/inside.html';
 }
 
