@@ -89,86 +89,102 @@ function checkVouchersUpdatesSilently(vouchersJsonUrl) {
         .catch(() => { });
 }
 
-// --- 8. HIỂN THỊ VOUCHER BADGE POPUP KHI BẮT ĐẦU SESSION ---
+// --- HIỂN THỊ VOUCHER BADGE POPUP KHI BẮT ĐẦU SESSION (CONCEPT PREMIUM TICKET) ---
 
 function checkAndShowVoucherBadgeModal() {
-    // 1. Kiểm tra xem session này đã hiển thị badge chưa
+    // 1. Kiểm tra session
     if (sessionStorage.getItem('voucher_badge_shown') === 'true') {
         return;
     }
 
-    // 2. Tìm các voucher có isBadge = true
+    // 2. Lọc voucher có isBadge = true
     const badgeVouchers = availableVouchers.filter(v => v.isBadge === true);
     if (badgeVouchers.length === 0) return;
 
-    // Lấy voucher badge đầu tiên để hiển thị
     const v = badgeVouchers[0];
 
-    // 3. Tạo DOM Popup nếu chưa có
+    // 3. Tạo Modal Container
     let modal = document.getElementById('voucher-badge-modal');
     if (!modal) {
         modal = document.createElement('div');
         modal.id = 'voucher-badge-modal';
-        modal.className = "fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs transition-opacity duration-300 opacity-0 hidden";
+        modal.className = "fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md transition-all duration-300 opacity-0 hidden";
         document.body.appendChild(modal);
     }
 
     modal.innerHTML = `
-        <div onclick="event.stopPropagation()" class="bg-white w-full max-w-sm sm:max-w-md rounded-xs overflow-hidden shadow-2xl relative transform transition-all duration-300 scale-95 border border-slate-100 font-['Montserrat']">
+        <div onclick="event.stopPropagation()" class="bg-white w-full max-w-sm sm:max-w-md rounded-none overflow-hidden shadow-2xl relative transform transition-all duration-300 scale-95 border border-slate-100 font-['Montserrat']">
             
-            <!-- Nút đóng X -->
-            <button onclick="closeVoucherBadgeModal()" class="absolute top-3 right-3 text-slate-400 hover:text-black font-bold text-2xl leading-none cursor-pointer z-10 w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 transition">&times;</button>
+            <!-- Nút đóng X tối giản -->
+            <button onclick="closeVoucherBadgeModal()" class="absolute top-3 right-3 text-slate-400 hover:text-slate-900 font-light text-2xl leading-none cursor-pointer z-20 w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 transition" title="Đóng (ESC)">&times;</button>
 
-            <div class="p-6 text-center space-y-4">
+            <!-- Phần Header Banner Trang Nhã -->
+            <div class="bg-slate-950 text-white px-6 pt-7 pb-6 text-center relative overflow-hidden">
+                <div class="absolute -right-6 -top-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none"></div>
                 
-                <!-- Tag Badge nhỏ -->
-                <div class="inline-flex items-center gap-1.5 bg-blue-50 text-[#1d3b8a] text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full">
-                    <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
-                    <span>Ưu đãi dành riêng cho bạn</span>
-                </div>
+                <span class="inline-block bg-white/10 text-slate-200 text-[9px] font-bold uppercase tracking-[0.2em] px-3 py-1 mb-2 border border-white/15">
+                    ĐẶC QUYỀN MUA SẮM
+                </span>
+                <h3 class="font-black text-xl sm:text-2xl uppercase tracking-tight text-white">${v.title}</h3>
+                <p class="text-xs text-slate-300 font-normal mt-1 opacity-90">${v.desc}</p>
+            </div>
 
-                <!-- Tiêu đề & Mô tả -->
-                <div>
-                    <h3 class="font-black text-2xl uppercase text-slate-900 tracking-tight">${v.title}</h3>
-                    <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">${v.desc}</p>
-                </div>
+            <!-- Body - Thẻ Voucher Đôi (Ticket Style) -->
+            <div class="p-6 bg-white space-y-5">
+                
+                <!-- Khung Vé Cắt Góc -->
+                <div class="relative bg-slate-50 border border-slate-200 p-4 transition-all group">
+                    <!-- Vết khuyết bán nguyệt 2 bên -->
+                    <div class="absolute -left-3 top-1/2 -translate-y-1/2 w-5 h-5 bg-white border-r border-slate-200 rounded-full"></div>
+                    <div class="absolute -right-3 top-1/2 -translate-y-1/2 w-5 h-5 bg-white border-l border-slate-200 rounded-full"></div>
 
-                <!-- Khung Mã Voucher dạng tấm vé -->
-                <div class="bg-slate-50 border-2 border-dashed border-slate-300 p-3.5 my-2 rounded-xs flex items-center justify-between gap-3 relative">
-                    <div class="text-left">
-                        <span class="block text-[9px] font-bold uppercase text-slate-400 tracking-wider">MÃ GIẢM GIÁ</span>
-                        <span class="text-xl font-mono font-black text-[#1d3b8a] tracking-wider">${v.code}</span>
+                    <div class="flex items-center justify-between gap-3 px-2">
+                        <div class="text-left space-y-0.5">
+                            <span class="block text-[9px] font-bold uppercase text-slate-400 tracking-widest">MÃ XÁC NHẬN</span>
+                            <span class="text-lg sm:text-xl font-mono font-black text-slate-900 tracking-wider">${v.code}</span>
+                        </div>
+
+                        <button onclick="copyAndApplyBadgeVoucher('${v.code}')" id="btn-copy-badge-code" class="bg-slate-900 text-white px-4 py-2.5 text-xs font-bold uppercase tracking-wider hover:bg-black transition cursor-pointer shadow-sm shrink-0">
+                            SAO CHÉP MÃ
+                        </button>
                     </div>
+                </div>
 
-                    <button onclick="copyAndApplyBadgeVoucher('${v.code}')" id="btn-copy-badge-code" class="bg-[#1d3b8a] text-white px-4 py-2 text-xs font-bold uppercase tracking-wider hover:bg-blue-900 transition shrink-0 cursor-pointer shadow-sm">
-                        Sao chép
+                <!-- Nút Hành Động Chính -->
+                <div class="space-y-2 pt-1">
+                    <button onclick="copyAndApplyBadgeVoucher('${v.code}')" class="w-full bg-[#1d3b8a] text-white py-3.5 text-xs font-bold uppercase tracking-widest hover:bg-blue-900 transition cursor-pointer shadow-md flex items-center justify-center gap-2">
+                        <span>ÁP DỤNG & MUA SẮM NGAY</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                    
+                    <button onclick="closeVoucherBadgeModal()" class="w-full bg-transparent text-slate-400 hover:text-slate-700 py-1.5 text-[11px] font-semibold uppercase tracking-wider transition cursor-pointer">
+                        Bỏ qua ưu đãi này
                     </button>
                 </div>
 
-                <!-- Nút Lưu & Mua sắm ngay -->
-                <button onclick="copyAndApplyBadgeVoucher('${v.code}')" class="w-full bg-[#222222] text-white py-3.5 text-xs font-bold uppercase tracking-widest hover:bg-black transition cursor-pointer">
-                    Áp dụng ngay & Mua sắm
-                </button>
-
-                <p class="text-[10px] text-slate-400 font-medium">Bấm ESC hoặc nhấp ra ngoài để đóng lại</p>
+            </div>
+            
+            <!-- Thanh Footer Nhỏ -->
+            <div class="bg-slate-50 border-t border-slate-100 py-2.5 px-4 text-center">
+                <p class="text-[10px] text-slate-400 font-medium">Nhấn phím <kbd class="px-1 py-0.5 bg-white border border-slate-200 text-slate-600 rounded text-[9px]">ESC</kbd> hoặc nhấp bên ngoài để đóng</p>
             </div>
         </div>
     `;
 
-    // 4. Hiển thị Popup mượt mà
+    // 4. Hiển thị Popup
     modal.classList.remove('hidden');
     if (window.lucide) lucide.createIcons({ root: modal });
 
     requestAnimationFrame(() => {
         modal.classList.remove('opacity-0');
         const content = modal.firstElementChild;
-        if (content) content.classList.remove('scale-95');
+        if (content) {
+            content.classList.remove('scale-95');
+            content.classList.add('scale-100');
+        }
     });
 
-    // Bắt sự kiện click ngoài background để đóng
     modal.onclick = closeVoucherBadgeModal;
-
-    // Đánh dấu session đã hiển thị
     sessionStorage.setItem('voucher_badge_shown', 'true');
 }
 
@@ -178,7 +194,10 @@ function closeVoucherBadgeModal() {
 
     modal.classList.add('opacity-0');
     const content = modal.firstElementChild;
-    if (content) content.classList.add('scale-95');
+    if (content) {
+        content.classList.remove('scale-100');
+        content.classList.add('scale-95');
+    }
 
     setTimeout(() => {
         modal.classList.add('hidden');
@@ -186,24 +205,23 @@ function closeVoucherBadgeModal() {
 }
 
 function copyAndApplyBadgeVoucher(code) {
-    // Sao chép vào bộ nhớ tạm
     navigator.clipboard.writeText(code).then(() => {
         const btn = document.getElementById('btn-copy-badge-code');
         if (btn) {
             btn.innerText = 'ĐÃ CHÉP ✓';
-            btn.className = 'bg-emerald-600 text-white px-4 py-2 text-xs font-bold uppercase tracking-wider shrink-0';
+            btn.className = 'bg-emerald-600 text-white px-4 py-2.5 text-xs font-bold uppercase tracking-wider shrink-0';
         }
 
-        // Áp dụng voucher vào giỏ nếu thỏa mãn
+        // Tự động chọn voucher vào giỏ hàng
         if (typeof selectVoucher === 'function') {
             selectVoucher(code);
         }
 
         if (typeof showCartToast === 'function') {
-            showCartToast(`Đã sao chép mã ${code} vào bộ nhớ tạm!`);
+            showCartToast(`Đã sao chép và áp dụng mã ưu đãi ${code}!`);
         }
 
-        setTimeout(closeVoucherBadgeModal, 800);
+        setTimeout(closeVoucherBadgeModal, 600);
     });
 }
 
