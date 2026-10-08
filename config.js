@@ -89,7 +89,7 @@ function checkVouchersUpdatesSilently(vouchersJsonUrl) {
         .catch(() => { });
 }
 
-// --- HIỂN THỊ VOUCHER BADGE POPUP (VIỀN RĂNG CƯA MÉP TRÊN/DƯỚI + OVAL XUYÊN THẤU) ---
+// --- HIỂN THỊ VOUCHER BADGE POPUP (DESIGN THEO CONCEPT GIFT VOUCHER MINIMALIST) ---
 
 function checkAndShowVoucherBadgeModal() {
     // 1. Kiểm tra session
@@ -103,88 +103,94 @@ function checkAndShowVoucherBadgeModal() {
 
     const v = badgeVouchers[0];
 
-    // 3. Đảm bảo inject CSS Răng cưa vào trang
-    injectZigzagStyles();
-
-    // 4. Tạo Modal Container
+    // 3. Tạo Modal Container
     let modal = document.getElementById('voucher-badge-modal');
     if (!modal) {
         modal = document.createElement('div');
         modal.id = 'voucher-badge-modal';
-        modal.className = "fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-all duration-300 opacity-0 hidden";
+        modal.className = "fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/40 backdrop-blur-md transition-all duration-300 opacity-0 hidden";
         document.body.appendChild(modal);
     }
 
     modal.innerHTML = `
-        <!-- Khung Poster Xanh Navy áp dụng Viền Răng Cưa zigzag-edge -->
-        <div onclick="event.stopPropagation()" class="zigzag-edge relative w-full max-w-sm sm:max-w-md bg-[#1d3b8a] text-white p-7 sm:p-9 shadow-2xl rounded-none transform transition-all duration-300 scale-95 font-['Montserrat'] overflow-hidden">
+        <div onclick="event.stopPropagation()" class="relative w-full max-w-lg bg-[#e2e2e2] text-slate-900 shadow-2xl rounded-none transform transition-all duration-300 scale-95 font-['Montserrat'] overflow-hidden border border-slate-300">
             
-            <!-- Vết khuyết đục lỗ tròn 2 bên sườn (Left & Right Notches) -->
-            <div class="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-black/50 backdrop-blur-sm rounded-full z-20 pointer-events-none"></div>
-            <div class="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-black/50 backdrop-blur-sm rounded-full z-20 pointer-events-none"></div>
+            <!-- Nút đóng X dạng Text tối giản ở góc trên bên phải -->
+            <button onclick="closeVoucherBadgeModal()" class="absolute top-2.5 right-3 text-slate-400 hover:text-black font-light text-2xl leading-none cursor-pointer z-30 transition" title="Đóng (ESC)">&times;</button>
 
-            <!-- Khung Oval trong suốt ở trung tâm nhìn xuyên qua trang web -->
-            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div class="w-[72%] h-[58%] rounded-[100%] border-2 border-white/30 bg-black/20 backdrop-blur-[2px] shadow-inner"></div>
-            </div>
-
-            <!-- Đường xé vé nét đứt ngang -->
-            <div class="absolute left-6 right-6 bottom-[85px] border-b border-dashed border-white/30 pointer-events-none z-10"></div>
-
-            <!-- Nút đóng X tối giản -->
-            <button onclick="closeVoucherBadgeModal()" class="absolute top-4 right-5 text-white/70 hover:text-white font-light text-2xl leading-none cursor-pointer z-30" title="Đóng (ESC)">&times;</button>
-
-            <!-- BỐ CỤC CHỮ LOOKBOOK POSTER TỐI GIẢN -->
-            <div class="relative z-20 flex flex-col justify-between min-h-[390px] sm:min-h-[430px]">
+            <!-- BỐ CỤC CHÍNH (KHUNG MANG PHONG CÁCH TẤM VÉ DỌC/NGANG) -->
+            <div class="grid grid-cols-12 min-h-[260px] sm:min-h-[280px]">
                 
-                <!-- 1. Góc trên bên trái -->
-                <div class="space-y-1 text-left max-w-[70%]">
-                    <span class="block text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] text-blue-200">INSIDE+ SPECIAL</span>
-                    <p class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-white/90 leading-tight">TẤM VÉ ƯU ĐÃI</p>
-                    <p class="text-[9px] text-blue-200/80 uppercase tracking-widest font-mono pt-1">${v.desc || 'DÀNH RIÊNG CHO BẠN'}</p>
-                </div>
-
-                <!-- 2. Vùng trung tâm (Hiển thị nổi trên nền Oval nhìn xuyên thấu) -->
-                <div class="my-auto py-6 text-center space-y-2 pointer-events-auto">
-                    <span class="text-[9px] font-bold uppercase tracking-[0.25em] text-blue-200 block">VOUCHER CODE</span>
+                <!-- BÊN TRÁI: DẢI CHỮ XOAY DỌC + KHU VỰC HÌNH OVAL / NỀN MỜ DẠNG CLIP-PATH -->
+                <div class="col-span-5 relative bg-slate-200/80 overflow-hidden flex items-center justify-center">
                     
-                    <!-- Mã Voucher -->
-                    <h2 class="text-3xl sm:text-4xl font-mono font-black tracking-widest text-white drop-shadow-lg">
-                        ${v.code}
-                    </h2>
-
-                    <!-- Nút Sao chép dạng Text Link -->
-                    <button onclick="copyAndApplyBadgeVoucher('${v.code}')" id="btn-copy-badge-code" class="inline-block pt-1 text-xs font-bold uppercase tracking-widest text-blue-200 hover:text-white underline underline-offset-4 decoration-1 cursor-pointer transition">
-                        [ SAO CHÉP MÃ ]
-                    </button>
-                </div>
-
-                <!-- 3. Chân Poster: Chi tiết mức giảm & Nút bấm Text -->
-                <div class="pt-4 flex items-end justify-between gap-4 pointer-events-auto">
-                    <div class="text-left space-y-0.5">
-                        <span class="block text-[9px] font-mono uppercase text-blue-200 tracking-wider">OFFER VALUE</span>
-                        <h3 class="font-black text-xl sm:text-2xl uppercase tracking-tight text-white leading-none">${v.title}</h3>
+                    <!-- Dải nhãn đen xoay dọc chạy sát lề trái -->
+                    <div class="absolute left-0 top-0 bottom-0 w-8 bg-[#111111] text-white flex items-center justify-center z-20">
+                        <span class="text-[9px] font-black uppercase tracking-[0.25em] -rotate-90 whitespace-nowrap">
+                            INSIDE+ STORE
+                        </span>
                     </div>
 
-                    <div class="flex flex-col items-end gap-2 text-right">
-                        <!-- Nút Mua sắm dạng Text Link -->
-                        <button onclick="copyAndApplyBadgeVoucher('${v.code}')" class="text-xs font-bold uppercase tracking-widest text-white hover:text-blue-200 underline underline-offset-4 cursor-pointer transition flex items-center gap-1">
-                            <span>MUA SẮM NGAY</span>
-                            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
-                        </button>
+                    <!-- Khối cắt hình tam giác/mũi tên nghiêng (Clip-path Arrow) nhìn xuyên qua trang web -->
+                    <div class="absolute inset-0 left-8 bg-black/10 backdrop-blur-sm z-10" style="clip-path: polygon(0 0, 80% 0, 100% 50%, 80% 100%, 0 100%);">
+                        <div class="w-full h-full flex items-center justify-center p-2 text-center opacity-20">
+                            <i data-lucide="sparkles" class="w-12 h-12 text-black"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BÊN PHẢI: NỘI DUNG VOUCHER & NÚT THAO TÁC -->
+                <div class="col-span-7 p-5 sm:p-6 flex flex-col justify-between text-right relative z-20">
+                    
+                    <!-- Phần thông tin tiêu đề trên -->
+                    <div class="space-y-1 pt-1">
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-slate-500 block font-mono">
+                            VALID FOR YOUR SESSION
+                        </span>
+                        <p class="text-[10px] sm:text-[11px] text-slate-600 font-medium leading-tight line-clamp-2">
+                            ${v.desc || 'Áp dụng cho đơn hàng đáp ứng điều kiện tối thiểu'}
+                        </p>
+                    </div>
+
+                    <!-- Giữa: Tag Đen + Con số / Mức Giảm lớn -->
+                    <div class="my-3 space-y-1">
+                        <div class="inline-block bg-[#111111] text-white text-[9px] sm:text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5">
+                            EXTRA DISCOUNT
+                        </div>
                         
-                        <!-- Nút Bỏ qua dạng Text Mờ -->
-                        <button onclick="closeVoucherBadgeModal()" class="text-[10px] font-medium text-white/60 hover:text-white tracking-wider cursor-pointer transition">
+                        <h2 class="text-3xl sm:text-4xl font-black uppercase tracking-tighter text-[#111111] leading-none">
+                            ${v.title}
+                        </h2>
+
+                        <!-- Mã Voucher hiển thị dạng Code -->
+                        <div class="pt-1.5 flex items-center justify-end gap-1.5 text-xs font-mono font-bold text-slate-700">
+                            <span class="text-[9px] text-slate-400 uppercase font-sans font-normal">CODE:</span>
+                            <span class="bg-white border border-slate-300 px-2 py-0.5 tracking-wider text-[#111111] shadow-2xs">${v.code}</span>
+                        </div>
+                    </div>
+
+                    <!-- Chân: Thao tác dạng Text Link (Không dùng nút khối) -->
+                    <div class="pt-2 border-t border-slate-300/80 flex items-center justify-between gap-2">
+                        <!-- Nút Bỏ qua dạng text mờ bên trái -->
+                        <button onclick="closeVoucherBadgeModal()" class="text-[10px] font-medium text-slate-400 hover:text-slate-800 transition cursor-pointer">
                             Bỏ qua
                         </button>
+
+                        <!-- Nút Sao chép & Mua sắm dạng Text Link đậm bên phải -->
+                        <button onclick="copyAndApplyBadgeVoucher('${v.code}')" id="btn-copy-badge-code" class="text-xs font-bold uppercase tracking-wider text-[#111111] hover:underline underline-offset-4 flex items-center gap-1 cursor-pointer transition">
+                            <span>ÁP DỤNG NGAY</span>
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        </button>
                     </div>
+
                 </div>
 
             </div>
+
         </div>
     `;
 
-    // 5. Kích hoạt hiển thị
+    // 4. Kích hoạt hiển thị
     modal.classList.remove('hidden');
     if (window.lucide) lucide.createIcons({ root: modal });
 
@@ -199,33 +205,6 @@ function checkAndShowVoucherBadgeModal() {
 
     modal.onclick = closeVoucherBadgeModal;
     sessionStorage.setItem('voucher_badge_shown', 'true');
-}
-
-// Hàm tự động nhúng Style viền răng cưa CSS vào trang web
-function injectZigzagStyles() {
-    if (document.getElementById('zigzag-badge-style')) return;
-    const style = document.createElement('style');
-    style.id = 'zigzag-badge-style';
-    style.textContent = `
-        /* CSS MASK TẠO VIỀN RĂNG CƯA MÉP TRÊN VÀ DƯỚI */
-        .zigzag-edge {
-            --s: 10px; /* Kích thước nửa răng cưa */
-            --g: 0px;
-            --c: #0000;
-            --m: 100%/#{$var};
-            
-            mask: 
-                conic-gradient(from 135deg at top   ,var(--c) 90deg,#000 0) 0 0/calc(2*var(--s)) var(--s) repeat-x,
-                conic-gradient(from -45deg at bottom,var(--c) 90deg,#000 0) 0 100%/calc(2*var(--s)) var(--s) repeat-x,
-                linear-gradient(#000 0 0) 0 var(--s)/100% calc(100% - 2*var(--s)) no-repeat;
-            
-            -webkit-mask: 
-                conic-gradient(from 135deg at top   ,#0000 90deg,#000 0) 0 0/20px 10px repeat-x,
-                conic-gradient(from -45deg at bottom,#0000 90deg,#000 0) 0 100%/20px 10px repeat-x,
-                linear-gradient(#000 0 0) 0 10px/100% calc(100% - 20px) no-repeat;
-        }
-    `;
-    document.head.appendChild(style);
 }
 
 function closeVoucherBadgeModal() {
@@ -248,8 +227,8 @@ function copyAndApplyBadgeVoucher(code) {
     navigator.clipboard.writeText(code).then(() => {
         const btn = document.getElementById('btn-copy-badge-code');
         if (btn) {
-            btn.innerText = '[ ĐÃ SAO CHÉP ✓ ]';
-            btn.className = 'inline-block pt-1 text-xs font-bold uppercase tracking-widest text-emerald-300 underline underline-offset-4 decoration-1 cursor-pointer transition';
+            btn.innerHTML = '<span>ĐÃ ÁP DỤNG ✓</span>';
+            btn.className = 'text-xs font-bold uppercase tracking-wider text-emerald-700 flex items-center gap-1 cursor-pointer transition';
         }
 
         if (typeof selectVoucher === 'function') {
@@ -260,7 +239,7 @@ function copyAndApplyBadgeVoucher(code) {
             showCartToast(`Đã sao chép và áp dụng mã ưu đãi ${code}!`);
         }
 
-        setTimeout(closeVoucherBadgeModal, 600);
+        setTimeout(closeVoucherBadgeModal, 700);
     });
 }
 
