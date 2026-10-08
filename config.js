@@ -47,6 +47,14 @@ function processRawVouchersData(data) {
     availableVouchers = activeVouchers.map(item => {
         const isBadge = item.is_badge ?? item.IS_BADGE ?? false;
         const hasBadge = String(isBadge).trim().toUpperCase() === 'TRUE' || isBadge === true;
+        
+        // Đọc link ảnh từ cột url_img trên Google Sheet
+        let rawUrlImg = item.url_img || item.URL_IMG || item.urlImg || item.image || '';
+        if (typeof cleanImageUrl === 'function') {
+            rawUrlImg = cleanImageUrl(rawUrlImg); // Làm sạch link ảnh nếu dính ngoặc [][cite: 11]
+        } else {
+            rawUrlImg = rawUrlImg.toString().replace(/^\[|\]$/g, '').trim();
+        }
 
         return {
             code: String(item.code || '').trim().toUpperCase(),
@@ -55,11 +63,11 @@ function processRawVouchersData(data) {
             minOrder: Number(String(item.minOrder || 0).replace(/[^0-9]/g, '')) || 0,
             discountType: String(item.discountType || 'fixed').trim().toLowerCase(),
             discountValue: Number(String(item.discountValue || 0).replace(/[^0-9]/g, '')) || 0,
-            isBadge: hasBadge // Thêm thuộc tính isBadge nếu muốn dùng về sau
+            isBadge: hasBadge,
+            urlImg: rawUrlImg // Lưu URL ảnh
         };
     });
 
-    // Nếu voucher đang lưu trong LocalStorage bị vô hiệu hóa trên Sheet, tiến hành hủy bỏ voucher đó
     if (activeVoucher && !availableVouchers.some(v => v.code === activeVoucher.code)) {
         activeVoucher = null;
         localStorage.removeItem('inside_active_voucher');
@@ -68,6 +76,7 @@ function processRawVouchersData(data) {
     if (typeof renderVoucherList === 'function') renderVoucherList();
     if (typeof renderCartModalContent === 'function') renderCartModalContent();
 
+    // Tự động kiểm tra hiển thị Badge Modal khi nạp xong dữ liệu
     checkAndShowVoucherBadgeModal();
 
     return availableVouchers;
@@ -89,7 +98,7 @@ function checkVouchersUpdatesSilently(vouchersJsonUrl) {
         .catch(() => { });
 }
 
-// --- HIỂN THỊ VOUCHER BADGE POPUP (DESIGN THEO CONCEPT GIFT VOUCHER MINIMALIST) ---
+// --- HIỂN THỊ VOUCHER BADGE POPUP (LIMIT 1 BADGE + TĂNG KÍCH THƯỚC MODAL) ---
 
 function checkAndShowVoucherBadgeModal() {
     // 1. Kiểm tra session
@@ -97,89 +106,89 @@ function checkAndShowVoucherBadgeModal() {
         return;
     }
 
-    // 2. Lọc voucher có isBadge = true
-    const badgeVouchers = availableVouchers.filter(v => v.isBadge === true);
-    if (badgeVouchers.length === 0) return;
+    // 2. LIMIT 1: Dùng .find() để chỉ lấy đúng 1 Voucher đầu tiên có isBadge = true
+    const badgeVoucher = availableVouchers.find(v => v.isBadge === true);
+    if (!badgeVoucher) return;
 
-    const v = badgeVouchers[0];
+    // Lấy link ảnh từ urlImg (Nếu không có link sẽ dùng ảnh mẫu mặc định)
+    const bgImage = badgeVoucher.urlImg || 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=1000';
 
     // 3. Tạo Modal Container
     let modal = document.getElementById('voucher-badge-modal');
     if (!modal) {
         modal = document.createElement('div');
         modal.id = 'voucher-badge-modal';
-        modal.className = "fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/40 backdrop-blur-md transition-all duration-300 opacity-0 hidden";
+        modal.className = "fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-all duration-300 opacity-0 hidden";
         document.body.appendChild(modal);
     }
 
+    // 4. Render HTML: Tăng max-w từ max-w-xl lên max-w-2xl sm:max-w-3xl
     modal.innerHTML = `
-        <div onclick="event.stopPropagation()" class="relative w-full max-w-lg bg-[#e2e2e2] text-slate-900 shadow-2xl rounded-none transform transition-all duration-300 scale-95 font-['Montserrat'] overflow-hidden border border-slate-300">
+        <div onclick="event.stopPropagation()" class="relative w-full max-w-2xl sm:max-w-3xl bg-[#e2e2e2] text-[#111111] shadow-2xl rounded-none transform transition-all duration-300 scale-95 font-['Montserrat'] overflow-hidden border border-slate-300">
             
-            <!-- Nút đóng X dạng Text tối giản ở góc trên bên phải -->
-            <button onclick="closeVoucherBadgeModal()" class="absolute top-2.5 right-3 text-slate-400 hover:text-black font-light text-2xl leading-none cursor-pointer z-30 transition" title="Đóng (ESC)">&times;</button>
+            <!-- Nút đóng X dạng Text tối giản góc trên bên phải -->
+            <button onclick="closeVoucherBadgeModal()" class="absolute top-3 right-4 text-slate-400 hover:text-black font-light text-3xl leading-none cursor-pointer z-30 transition" title="Đóng (ESC)">&times;</button>
 
-            <!-- BỐ CỤC CHÍNH (KHUNG MANG PHONG CÁCH TẤM VÉ DỌC/NGANG) -->
-            <div class="grid grid-cols-12 min-h-[260px] sm:min-h-[280px]">
+            <!-- BỐ CỤC TẤM TICKET / VOUCHER MỞ RỘNG KÍCH THƯỚC -->
+            <div class="grid grid-cols-12 min-h-[340px] sm:min-h-[380px]">
                 
-                <!-- BÊN TRÁI: DẢI CHỮ XOAY DỌC + KHU VỰC HÌNH OVAL / NỀN MỜ DẠNG CLIP-PATH -->
-                <div class="col-span-5 relative bg-slate-200/80 overflow-hidden flex items-center justify-center">
+                <!-- BÊN TRÁI: KHỐI CHỨA ẢNH HIỂN THỊ RỘNG RÃI & ĐẸP HƠN -->
+                <div class="col-span-5 sm:col-span-6 relative bg-slate-300 overflow-hidden">
                     
-                    <!-- Dải nhãn đen xoay dọc chạy sát lề trái -->
-                    <div class="absolute left-0 top-0 bottom-0 w-8 bg-[#111111] text-white flex items-center justify-center z-20">
-                        <span class="text-[9px] font-black uppercase tracking-[0.25em] -rotate-90 whitespace-nowrap">
-                            INSIDE+ STORE
+                    <!-- Dải nhãn đen xoay dọc chữ STORE NAME sát lề trái -->
+                    <div class="absolute left-0 top-0 bottom-0 w-8 sm:w-10 bg-[#111111] text-white flex items-center justify-center z-20">
+                        <span class="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.25em] -rotate-90 whitespace-nowrap">
+                            STORE NAME
                         </span>
                     </div>
 
-                    <!-- Khối cắt hình tam giác/mũi tên nghiêng (Clip-path Arrow) nhìn xuyên qua trang web -->
-                    <div class="absolute inset-0 left-8 bg-black/10 backdrop-blur-sm z-10" style="clip-path: polygon(0 0, 80% 0, 100% 50%, 80% 100%, 0 100%);">
-                        <div class="w-full h-full flex items-center justify-center p-2 text-center opacity-20">
-                            <i data-lucide="sparkles" class="w-12 h-12 text-black"></i>
-                        </div>
+                    <!-- Khối chứa ảnh ghép từ Google Sheet (url_img) với góc vát Clip-path lớn -->
+                    <div class="absolute inset-0 left-8 sm:left-10 z-10" style="clip-path: polygon(0 0, 82% 0, 100% 50%, 82% 100%, 0 100%);">
+                        <img src="${bgImage}" class="w-full h-full object-cover filter grayscale contrast-110 hover:grayscale-0 transition-all duration-700">
                     </div>
                 </div>
 
-                <!-- BÊN PHẢI: NỘI DUNG VOUCHER & NÚT THAO TÁC -->
-                <div class="col-span-7 p-5 sm:p-6 flex flex-col justify-between text-right relative z-20">
+                <!-- BÊN PHẢI: CÁC THÔNG TIN VOUCHER & NÚT THAO TÁC -->
+                <div class="col-span-7 sm:col-span-6 p-6 sm:p-8 flex flex-col justify-between text-right relative z-20 bg-[#e2e2e2]">
                     
-                    <!-- Phần thông tin tiêu đề trên -->
-                    <div class="space-y-1 pt-1">
-                        <span class="text-[9px] font-bold uppercase tracking-widest text-slate-500 block font-mono">
+                    <!-- Phần 1: Thời hạn & Mô tả -->
+                    <div class="space-y-1.5 pt-1">
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500 block font-mono">
                             VALID FOR YOUR SESSION
                         </span>
-                        <p class="text-[10px] sm:text-[11px] text-slate-600 font-medium leading-tight line-clamp-2">
-                            ${v.desc || 'Áp dụng cho đơn hàng đáp ứng điều kiện tối thiểu'}
+                        <p class="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed line-clamp-2">
+                            ${badgeVoucher.desc || 'On this day special offer for our premium members only.'}
                         </p>
                     </div>
 
-                    <!-- Giữa: Tag Đen + Con số / Mức Giảm lớn -->
-                    <div class="my-3 space-y-1">
-                        <div class="inline-block bg-[#111111] text-white text-[9px] sm:text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5">
+                    <!-- Phần 2: Tag đen + Giá trị Voucher cỡ lớn -->
+                    <div class="my-4 space-y-1.5">
+                        <div class="inline-block bg-[#111111] text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-3 py-1">
                             EXTRA DISCOUNT
                         </div>
                         
-                        <h2 class="text-3xl sm:text-4xl font-black uppercase tracking-tighter text-[#111111] leading-none">
-                            ${v.title}
+                        <h2 class="text-4xl sm:text-5xl font-black uppercase tracking-tighter text-[#111111] leading-none py-1">
+                            ${badgeVoucher.title}
                         </h2>
 
-                        <!-- Mã Voucher hiển thị dạng Code -->
-                        <div class="pt-1.5 flex items-center justify-end gap-1.5 text-xs font-mono font-bold text-slate-700">
-                            <span class="text-[9px] text-slate-400 uppercase font-sans font-normal">CODE:</span>
-                            <span class="bg-white border border-slate-300 px-2 py-0.5 tracking-wider text-[#111111] shadow-2xs">${v.code}</span>
+                        <!-- Mã Voucher hiển thị dạng Box Code -->
+                        <div class="pt-2 flex items-center justify-end gap-2 text-sm font-mono font-bold text-slate-700">
+                            <span class="text-xs text-slate-400 uppercase font-sans font-normal">CODE:</span>
+                            <span class="bg-white border border-slate-300 px-3 py-1 tracking-wider text-[#111111] shadow-2xs">${badgeVoucher.code}</span>
                         </div>
                     </div>
 
-                    <!-- Chân: Thao tác dạng Text Link (Không dùng nút khối) -->
-                    <div class="pt-2 border-t border-slate-300/80 flex items-center justify-between gap-2">
+                    <!-- Phần 3: Chân Voucher - Nút thao tác Text Link -->
+                    <div class="pt-3 border-t border-slate-300/80 flex items-center justify-between gap-3">
                         <!-- Nút Bỏ qua dạng text mờ bên trái -->
-                        <button onclick="closeVoucherBadgeModal()" class="text-[10px] font-medium text-slate-400 hover:text-slate-800 transition cursor-pointer">
+                        <button onclick="closeVoucherBadgeModal()" class="text-xs font-medium text-slate-400 hover:text-slate-800 transition cursor-pointer">
                             Bỏ qua
                         </button>
 
                         <!-- Nút Sao chép & Mua sắm dạng Text Link đậm bên phải -->
-                        <button onclick="copyAndApplyBadgeVoucher('${v.code}')" id="btn-copy-badge-code" class="text-xs font-bold uppercase tracking-wider text-[#111111] hover:underline underline-offset-4 flex items-center gap-1 cursor-pointer transition">
+                        <button onclick="copyAndApplyBadgeVoucher('${badgeVoucher.code}')" id="btn-copy-badge-code" class="text-xs sm:text-sm font-bold uppercase tracking-wider text-[#111111] hover:underline underline-offset-4 flex items-center gap-1.5 cursor-pointer transition">
                             <span>ÁP DỤNG NGAY</span>
-                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                            <i data-lucide="arrow-right" class="w-4 h-4"></i>
                         </button>
                     </div>
 
@@ -190,7 +199,7 @@ function checkAndShowVoucherBadgeModal() {
         </div>
     `;
 
-    // 4. Kích hoạt hiển thị
+    // 5. Kích hoạt hiển thị Modal
     modal.classList.remove('hidden');
     if (window.lucide) lucide.createIcons({ root: modal });
 
