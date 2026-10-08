@@ -169,12 +169,12 @@ function checkAndShowVoucherBadgeModal() {
 
                     <!-- Phần 2: Tag đen + Giá trị Voucher cỡ lớn (Ép nằm 1 hàng ngang) -->
                     <div class="my-2 sm:my-4 space-y-1">
-                        <div class="inline-block bg-[#111111] text-white text-[8px] sm:text-xs font-black uppercase tracking-widest px-2 py-0.5 sm:px-3 sm:py-1">
+                        <div class="inline-block bg-[#111111] text-white text-[8=10px] sm:text-sm font-black uppercase tracking-widest px-2 py-0.5 sm:px-3 sm:py-1">
                             EXTRA DISCOUNT
                         </div>
                         
                         <!-- GIẢM 10%: whitespace-nowrap đảm bảo tuyệt đối trên 1 hàng -->
-                        <h2 class="text-xl sm:text-5xl font-black uppercase tracking-tighter text-[#111111] leading-none py-0.5 whitespace-nowrap">
+                        <h2 class="text-xl sm:text-3xl font-black uppercase tracking-tighter text-[#111111] leading-none py-0.5 whitespace-nowrap">
                             ${badgeVoucher.title}
                         </h2>
 
