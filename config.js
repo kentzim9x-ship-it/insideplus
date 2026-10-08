@@ -163,8 +163,8 @@ function renderAndShowBadgeModalContent(badgeVoucher) {
     modal.innerHTML = `
         <div onclick="event.stopPropagation()" class="relative w-full max-w-lg sm:max-w-3xl bg-[#e2e2e2] text-[#111111] shadow-2xl rounded-none transform transition-all duration-300 scale-95 font-['Montserrat'] overflow-hidden border border-slate-300">
             
-            <!-- Nút đóng X đẩy cao lên góc trên bên phải trên Mobile -->
-            <button onclick="closeVoucherBadgeModal()" class="absolute top-0.5 right-1 sm:top-2 sm:right-4 text-slate-400 hover:text-black font-light text-2xl sm:text-3xl leading-none cursor-pointer z-30 transition p-1" title="Đóng (ESC)">&times;</button>
+            <!-- Nút đóng X dạng Text tối giản -->
+            <button onclick="closeVoucherBadgeModal()" class="absolute top-0.5 right-1 sm:top-2 sm:right-4 text-slate-400 hover:text-black font-light text-2xl sm:text-3xl leading-none cursor-pointer z-30 transition" title="Đóng (ESC)">&times;</button>
 
             <!-- BỐ CỤC KHUNG TICKET / VOUCHER -->
             <div class="grid grid-cols-12 min-h-[260px] sm:min-h-[380px]">
@@ -172,14 +172,14 @@ function renderAndShowBadgeModalContent(badgeVoucher) {
                 <!-- BÊN TRÁI: KHỐI CHỨA ẢNH & STORE NAME -->
                 <div class="col-span-5 sm:col-span-6 relative bg-[#e2e2e2] overflow-hidden">
                     
-                    <!-- Khung chứa ảnh ghép từ url_img -->
+                    <!-- Khung chứa ảnh hiển thị đầy đủ màu sắc -->
                     <div class="absolute inset-0 z-10 w-full h-full" style="clip-path: polygon(0 0, 82% 0, 100% 50%, 82% 100%, 0 100%);">
                         <img src="${bgImage}" class="w-full h-full object-cover">
                     </div>
 
                     <!-- Dải nhãn đen xoay dọc chữ STORE NAME đè trực tiếp trong lòng ảnh -->
-                    <div class="absolute left-0 top-1/2 -translate-y-1/2 h-auto py-3 sm:py-4 w-7 sm:w-10 bg-[#111111] text-white flex items-center justify-center z-20 shadow-md">
-                        <span class="text-[8px] sm:text-[11px] font-black uppercase tracking-[0.2em] -rotate-90 whitespace-nowrap">
+                    <div class="absolute left-0 top-1/3 bottom-1/3 w-8 sm:w-9 bg-[#111111] text-white flex items-center justify-center z-20 shadow-md">
+                        <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] -rotate-90 whitespace-nowrap">
                             INSIDE+
                         </span>
                     </div>
@@ -199,12 +199,13 @@ function renderAndShowBadgeModalContent(badgeVoucher) {
                         </p>
                     </div>
 
-                    <!-- Phần 2: Tag đen + Giá trị Voucher -->
+                    <!-- Phần 2: Tag đen + Giá trị Voucher cỡ lớn (Ép nằm 1 hàng ngang) -->
                     <div class="my-2 sm:my-4 space-y-1">
                         <div class="inline-block bg-[#111111] text-white text-[10px] sm:text-sm font-black uppercase tracking-widest px-2 py-0.5 sm:px-3 sm:py-1">
                             EXTRA DISCOUNT
                         </div>
                         
+                        <!-- GIẢM 10%: whitespace-nowrap đảm bảo tuyệt đối trên 1 hàng -->
                         <h2 class="text-xl sm:text-3xl font-black uppercase tracking-tighter text-[#111111] leading-none py-0.5 whitespace-nowrap">
                             ${badgeVoucher.title}
                         </h2>
@@ -216,12 +217,14 @@ function renderAndShowBadgeModalContent(badgeVoucher) {
                         </div>
                     </div>
 
-                    <!-- Phần 3: Chân Voucher - Nút Bỏ qua & ÁP DỤNG NGAY trên 1 HÀNG NGANG -->
+                    <!-- Phần 3: Chân Voucher - Nút Bỏ qua & ÁP DỤNG NGAY cùng trên 1 HÀNG NGANG -->
                     <div class="pt-2 sm:pt-3 border-t border-slate-300/80 flex items-center justify-between gap-1.5">
+                        <!-- Nút Bỏ qua dạng text mờ bên trái -->
                         <button onclick="closeVoucherBadgeModal()" class="text-[9px] sm:text-xs font-medium text-slate-400 hover:text-slate-800 transition cursor-pointer whitespace-nowrap">
                             Bỏ qua
                         </button>
 
+                        <!-- Nút Sao chép & Mua sắm dạng Text Link đậm bên phải -->
                         <button onclick="copyAndApplyBadgeVoucher('${badgeVoucher.code}')" id="btn-copy-badge-code" class="text-[9px] sm:text-sm font-bold uppercase tracking-wider text-[#111111] hover:underline underline-offset-4 flex items-center gap-1 cursor-pointer transition whitespace-nowrap">
                             <span>ÁP DỤNG NGAY</span>
                             <i data-lucide="arrow-right" class="w-3 h-3 sm:w-4 sm:h-4 shrink-0"></i>
