@@ -171,7 +171,7 @@ function renderAndShowBadgeModalContent(badgeVoucher) {
                 <div class="col-span-5 sm:col-span-6 relative bg-[#e2e2e2] overflow-hidden">
                     
                     <div class="absolute inset-0 z-10 w-full h-full" style="clip-path: polygon(0 0, 82% 0, 100% 50%, 82% 100%, 0 100%);">
-                        <img src="${bgImage}" class="w-full h-full object-contain object-center">
+                        <img src="${bgImage}" class="w-full h-full object-cover object-top">
                     </div>
 
                     <div class="absolute left-0 top-1/3 bottom-1/3 w-8 sm:w-9 bg-[#111111] text-white flex items-center justify-center z-20 shadow-md">
