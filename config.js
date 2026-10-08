@@ -169,7 +169,7 @@ function checkAndShowVoucherBadgeModal() {
 
                     <!-- Phần 2: Tag đen + Giá trị Voucher cỡ lớn (Ép nằm 1 hàng ngang) -->
                     <div class="my-2 sm:my-4 space-y-1">
-                        <div class="inline-block bg-[#111111] text-white text-[8=10px] sm:text-sm font-black uppercase tracking-widest px-2 py-0.5 sm:px-3 sm:py-1">
+                        <div class="inline-block bg-[#111111] text-white text-[10px] sm:text-sm font-black uppercase tracking-widest px-2 py-0.5 sm:px-3 sm:py-1">
                             EXTRA DISCOUNT
                         </div>
                         
