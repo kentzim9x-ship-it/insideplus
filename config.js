@@ -5,12 +5,19 @@ const SHIPPING_CONFIG = {
     freeShippingMessage: "Bạn đã được miễn phí vận chuyển"
 };
 
-// Thay đổi khai báo const thành let để có thể gán dữ liệu động từ JSON
+// Khai báo dữ liệu động cho Vouchers
 let availableVouchers = [];
 let currentVouchersETag = null;
 
 // URL Apps Script dự phòng
 const VOUCHERS_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=VOUCHERS";
+
+// TỰ ĐỘNG KÍCH HOẠT NẠP VOUCHER NGAY KHI SCRIPT ĐƯỢC NẠP (GIÚP HIỂN THỊ POPUP SIÊU NHANH)
+(function initFastVoucherBadge() {
+    if (typeof loadVouchersData === 'function') {
+        loadVouchersData();
+    }
+})();
 
 function loadVouchersData() {
     const vouchersJsonUrl = '../data/vouchers.json';
@@ -38,12 +45,13 @@ function loadVouchersData() {
 function processRawVouchersData(data) {
     if (!Array.isArray(data)) return [];
 
-    // Chỉ lọc lấy các Voucher có is_available = TRUE
+    // 1. Chỉ lọc lấy các Voucher có is_available = TRUE
     const activeVouchers = data.filter(item => {
         const avail = item.is_available ?? item.IS_AVAILABLE ?? true;
         return String(avail).trim().toUpperCase() === 'TRUE' || avail === true;
     });
 
+    // 2. Chuẩn hóa dữ liệu
     availableVouchers = activeVouchers.map(item => {
         const isBadge = item.is_badge ?? item.IS_BADGE ?? false;
         const hasBadge = String(isBadge).trim().toUpperCase() === 'TRUE' || isBadge === true;
@@ -51,7 +59,7 @@ function processRawVouchersData(data) {
         // Đọc link ảnh từ cột url_img trên Google Sheet
         let rawUrlImg = item.url_img || item.URL_IMG || item.urlImg || item.image || '';
         if (typeof cleanImageUrl === 'function') {
-            rawUrlImg = cleanImageUrl(rawUrlImg); // Làm sạch link ảnh nếu dính ngoặc [][cite: 11]
+            rawUrlImg = cleanImageUrl(rawUrlImg);
         } else {
             rawUrlImg = rawUrlImg.toString().replace(/^\[|\]$/g, '').trim();
         }
@@ -64,7 +72,7 @@ function processRawVouchersData(data) {
             discountType: String(item.discountType || 'fixed').trim().toLowerCase(),
             discountValue: Number(String(item.discountValue || 0).replace(/[^0-9]/g, '')) || 0,
             isBadge: hasBadge,
-            urlImg: rawUrlImg // Lưu URL ảnh
+            urlImg: rawUrlImg
         };
     });
 
@@ -73,10 +81,20 @@ function processRawVouchersData(data) {
         localStorage.removeItem('inside_active_voucher');
     }
 
+    // Lọc badge voucher và lưu cache để nạp tức thì cho các trang tiếp theo
+    const firstBadge = availableVouchers.find(v => v.isBadge === true);
+    if (firstBadge) {
+        localStorage.setItem('inside_cached_badge_voucher', JSON.stringify(firstBadge));
+        if (firstBadge.urlImg) {
+            const imgPreload = new Image();
+            imgPreload.src = firstBadge.urlImg; // Preload ảnh ngầm vào RAM
+        }
+    }
+
     if (typeof renderVoucherList === 'function') renderVoucherList();
     if (typeof renderCartModalContent === 'function') renderCartModalContent();
 
-    // Tự động kiểm tra hiển thị Badge Modal khi nạp xong dữ liệu
+    // Tự động kiểm tra hiển thị Popup Voucher Badge
     checkAndShowVoucherBadgeModal();
 
     return availableVouchers;
@@ -98,27 +116,42 @@ function checkVouchersUpdatesSilently(vouchersJsonUrl) {
         .catch(() => { });
 }
 
-// --- HIỂN THỊ VOUCHER BADGE POPUP (LỌC TẤT CẢ VOUCHER IS_BADGE = TRUE, LẤY LIMIT 1) ---
+// --- HIỂN THỊ VOUCHER BADGE POPUP (SIÊU NHANH - CÓ TÍCH HỢP CACHE & LIMIT 1) ---
 
 function checkAndShowVoucherBadgeModal() {
-    // 1. Kiểm tra session storage
+    // 1. Kiểm tra session
     if (sessionStorage.getItem('voucher_badge_shown') === 'true') {
         return;
     }
 
-    // 2. Lọc tất cả các voucher trong bảng có isBadge = true
-    const allBadgeVouchers = availableVouchers.filter(v => v.isBadge === true);
-    
-    // Nếu không có voucher nào đánh dấu badge thì dừng
-    if (allBadgeVouchers.length === 0) return;
+    let badgeVoucher = null;
 
-    // 3. LIMIT 1: Lấy kết quả đầu tiên từ danh sách đã lọc
-    const badgeVoucher = allBadgeVouchers[0];
+    // 2. Ưu tiên đọc từ Cache trước để hiển thị TỨC THÌ (Tốc độ < 0.05s)
+    const cachedBadge = localStorage.getItem('inside_cached_badge_voucher');
+    if (cachedBadge) {
+        try {
+            badgeVoucher = JSON.parse(cachedBadge);
+        } catch (e) { }
+    }
 
-    // Lấy link ảnh từ urlImg
+    // 3. Nếu chưa có cache, lọc từ mảng availableVouchers (LẤY TẤT CẢ IS_BADGE = TRUE, GIỚI HẠN LIMIT 1)
+    if (!badgeVoucher && availableVouchers.length > 0) {
+        const allBadgeVouchers = availableVouchers.filter(v => v.isBadge === true);
+        if (allBadgeVouchers.length > 0) {
+            badgeVoucher = allBadgeVouchers[0];
+            localStorage.setItem('inside_cached_badge_voucher', JSON.stringify(badgeVoucher));
+        }
+    }
+
+    if (!badgeVoucher) return;
+
+    // Render & Mở Modal
+    renderAndShowBadgeModalContent(badgeVoucher);
+}
+
+function renderAndShowBadgeModalContent(badgeVoucher) {
     const bgImage = badgeVoucher.urlImg || 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=1000';
 
-    // 4. Tạo Modal Container nếu chưa có
     let modal = document.getElementById('voucher-badge-modal');
     if (!modal) {
         modal = document.createElement('div');
@@ -127,12 +160,11 @@ function checkAndShowVoucherBadgeModal() {
         document.body.appendChild(modal);
     }
 
-    // 5. Render HTML chuẩn responsive cho cả Mobile và Desktop
     modal.innerHTML = `
         <div onclick="event.stopPropagation()" class="relative w-full max-w-lg sm:max-w-3xl bg-[#e2e2e2] text-[#111111] shadow-2xl rounded-none transform transition-all duration-300 scale-95 font-['Montserrat'] overflow-hidden border border-slate-300">
             
-            <!-- Nút đóng X dạng Text tối giản -->
-            <button onclick="closeVoucherBadgeModal()" class="absolute top-0.5 right-1 sm:top-2 sm:right-4 text-slate-400 hover:text-black font-light text-2xl sm:text-3xl leading-none cursor-pointer z-30 transition" title="Đóng (ESC)">&times;</button>
+            <!-- Nút đóng X đẩy cao lên góc trên bên phải trên Mobile -->
+            <button onclick="closeVoucherBadgeModal()" class="absolute top-0.5 right-1 sm:top-2 sm:right-4 text-slate-400 hover:text-black font-light text-2xl sm:text-3xl leading-none cursor-pointer z-30 transition p-1" title="Đóng (ESC)">&times;</button>
 
             <!-- BỐ CỤC KHUNG TICKET / VOUCHER -->
             <div class="grid grid-cols-12 min-h-[260px] sm:min-h-[380px]">
@@ -140,14 +172,14 @@ function checkAndShowVoucherBadgeModal() {
                 <!-- BÊN TRÁI: KHỐI CHỨA ẢNH & STORE NAME -->
                 <div class="col-span-5 sm:col-span-6 relative bg-[#e2e2e2] overflow-hidden">
                     
-                    <!-- Khung chứa ảnh hiển thị đầy đủ màu sắc -->
+                    <!-- Khung chứa ảnh ghép từ url_img -->
                     <div class="absolute inset-0 z-10 w-full h-full" style="clip-path: polygon(0 0, 82% 0, 100% 50%, 82% 100%, 0 100%);">
                         <img src="${bgImage}" class="w-full h-full object-cover">
                     </div>
 
                     <!-- Dải nhãn đen xoay dọc chữ STORE NAME đè trực tiếp trong lòng ảnh -->
-                    <div class="absolute left-0 top-1/3 bottom-1/3 w-8 sm:w-9 bg-[#111111] text-white flex items-center justify-center z-20 shadow-md">
-                        <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] -rotate-90 whitespace-nowrap">
+                    <div class="absolute left-0 top-1/2 -translate-y-1/2 h-auto py-3 sm:py-4 w-7 sm:w-10 bg-[#111111] text-white flex items-center justify-center z-20 shadow-md">
+                        <span class="text-[8px] sm:text-[11px] font-black uppercase tracking-[0.2em] -rotate-90 whitespace-nowrap">
                             INSIDE+
                         </span>
                     </div>
@@ -167,13 +199,12 @@ function checkAndShowVoucherBadgeModal() {
                         </p>
                     </div>
 
-                    <!-- Phần 2: Tag đen + Giá trị Voucher cỡ lớn (Ép nằm 1 hàng ngang) -->
+                    <!-- Phần 2: Tag đen + Giá trị Voucher -->
                     <div class="my-2 sm:my-4 space-y-1">
                         <div class="inline-block bg-[#111111] text-white text-[10px] sm:text-sm font-black uppercase tracking-widest px-2 py-0.5 sm:px-3 sm:py-1">
                             EXTRA DISCOUNT
                         </div>
                         
-                        <!-- GIẢM 10%: whitespace-nowrap đảm bảo tuyệt đối trên 1 hàng -->
                         <h2 class="text-xl sm:text-3xl font-black uppercase tracking-tighter text-[#111111] leading-none py-0.5 whitespace-nowrap">
                             ${badgeVoucher.title}
                         </h2>
@@ -185,14 +216,12 @@ function checkAndShowVoucherBadgeModal() {
                         </div>
                     </div>
 
-                    <!-- Phần 3: Chân Voucher - Nút Bỏ qua & ÁP DỤNG NGAY cùng trên 1 HÀNG NGANG -->
+                    <!-- Phần 3: Chân Voucher - Nút Bỏ qua & ÁP DỤNG NGAY trên 1 HÀNG NGANG -->
                     <div class="pt-2 sm:pt-3 border-t border-slate-300/80 flex items-center justify-between gap-1.5">
-                        <!-- Nút Bỏ qua dạng text mờ bên trái -->
                         <button onclick="closeVoucherBadgeModal()" class="text-[9px] sm:text-xs font-medium text-slate-400 hover:text-slate-800 transition cursor-pointer whitespace-nowrap">
                             Bỏ qua
                         </button>
 
-                        <!-- Nút Sao chép & Mua sắm dạng Text Link đậm bên phải -->
                         <button onclick="copyAndApplyBadgeVoucher('${badgeVoucher.code}')" id="btn-copy-badge-code" class="text-[9px] sm:text-sm font-bold uppercase tracking-wider text-[#111111] hover:underline underline-offset-4 flex items-center gap-1 cursor-pointer transition whitespace-nowrap">
                             <span>ÁP DỤNG NGAY</span>
                             <i data-lucide="arrow-right" class="w-3 h-3 sm:w-4 sm:h-4 shrink-0"></i>
@@ -206,7 +235,6 @@ function checkAndShowVoucherBadgeModal() {
         </div>
     `;
 
-    // 6. Kích hoạt hiển thị Modal
     modal.classList.remove('hidden');
     if (window.lucide) lucide.createIcons({ root: modal });
 
@@ -409,7 +437,6 @@ function renderCartModalContent() {
 
     const cartPanel = document.getElementById('cart-panel');
 
-    // FIX LỖI 2 FOOTER: Ẩn/xóa tất cả các khối footer tĩnh cũ
     if (cartPanel) {
         const oldFooters = cartPanel.querySelectorAll('.border-t:not(#cart-modal-footer)');
         oldFooters.forEach(el => {
@@ -421,7 +448,6 @@ function renderCartModalContent() {
 
     let cartFooter = document.getElementById('cart-modal-footer');
 
-    // Đảm bảo duy nhất 1 thẻ Footer nằm ở chân giỏ hàng
     if (!cartFooter && cartPanel) {
         cartFooter = document.createElement('div');
         cartFooter.id = 'cart-modal-footer';
@@ -435,9 +461,7 @@ function renderCartModalContent() {
         else clearAllBtn.classList.add('hidden');
     }
 
-    // ==========================================
-    // 1. TRƯỜNG HỢP: GIỎ HÀNG TRỐNG
-    // ==========================================
+    // 1. GIỎ HÀNG TRỐNG
     if (cartItems.length === 0) {
         container.className = "flex-1 overflow-y-auto bg-white flex flex-col items-center justify-center";
         container.innerHTML = `
@@ -473,13 +497,11 @@ function renderCartModalContent() {
         return;
     }
 
-    // ==========================================
-    // 2. TRƯỜNG HỢP: CÓ SẢN PHẨM TRONG GIỎ
-    // ==========================================
+    // 2. CÓ SẢN PHẨM TRONG GIỎ
     container.className = "flex-1 overflow-y-auto bg-[#f8f9fa]";
 
-    let originalSubtotal = 0; // Giá trị đơn hàng (Chưa trừ chiết khấu)
-    let directDiscount = 0;    // Tổng chiết khấu trực tiếp từ sản phẩm gốc
+    let originalSubtotal = 0;
+    let directDiscount = 0;
     let hasStockError = false;
 
     container.innerHTML = cartItems.map((item, idx) => {
@@ -491,7 +513,6 @@ function renderCartModalContent() {
         const origPriceFormatted = (itemOrigPrice * item.quantity).toLocaleString('vi-VN');
         const discountPercent = item.originalPrice ? Math.round((1 - item.price / item.originalPrice) * 100) : 17;
 
-        // KIỂM TRA TỒN KHO THỰC TẾ
         const stockCheck = checkProductStock(item.productId, item.colorName, item.size, item.quantity);
         let stockWarningHtml = '';
 
@@ -523,7 +544,6 @@ function renderCartModalContent() {
                     </div>
                 </div>
 
-                <!-- CẢNH BÁO TỒN KHO NẾU CÓ -->
                 ${stockWarningHtml}
             </div>
             
@@ -581,13 +601,11 @@ function renderCartModalContent() {
         }
     }
 
-    // Quản lý trạng thái Nút Thanh toán
     const checkoutBtnClass = !hasStockError
         ? "bg-[#222222] text-white hover:bg-black cursor-pointer font-bold"
         : "bg-[#cccccc] text-white cursor-not-allowed font-bold";
 
     if (cartFooter) {
-        // Icon mũi tên trỏ lên khi mở (isSubtotalExpanded = true), trỏ xuống khi đóng
         const arrowLucideIcon = isSubtotalExpanded ? 'chevron-up' : 'chevron-down';
 
         let expandedHtml = '';
@@ -613,40 +631,35 @@ function renderCartModalContent() {
         }
 
         cartFooter.innerHTML = `
-    <div class="p-4 sm:p-5 border-t border-slate-100 bg-white space-y-3 font-['Montserrat']">
-        
-        <!-- KHỐI CHỨA TIÊU ĐỀ & NÚT ĐỔI MÃ GIẢM GIÁ -->
-        <div>
-            <!-- HÀNG CĂN THẲNG NGANG BẰNG ITEMS-CENTER -->
-            <div class="flex justify-between items-center text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-900 leading-none">
-                <span>MÃ GIẢM GIÁ</span>
-                
-                <button onclick="openVoucherDrawer()" class="text-blue-600 hover:underline flex items-center gap-1 font-bold text-xs sm:text-sm cursor-pointer shrink-0">
-                    <span>${activeVoucher ? 'Đổi hoặc nhập mã' : 'Chọn hoặc nhập mã'}</span>
-                    <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+            <div class="p-4 sm:p-5 border-t border-slate-100 bg-white space-y-3 font-['Montserrat']">
+                <div>
+                    <div class="flex justify-between items-center text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-900 leading-none">
+                        <span>MÃ GIẢM GIÁ</span>
+                        
+                        <button onclick="openVoucherDrawer()" class="text-blue-600 hover:underline flex items-center gap-1 font-bold text-xs sm:text-sm cursor-pointer shrink-0">
+                            <span>${activeVoucher ? 'Đổi hoặc nhập mã' : 'Chọn hoặc nhập mã'}</span>
+                            <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+
+                    ${activeVoucher ? `<div class="pt-1.5"><span class="inline-block bg-blue-50 text-blue-600 font-bold text-[11px] px-2 py-0.5 font-mono">${activeVoucher.code}</span></div>` : ''}
+                </div>
+
+                ${expandedHtml}
+
+                <div class="flex justify-between items-center text-xs sm:text-sm font-bold text-slate-900 cursor-pointer pt-1" onclick="toggleSubtotalDetails()">
+                    <div class="flex items-center gap-1 uppercase tracking-wider">
+                        <span>TẠM TÍNH</span>
+                        <i data-lucide="${arrowLucideIcon}" class="w-4 h-4 text-slate-600"></i>
+                    </div>
+                    <span class="text-base font-bold text-slate-900">${finalTotal.toLocaleString('vi-VN')} đ</span>
+                </div>
+
+                <button onclick="handleCheckoutRedirect()" ${hasStockError ? 'disabled' : ''} class="w-full py-3.5 text-md uppercase tracking-widest transition block mt-2 ${checkoutBtnClass}">
+                    Thanh toán
                 </button>
             </div>
-
-            <!-- HASHTAG HIỂN THỊ HÀNG BÊN DƯỚI -->
-            ${activeVoucher ? `<div class="pt-1.5"><span class="inline-block bg-blue-50 text-blue-600 font-bold text-[11px] px-2 py-0.5 font-mono">${activeVoucher.code}</span></div>` : ''}
-        </div>
-
-        ${expandedHtml}
-
-        <!-- TẠM TÍNH: MŨI TÊN ĐƯỢC ĐẶT NGAY BÊN CẠNH CHỮ TẠM TÍNH -->
-        <div class="flex justify-between items-center text-xs sm:text-sm font-bold text-slate-900 cursor-pointer pt-1" onclick="toggleSubtotalDetails()">
-            <div class="flex items-center gap-1 uppercase tracking-wider">
-                <span>TẠM TÍNH</span>
-                <i data-lucide="${arrowLucideIcon}" class="w-4 h-4 text-slate-600"></i>
-            </div>
-            <span class="text-base font-bold text-slate-900">${finalTotal.toLocaleString('vi-VN')} đ</span>
-        </div>
-
-        <button onclick="handleCheckoutRedirect()" ${hasStockError ? 'disabled' : ''} class="w-full py-3.5 text-md uppercase tracking-widest transition block mt-2 ${checkoutBtnClass}">
-            Thanh toán
-        </button>
-    </div>
-`;
+        `;
     }
 
     updateCartBadge();
@@ -680,7 +693,6 @@ function checkProductStock(productId, colorName, sizeName, requestedQty) {
     };
 }
 
-
 function updateCartItemQty(index, delta) {
     const item = cartItems[index];
     if (!item) return;
@@ -692,7 +704,6 @@ function updateCartItemQty(index, delta) {
         return;
     }
 
-    // Kiểm tra với stock thực tế
     const stockCheck = checkProductStock(item.productId, item.colorName, item.size, newQty);
 
     if (!stockCheck.valid && delta > 0) {
@@ -705,14 +716,12 @@ function updateCartItemQty(index, delta) {
     renderCartModalContent();
 }
 
-// Cập nhật hàm xử lý nút Thanh toán (handleCheckoutRedirect)
 function handleCheckoutRedirect() {
     if (cartItems.length === 0) {
         alert('Giỏ hàng của bạn đang trống!');
         return;
     }
 
-    // Kiểm tra tồn kho trước khi cho thanh toán
     for (let item of cartItems) {
         const stockCheck = checkProductStock(item.productId, item.colorName, item.size, item.quantity);
         if (!stockCheck.valid) {
@@ -721,11 +730,9 @@ function handleCheckoutRedirect() {
         }
     }
 
-    // ĐẢM BẢO ĐỒNG BỘ NGUYÊN BẢN GIỎ HÀNG VÀ VOUCHER VÀO LOCALSTORAGE
     localStorage.setItem('inside_cart', JSON.stringify(cartItems));
     localStorage.setItem('inside_active_voucher', JSON.stringify(activeVoucher));
 
-    // Xác định đường dẫn tương đối chuẩn xác
     const isInSubFolder = window.location.pathname.includes('/INSIDE/') ||
         window.location.pathname.includes('/SOCK/') ||
         window.location.pathname.includes('/TSHIRT/') ||
@@ -735,7 +742,6 @@ function handleCheckoutRedirect() {
 
     const prefix = isInSubFolder ? '../' : '';
 
-    // Chuyển hướng sang checkout.html
     window.location.href = prefix + 'checkout.html';
 }
 
@@ -916,9 +922,8 @@ function attachQuickAddHoverEvents() {
 }
 
 let isQuickAddFirstOpen = false;
-let quickAddSavedScrollY = 0; // Biến lưu vị trí cuộn
+let quickAddSavedScrollY = 0;
 
-// --- TỰ ĐỘNG NHÚNG CSS ANIMATION CHO QUICK ADD POPUP ---
 (function injectQuickAddStyles() {
     if (document.getElementById('quick-add-styles')) return;
     const style = document.createElement('style');
@@ -992,8 +997,8 @@ function closeQuickAddToCartModal() {
 function selectQuickAddColor(colorIdx) {
     if (quickAddToCartColorIdx === colorIdx) return;
     quickAddToCartColorIdx = colorIdx;
-    quickAddToCartSize = null; // Reset size khi đổi màu
-    quickAddImageIdx = 0;      // Reset về ảnh đầu tiên
+    quickAddToCartSize = null;
+    quickAddImageIdx = 0;
     updateQuickAddModalDOM();
 }
 
@@ -1012,7 +1017,6 @@ function changeQuickAddImage(delta) {
     updateQuickAddModalDOM();
 }
 
-// --- HÀM CẬP NHẬT TRỰC TIẾP DOM CHUẨN XÁC CẢ MOBILE VÀ PC ---
 function updateQuickAddModalDOM() {
     const modal = document.getElementById('quick-add-cart-modal');
     if (!modal || !quickAddToCartProduct) return;
@@ -1026,7 +1030,6 @@ function updateQuickAddModalDOM() {
     if (quickAddImageIdx >= images.length) quickAddImageIdx = 0;
     const currentImg = images[quickAddImageIdx];
 
-    // 1. Cập nhật ảnh đại diện sản phẩm (cả Mobile & PC)
     modal.querySelectorAll('img').forEach(img => {
         if (!img.classList.contains('pointer-events-none') && img.parentElement.classList.contains('aspect-[4/5]')) {
             img.src = currentImg;
@@ -1035,14 +1038,12 @@ function updateQuickAddModalDOM() {
         }
     });
 
-    // 2. Cập nhật chỉ số ảnh (VD: 1/5)
     modal.querySelectorAll('span').forEach(sp => {
         if (sp.innerText && /^\d+\/\d+$/.test(sp.innerText.trim())) {
             sp.innerText = `${quickAddImageIdx + 1}/${images.length}`;
         }
     });
 
-    // 3. Cập nhật Tên Màu đang chọn
     const colorLabelNodes = modal.querySelectorAll('#quick-add-color-name-mobile, #quick-add-color-name-pc');
     if (colorLabelNodes.length > 0) {
         colorLabelNodes.forEach(node => node.innerText = activeColor.name);
@@ -1054,19 +1055,13 @@ function updateQuickAddModalDOM() {
         });
     }
 
-    // 4. CẬP NHẬT VÒNG TRÒN CHỌN MÀU (GIỮ NGUYÊN VIỀN RING KHI CHỌN MÀU/SIZE)
     modal.querySelectorAll('button[onclick^="selectQuickAddColor"]').forEach((btn) => {
-        // Lấy chính xác index của màu từ thuộc tính onclick (VD: selectQuickAddColor(1) -> lấy số 1)
         const match = btn.getAttribute('onclick').match(/\d+/);
         if (!match) return;
         const btnColorIdx = parseInt(match[0], 10);
-
         const isSelected = btnColorIdx === quickAddToCartColorIdx;
-
-        // Giữ lại trạng thái gạch chéo nếu màu đó đang hết hàng
         const strikeClass = btn.classList.contains('color-out-of-stock') ? 'color-out-of-stock' : '';
 
-        // Luôn bổ sung class 'relative' để dấu gạch chéo không bị vỡ bố cục
         if (isSelected) {
             btn.className = `w-6 h-6 rounded-full border ring-2 ring-slate-900 ring-offset-2 transition-all cursor-pointer block relative ${strikeClass}`;
         } else {
@@ -1074,7 +1069,6 @@ function updateQuickAddModalDOM() {
         }
     });
 
-    // 5. Tính toán Tồn kho thực tế
     const defaultSizes = [{ name: 'S', stock: 50 }, { name: 'M', stock: 15 }, { name: 'L', stock: 0 }, { name: 'XL', stock: 30 }, { name: 'XXL', stock: 40 }];
     const availableSizes = activeColor.sizes || defaultSizes;
     const selectedSizeObj = availableSizes.find(s => s.name === quickAddToCartSize);
@@ -1104,7 +1098,6 @@ function updateQuickAddModalDOM() {
         }
     }
 
-    // 6. Cập nhật hiển thị Hint Kích cỡ / Tồn kho
     const stockBoxes = modal.querySelectorAll('.quick-add-stock-box');
     if (stockBoxes.length > 0) {
         stockBoxes.forEach(box => {
@@ -1116,7 +1109,6 @@ function updateQuickAddModalDOM() {
         });
     }
 
-    // 7. CẬP NHẬT GIAO DIỆN NÚT KÍCH CỠ (KHÔNG ẢNH HƯỞNG TỚI MÀU SẮC)
     modal.querySelectorAll('button[onclick^="selectQuickAddSize"]').forEach(btn => {
         const sizeName = btn.innerText.trim();
         const sizeObj = availableSizes.find(s => s.name === sizeName);
@@ -1135,7 +1127,6 @@ function updateQuickAddModalDOM() {
         btn.className = `w-11 h-11 border text-xs sm:text-sm transition-all flex items-center justify-center cursor-pointer ${style}`;
     });
 
-    // 8. Cập nhật Nút Thêm vào giỏ hàng
     const btnClass = !isBtnDisabled
         ? "bg-[#222222] text-white hover:bg-black cursor-pointer font-bold"
         : "bg-[#cccccc] text-white cursor-not-allowed font-bold";
@@ -1146,7 +1137,6 @@ function updateQuickAddModalDOM() {
     });
 }
 
-// Biến hỗ trợ nhận diện thao tác vuốt ảnh trên Mobile
 let quickAddTouchStartX = 0;
 
 function handleQuickAddTouchStart(e) {
@@ -1158,14 +1148,13 @@ function handleQuickAddTouchEnd(e) {
     const deltaX = touchEndX - quickAddTouchStartX;
     if (Math.abs(deltaX) > 40) {
         if (deltaX < 0) {
-            changeQuickAddImage(1);  // Vuốt sang trái -> Xem ảnh tiếp
+            changeQuickAddImage(1);
         } else {
-            changeQuickAddImage(-1); // Vuốt sang phải -> Xem ảnh trước
+            changeQuickAddImage(-1);
         }
     }
 }
 
-// Biến lưu số lượng nhập trong popup
 let quickAddToCartQty = 1;
 
 function updateQuickAddQty(delta) {
@@ -1200,7 +1189,6 @@ function renderQuickAddToCartModalContent() {
     const colorsHtml = p.colors.map((c, idx) => {
         const isSelected = idx === quickAddToCartColorIdx;
 
-        // Kiểm tra hết hàng bằng hàm chuẩn
         const isColorOutOfStock = (typeof checkColorOutOfStock === 'function')
             ? checkColorOutOfStock(c)
             : (c.outOfStock || (c.sizes && c.sizes.length > 0 && c.sizes.every(s => Boolean(s.outOfStock) || s.stock === 0)));
@@ -1269,13 +1257,12 @@ function renderQuickAddToCartModalContent() {
         <div class="fixed inset-0 z-[200] flex items-end sm:items-center justify-center" onclick="closeQuickAddToCartModal()">
             <div onclick="event.stopPropagation()" class="quick-add-modal-content bg-white w-full sm:max-w-2xl rounded-none sm:rounded-sm overflow-hidden shadow-2xl relative max-h-[90vh] sm:max-h-none overflow-y-auto">
                 
-                <!-- Header Modal -->
                 <div class="flex justify-between items-center px-5 py-3.5 sm:px-6 sm:py-4 border-b border-slate-100 sticky top-0 bg-white z-10">
                     <h3 class="font-bold text-lg sm:text-xl text-slate-900">Thêm nhanh vào giỏ</h3>
                     <button onclick="closeQuickAddToCartModal()" class="text-slate-900 hover:text-black font-bold text-3xl cursor-pointer">&times;</button>
                 </div>
 
-                <!-- 1. GIAO DIỆN MOBILE (Bottom Sheet) -->
+                <!-- 1. GIAO DIỆN MOBILE -->
                 <div class="block sm:hidden p-4 space-y-4">
                     <div class="flex gap-4 items-start">
                         <div class="w-28 aspect-[3/4] bg-slate-100 rounded-sm overflow-hidden shrink-0 relative select-none"
@@ -1319,7 +1306,7 @@ function renderQuickAddToCartModalContent() {
                     </div>
                 </div>
 
-                <!-- 2. GIAO DIỆN DESKTOP (PC) -->
+                <!-- 2. GIAO DIỆN DESKTOP -->
                 <div class="hidden sm:block p-6">
                     <div class="grid grid-cols-2 gap-8 items-start">
                         
@@ -1457,7 +1444,6 @@ function findProductAnywhere(productId) {
     return null;
 }
 
-// Khai báo alias hàm renderQuickEditPanel để tránh lỗi Uncaught ReferenceError
 function renderQuickEditPanel() {
     if (typeof renderQuickEditDrawer === 'function') {
         renderQuickEditDrawer();
@@ -1526,7 +1512,6 @@ function renderQuickEditDrawer() {
     const origPriceFormatted = (product.originalPrice || Math.round(product.price * 1.2)).toLocaleString('vi-VN');
     const discountPercent = product.originalPrice ? Math.round((1 - product.price / product.originalPrice) * 100) : 14;
 
-    // Danh sách chọn màu
     const colorsHtml = product.colors.map((c, idx) => {
         const isSelected = idx === currentColorIdx;
         const ring = isSelected ? 'ring-2 ring-slate-900 ring-offset-2' : 'border-slate-300';
@@ -1535,11 +1520,9 @@ function renderQuickEditDrawer() {
         </div>`;
     }).join('');
 
-    // Danh sách chọn Kích cỡ & Kiểm tra tồn kho
     const defaultSizes = [{ name: 'S', stock: 50 }, { name: 'M', stock: 15 }, { name: 'L', stock: 0 }, { name: 'XL', stock: 30 }, { name: 'XXL', stock: 40 }];
     const availableSizes = activeColor.sizes || defaultSizes;
 
-    // Tìm đối tượng size đang chọn
     const selectedSizeObj = availableSizes.find(s => s.name === activeSize);
     let stockBadgeHtml = '';
     let isBtnDisabled = false;
@@ -1586,7 +1569,6 @@ function renderQuickEditDrawer() {
     container.innerHTML = `
         <div class="bg-white w-full h-full min-h-screen flex flex-col justify-between">
             <div>
-                <!-- Header Drawer -->
                 <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100 relative">
                     <button onclick="closeQuickEditDrawer()" class="text-slate-800 hover:text-black font-bold text-xl cursor-pointer p-1 z-10">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1597,10 +1579,8 @@ function renderQuickEditDrawer() {
                     <button onclick="closeQuickEditDrawer()" class="text-slate-400 hover:text-black font-bold text-xl cursor-pointer p-1 z-10">&times;</button>
                 </div>
 
-                <!-- Body Content -->
                 <div class="p-5 space-y-5">
                     <div class="flex gap-4 items-start">
-                        <!-- Khung Ảnh sản phẩm (Ảnh to, p-0) -->
                         <div class="w-28 sm:w-32 aspect-[3/4] bg-[#f8f8f8] rounded-sm overflow-hidden shrink-0 flex items-center justify-center p-0">
                             <img src="${activeColor.images[0]}" class="w-full h-full object-cover">
                         </div>
@@ -1618,13 +1598,11 @@ function renderQuickEditDrawer() {
                         </div>
                     </div>
 
-                    <!-- Chọn Màu sắc -->
                     <div class="pt-2">
                         <span class="text-slate-600 text-xs sm:text-sm">Màu sắc: <strong class="text-slate-900 font-bold">${activeColor.name}</strong></span>
                         <div class="flex gap-1.5 pt-2 items-center overflow-x-auto no-scrollbar">${colorsHtml}</div>
                     </div>
 
-                    <!-- Chọn Kích cỡ & Thông báo Tồn kho -->
                     <div class="pt-2">
                         <div class="flex items-center gap-2 mb-2">
                             <span class="text-slate-600 text-xs sm:text-sm">Kích cỡ:</span>
@@ -1636,7 +1614,6 @@ function renderQuickEditDrawer() {
                 </div>
             </div>
 
-            <!-- Footer: Nút Cập nhật giỏ hàng (Tự động disable nếu hết hàng) -->
             <div class="p-5 border-t border-slate-100 bg-white">
                 <button onclick="saveQuickEdit()" ${isBtnDisabled ? 'disabled' : ''} class="w-full py-3.5 text-md uppercase tracking-widest transition ${btnClass}" style="padding-bottom: calc(1.25rem + env(safe-area-inset-bottom));">
                     Cập nhật giỏ hàng
@@ -1710,7 +1687,7 @@ function openProductDrawerFromCart(productId, colorName, category) {
     }
 }
 
-// Tự động kích hoạt gán sự kiện hover khi trang load xong
+// Lắng nghe sự kiện nạp xong trang
 document.addEventListener('DOMContentLoaded', () => {
     attachQuickAddHoverEvents();
     loadVouchersData();
