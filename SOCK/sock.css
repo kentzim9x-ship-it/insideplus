@@ -46,9 +46,12 @@ textarea {
 /* KHÓA SCROLLBAR BÊN DƯỚI KHI MỞ CÁC LỚP OVERLAY / DRAWER / MODAL (ÁP DỤNG CHUẨN CẢ MOBILE) */
 body.drawer-open {
     overflow: hidden !important;
-    position: fixed !important;
-    width: 100% !important;
-    height: 100% !important;
+
+}
+
+#product-drawer {
+    overscroll-behavior-y: contain; /* Ngăn cuộn dội lây sang trang bên dưới */
+    -webkit-overflow-scrolling: touch; /* Bật mượt cuộn iOS */
 }
 
 #product-drawer.drawer-open {

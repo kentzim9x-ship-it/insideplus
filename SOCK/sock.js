@@ -1,3 +1,7 @@
+if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+}
+
 let visualFilterCategories = [];
 let activeVisualFilter = "ALL";
 let originalProducts = [];
@@ -994,10 +998,8 @@ function openProductDrawer(id, colorIdx, shouldUpdateUrl) {
     if (!p) return;
 
     const drawer = document.getElementById('product-drawer');
-    if (drawer && drawer.classList.contains('hidden')) {
-        savedCategoryScrollY = window.scrollY || window.pageYOffset;
-    }
-
+    
+    // KHÔNG cần lưu savedCategoryScrollY nữa vì body không bị mất vị trí cuộn
     window.currentActiveProductId = p.id;
     const initialColorIdx = (typeof colorIdx === 'number') ? colorIdx : 0;
     currentSelectedSize = null;
@@ -1007,33 +1009,13 @@ function openProductDrawer(id, colorIdx, shouldUpdateUrl) {
     renderDrawerContent(p, initialColorIdx);
     renderRecentViewedSlider(p.id);
 
-    const drawerHeaderContainer = document.getElementById('drawer-header-container');
-    if (drawerHeaderContainer && drawerHeaderContainer.children.length === 0) {
-        const headerElem = document.getElementById('main-header');
-        if (headerElem) drawerHeaderContainer.innerHTML = headerElem.outerHTML;
-    }
-
-    const drawerFooterContainer = document.getElementById('drawer-footer-container');
-    if (drawerFooterContainer && drawerFooterContainer.children.length === 0) {
-        const footerElem = document.getElementById('main-footer');
-        if (footerElem) drawerFooterContainer.innerHTML = footerElem.outerHTML;
-    }
-
     if (drawer) {
         drawer.classList.remove('hidden');
         drawer.scrollTop = 0;
     }
 
-    if (drawer && drawer.classList.contains('hidden')) {
-        savedCategoryScrollY = window.scrollY || window.pageYOffset;
-        // Khóa scroll body chuẩn
-        document.body.style.position = 'fixed';
-        document.body.style.top = `-${savedCategoryScrollY}px`;
-        document.body.style.width = '100%';
-    }
-
     drawer.classList.add('is-active');
-    document.body.classList.add('drawer-open');
+    document.body.classList.add('drawer-open'); // Chỉ gán khóa overflow
 
     if (shouldUpdateUrl !== false) {
         updateProductUrlParam(p.id, initialColorIdx);
@@ -1048,9 +1030,11 @@ function closeProductDrawer(shouldUpdateUrl) {
         drawer.classList.remove('drawer-open');
     }
 
+    // Bỏ khóa cuộn body
     document.body.classList.remove('drawer-open');
 
-    window.scrollTo(0, savedCategoryScrollY);
+    // KHÔNG CẦN gọi window.scrollTo(0, savedCategoryScrollY) nữa!
+    // Vị trí cuộn của trang danh mục bên dưới VẪN GIỮ NGUYÊN 100%.
 
     if (shouldUpdateUrl !== false) {
         updateProductUrlParam(null, null);
