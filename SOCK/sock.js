@@ -693,26 +693,6 @@ function toggleMobileNavDrawer() {
     }
 }
 
-function filterProductsByCategoryId(filterId) {
-    const targetId = (filterId || 'ALL').toString().trim().toUpperCase();
-
-    // 1. Trường hợp ID = "ALL": Hiển thị tất cả sản phẩm
-    if (targetId === 'ALL') {
-        currentFilteredProducts = [...originalProducts];
-    } else {
-        // 2. So sánh UPCASE(id) của filter với UPCASE(style) của sản phẩm
-        currentFilteredProducts = originalProducts.filter(p => {
-            const productStyle = (p.style || p.category || '').toString().trim().toUpperCase();
-            return productStyle === targetId;
-        });
-    }
-
-    // Render lại danh sách sản phẩm ra màn hình
-    if (typeof renderCatalog === 'function') {
-        renderCatalog(currentFilteredProducts);
-    }
-}
-
 function renderVisualFilterBar() {
     const container = document.getElementById('visual-filter-grid');
     if (!container) return;
@@ -960,7 +940,6 @@ function changeCatalogThumbColor(id, colorIdx) {
     const targetColor = p.colors[colorIdx];
     const imgEl = document.getElementById('thumb-' + id);
 
-    // 1. Cập nhật ảnh tương ứng với màu được chọn
     if (imgEl && targetColor) {
         const newImg1 = targetColor.images[0] || '';
         const newImg2 = targetColor.images[1] || newImg1;
@@ -969,10 +948,19 @@ function changeCatalogThumbColor(id, colorIdx) {
         imgEl.setAttribute('data-img2', newImg2);
     }
 
-    // 2. Cập nhật trạng thái vòng tròn viền đen active khi click đổi màu
     const colorButtons = document.querySelectorAll(`.color-btn-${id}`);
     colorButtons.forEach(btn => {
         const btnIdx = parseInt(btn.getAttribute('data-color-idx'), 10);
+        const colorData = p.colors[btnIdx];
+        const isOutOfStock = checkColorOutOfStock(colorData);
+
+        // Đảm bảo class gạch chéo không bị mất khi toggle trạng thái active
+        if (isOutOfStock) {
+            btn.classList.add('color-out-of-stock');
+        } else {
+            btn.classList.remove('color-out-of-stock');
+        }
+
         if (btnIdx === colorIdx) {
             btn.classList.add('ring-2', 'ring-slate-900', 'ring-offset-2');
         } else {
@@ -1075,9 +1063,12 @@ function changeDrawerColor(productId, colorIdx) {
 }
 
 function checkColorOutOfStock(colorObj) {
-    if (!colorObj || !Array.isArray(colorObj.sizes) || colorObj.sizes.length === 0) return false;
-    // Kiểm tra tất cả các size thuộc màu này có outOfStock = true hoặc stock = 0 không
-    return colorObj.sizes.every(s => Boolean(s.outOfStock) || s.stock === 0);
+    if (!colorObj) return false;
+    if (Boolean(colorObj.outOfStock)) return true; // Kiểm tra trực tiếp cấp màu
+    if (Array.isArray(colorObj.sizes) && colorObj.sizes.length > 0) {
+        return colorObj.sizes.every(s => Boolean(s.outOfStock) || s.stock === 0);
+    }
+    return false;
 }
 
 function renderDrawerContent(p, colorIdx) {
