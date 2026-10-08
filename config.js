@@ -131,8 +131,8 @@ function checkAndShowVoucherBadgeModal() {
     modal.innerHTML = `
         <div onclick="event.stopPropagation()" class="relative w-full max-w-lg sm:max-w-3xl bg-[#e2e2e2] text-[#111111] shadow-2xl rounded-none transform transition-all duration-300 scale-95 font-['Montserrat'] overflow-hidden border border-slate-300">
             
-            <!-- Nút đóng X đẩy cao lên góc trên bên phải trên Mobile -->
-            <button onclick="closeVoucherBadgeModal()" class="absolute top-1 right-1.5 sm:top-3 sm:right-4 text-slate-400 hover:text-black font-light text-2xl sm:text-3xl leading-none cursor-pointer z-30 transition p-1" title="Đóng (ESC)">&times;</button>
+            <!-- Nút đóng X dạng Text tối giản -->
+            <button onclick="closeVoucherBadgeModal()" class="absolute top-0.5 right-1 sm:top-2 sm:right-4 text-slate-400 hover:text-black font-light text-2xl sm:text-3xl leading-none cursor-pointer z-30 transition" title="Đóng (ESC)">&times;</button>
 
             <!-- BỐ CỤC KHUNG TICKET / VOUCHER -->
             <div class="grid grid-cols-12 min-h-[260px] sm:min-h-[380px]">
