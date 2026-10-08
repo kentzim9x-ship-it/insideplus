@@ -1024,6 +1024,14 @@ function openProductDrawer(id, colorIdx, shouldUpdateUrl) {
         drawer.scrollTop = 0;
     }
 
+    if (drawer && drawer.classList.contains('hidden')) {
+        savedCategoryScrollY = window.scrollY || window.pageYOffset;
+        // Khóa scroll body chuẩn
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${savedCategoryScrollY}px`;
+        document.body.style.width = '100%';
+    }
+
     drawer.classList.add('is-active');
     document.body.classList.add('drawer-open');
 
