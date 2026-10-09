@@ -267,7 +267,7 @@ function renderProductContent(p, colorIdx) {
         <div class="grid grid-cols-12 min-h-[190px] sm:min-h-[220px]">
             
             <!-- BÊN TRÁI: KHỐI THÔNG TIN CĂN GIỮA -->
-            <div class="col-span-7 sm:col-span-7 bg-[#f8f6f0] text-slate-900 p-5 sm:p-8 flex flex-col justify-center items-start space-y-3">
+            <div class="col-span-7 sm:col-span-7 bg-[#f8f6f0] text-slate-900 p-4 sm:p-6 flex flex-col justify-center items-start space-y-2.5">
                 <div>
                     <span class="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-[0.2em] text-slate-500 block">DAILY VOUCHER</span>
                     <h3 class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tight text-[#ea580c] leading-none mt-1">
@@ -290,7 +290,7 @@ function renderProductContent(p, colorIdx) {
             </div>
 
             <!-- BÊN PHẢI: KHUNG TỐI CÓ VÒNG TRÒN ẢNH VÀ MÃ CODE SÁT GÓC -->
-            <div class="col-span-5 sm:col-span-5 bg-[#1c2e24] text-white relative p-3 sm:p-4 flex items-center justify-center overflow-hidden">
+            <div class="col-span-5 sm:col-span-5 bg-[#1c2e24] text-white relative p-3 sm:p-4 flex items-center justify-center overflow-hidden aspect-square sm:aspect-auto">
                 
                 <!-- Vòng tròn ảnh lớn đặt chính giữa -->
                 <div class="w-36 h-36 sm:w-40 sm:h-40 lg:w-44 lg:h-44 rounded-full overflow-hidden border-2 border-white/20 shadow-lg relative shrink-0 -mt-2">
