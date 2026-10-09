@@ -44,8 +44,11 @@ function processRawProductsData(data) {
         let usageGuideText = [];
         try { usageGuideText = JSON.parse(item.usageGuideText || "[]"); } catch (e) { if (Array.isArray(item.usageGuideText)) usageGuideText = item.usageGuideText; }
 
-        const cleanPrice = Number(String(item.price || item.PRICE || 0).replace(/[^0-9]/g, '')) || 0;
-        const cleanOrigPrice = Number(String(item.originalPrice || item.ORIGINALPRICE || 0).replace(/[^0-9]/g, '')) || 0;
+        const rawPrice = item.price ?? item.PRICE ?? 0;
+        const rawOrigPrice = item.originalPrice ?? item.originalprice ?? item.ORIGINALPRICE ?? item.original_price ?? 0;
+
+        const cleanPrice = Number(String(rawPrice).replace(/[^0-9]/g, '')) || 0;
+        const cleanOrigPrice = Number(String(rawOrigPrice).replace(/[^0-9]/g, '')) || 0;
         const rawId = item.id || item.ID || item.productId || `SP_${index}`;
 
         return { ...item, id: String(rawId).trim(), price: cleanPrice, originalPrice: cleanOrigPrice, colors: colors, introImages: introImages, usageGuideText: usageGuideText };
@@ -198,7 +201,7 @@ function renderProductContent(p, colorIdx) {
                 <span class="text-[10px] font-black uppercase text-slate-400">${p.category || 'INSIDE+'}</span>
                 <h2 class="text-2xl font-black uppercase text-slate-900 mt-1 mb-3">${p.name}</h2>
                 <div class="flex items-center gap-2.5 flex-wrap">
-                    <span class="text-xl sm:text-2xl font-bold text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
+                    <span class="text-2xl font-black text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
                     ${hasDiscount ? `
                         <span class="text-xs sm:text-sm text-slate-400 line-through font-normal">${p.originalPrice.toLocaleString('vi-VN')}đ</span>
                         <span class="bg-[#f1f3f9] text-[#556b92] font-semibold text-[11px] px-1.5 py-0.5 rounded-xs">
