@@ -1143,7 +1143,7 @@ document.addEventListener('touchend', function (e) {
     }
 
     if (deltaX > 60 && deltaX > deltaY) {
-        const drawers = ['quick-edit-drawer', 'voucher-drawer', 'cart-modal', 'search-modal'];
+        const drawers = ['quick-edit-drawer', 'voucher-drawer', 'cart-modal', 'search-modal', 'filter-drawer'];
         for (let id of drawers) {
             const el = document.getElementById(id);
             if (el && !el.classList.contains('hidden')) {

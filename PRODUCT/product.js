@@ -513,11 +513,29 @@ function updateRecentSliderArrows() {
     const isScrollable = container.scrollWidth > container.clientWidth;
     if (!isScrollable) {
         prevBtn.disabled = true;
+        prevBtn.className = "text-slate-300 cursor-not-allowed transition"; // Màu nhạt
         nextBtn.disabled = true;
+        nextBtn.className = "text-slate-300 cursor-not-allowed transition"; // Màu nhạt
         return;
     }
-    prevBtn.disabled = container.scrollLeft <= 5;
-    nextBtn.disabled = container.scrollLeft + container.clientWidth >= container.scrollWidth - 5;
+
+    // Kiểm tra nút Lùi (prev)
+    if (container.scrollLeft <= 5) {
+        prevBtn.disabled = true;
+        prevBtn.className = "text-slate-300 cursor-not-allowed transition"; // Màu nhạt khi không lùi được nữa
+    } else {
+        prevBtn.disabled = false;
+        prevBtn.className = "text-slate-900 cursor-pointer transition hover:opacity-75"; // Màu đậm khi dùng được
+    }
+
+    // Kiểm tra nút Tiến (next)
+    if (container.scrollLeft + container.clientWidth >= container.scrollWidth - 5) {
+        nextBtn.disabled = true;
+        nextBtn.className = "text-slate-300 cursor-not-allowed transition"; // Màu nhạt khi hết ảnh để tiến
+    } else {
+        nextBtn.disabled = false;
+        nextBtn.className = "text-slate-900 cursor-pointer transition hover:opacity-75"; // Màu đậm khi dùng được
+    }
 }
 
 // 2. Các hàm Menu Mobile
@@ -728,6 +746,15 @@ document.addEventListener('touchend', function (e) {
             clearAllBoldActiveStates();
             return;
         }
+    }
+
+    const galleryModal = document.getElementById('gallery-modal');
+    if (galleryModal && !galleryModal.classList.contains('hidden')) {
+        if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > deltaY) {
+            if (deltaX < 0) nextGalleryImage();
+            else prevGalleryImage();
+        }
+        return;
     }
 
     if (deltaX > 60 && deltaX > deltaY) {
