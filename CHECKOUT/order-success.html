@@ -40,47 +40,29 @@
     <main class="max-w-lg sm:max-w-xl mx-auto px-4 py-8 sm:py-12 flex-1 w-full">
         <div class="bg-white p-6 sm:p-10 rounded-2xl shadow-sm border border-slate-100 text-center space-y-6">
 
-            <!-- MINH HỌA GIAO HÀNG (SHIPPER CƯỠI XE MÁY - SVG CHUẨN) -->
+            <!-- MINH HỌA GIAO HÀNG (SHIPPER CƯỠI XE MÁY) -->
             <div class="flex justify-center pt-2">
-                <div
-                    class="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-slate-100/80 flex items-center justify-center p-3 border border-slate-200/50">
-                    <svg class="w-20 h-20 text-slate-800" viewBox="0 0 64 64" fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <!-- Thùng hàng -->
-                        <rect x="10" y="22" width="14" height="14" rx="2" fill="#0F172A" />
-                        <path d="M10 26H24" stroke="white" stroke-width="1.5" />
-                        <!-- Xe máy giao hàng -->
-                        <path d="M22 36L28 24H38L46 36H54V42H48" stroke="#0F172A" stroke-width="2.5"
-                            stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M34 24L38 18H44" stroke="#0F172A" stroke-width="2.5" stroke-linecap="round" />
-                        <!-- Người lái -->
-                        <circle cx="34" cy="13" r="4" fill="#0F172A" />
-                        <!-- Bánh xe -->
-                        <circle cx="20" cy="42" r="6" stroke="#0F172A" stroke-width="2.5" fill="white" />
-                        <circle cx="44" cy="42" r="6" stroke="#0F172A" stroke-width="2.5" fill="white" />
-                        <!-- Tốc độ -->
-                        <path d="M4 30H8M2 34H6M4 38H8" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" />
-                    </svg>
+                <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-slate-50 flex items-center justify-center p-2">
+                    <img src="https://res.cloudinary.com/puyb3jyd/image/upload/v1791566669/_.gif" 
+                         alt="Delivery Courier"
+                         class="w-full h-full object-contain">
                 </div>
             </div>
 
             <!-- TIÊU ĐỀ & TRẠNG THÁI ĐƠN HÀNG -->
             <div class="space-y-1">
                 <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Trạng thái đơn hàng</h1>
-                <p class="text-xs sm:text-sm text-slate-500 font-normal">Đơn hàng của bạn đang được xử lý và chuẩn bị
-                    giao đến bạn</p>
+                <p class="text-xs sm:text-sm text-slate-500 font-normal">Đơn hàng của bạn đang được xử lý và chuẩn bị giao đến bạn</p>
             </div>
 
             <!-- KHỐI DANH SÁCH SẢN PHẨM -->
             <div id="order-items-container" class="bg-[#f8f9fa] p-4 rounded-xl space-y-3 text-left">
-                <div class="flex items-center justify-center py-4 text-xs text-slate-400">Đang tải thông tin đơn hàng...
-                </div>
+                <div class="flex items-center justify-center py-4 text-xs text-slate-400">Đang tải thông tin đơn hàng...</div>
             </div>
 
             <!-- KHỐI BẢNG TỔNG QUAN (ORDER SUMMARY) -->
             <div class="bg-[#f8f9fa] p-5 rounded-xl text-left space-y-3">
-                <h3
-                    class="font-bold text-xs sm:text-sm text-slate-900 uppercase tracking-wider pb-1 border-b border-slate-200/60">
+                <h3 class="font-bold text-xs sm:text-sm text-slate-900 uppercase tracking-wider pb-1 border-b border-slate-200/60">
                     Chi tiết đơn hàng
                 </h3>
 
@@ -92,8 +74,7 @@
 
                     <div class="flex justify-between items-start text-slate-600 gap-4">
                         <span class="shrink-0">Địa chỉ giao hàng</span>
-                        <span id="display-address"
-                            class="font-medium text-slate-900 text-right truncate max-w-[220px]">...</span>
+                        <span id="display-address" class="font-medium text-slate-900 text-right truncate max-w-[220px]">...</span>
                     </div>
 
                     <div class="flex justify-between items-center text-slate-600">
@@ -130,8 +111,7 @@
     </main>
 
     <!-- FOOTER -->
-    <footer
-        class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-400 font-bold uppercase tracking-wider mt-8">
+    <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-400 font-bold uppercase tracking-wider mt-8">
         <p>© 2026 INSIDE⁺. Minimalist Concept Layout.</p>
     </footer>
 
