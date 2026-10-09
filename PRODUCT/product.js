@@ -290,7 +290,7 @@ function renderProductContent(p, colorIdx) {
             </div>
 
             <!-- BÊN PHẢI: KHUNG TỐI CÓ VÒNG TRÒN ẢNH VÀ MÃ CODE SÁT GÓC -->
-            <div class="col-span-5 sm:col-span-5 bg-[#1c2e24] text-white relative p-3 sm:p-4 flex items-center justify-center overflow-hidden">
+            <div class="col-span-5 sm:col-span-5 bg-[#1c2e24] text-white relative p-3 sm:p-4 flex items-center justify-center overflow-hidden aspect-square sm:aspect-auto">
                 
                 <!-- Vòng tròn ảnh lớn đặt chính giữa -->
                 <div class="w-36 h-36 sm:w-40 sm:h-40 lg:w-44 lg:h-44 rounded-full overflow-hidden border-2 border-white/20 shadow-lg relative shrink-0 -mt-2">
@@ -298,7 +298,7 @@ function renderProductContent(p, colorIdx) {
                 </div>
 
                 <!-- Mã CODE chuyển sát góc dưới bên phải không bị che hay đè vào ảnh -->
-                <div class="absolute bottom-1.5 right-2 sm:bottom-2.5 sm:right-3.5 z-20">
+                <div class="absolute bottom-1.5 right-2 sm:bottom-1.5 sm:right-2.5 z-20">
                     <span class="text-[8px] sm:text-[10px] font-mono font-bold tracking-widest text-emerald-200/90 uppercase">
                         CODE : ${voucherCode}
                     </span>
