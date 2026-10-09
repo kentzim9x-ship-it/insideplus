@@ -293,7 +293,7 @@ function renderProductContent(p, colorIdx) {
             <div class="col-span-5 sm:col-span-5 bg-[#1c2e24] text-white relative p-3 sm:p-4 flex items-center justify-center overflow-hidden">
                 
                 <!-- Vòng tròn ảnh lớn đặt chính giữa -->
-                <div class="w-28 h-28 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full overflow-hidden border-2 border-white/20 shadow-lg relative shrink-0 -mt-2">
+                <div class="w-32 h-32 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full overflow-hidden border-2 border-white/20 shadow-lg relative shrink-0 -mt-2">
                     <img src="${fashionImg}" alt="Voucher Image" class="w-full h-full object-cover object-top">
                 </div>
 
