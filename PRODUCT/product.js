@@ -56,7 +56,7 @@ function processRawProductsData(data) {
     });
 }
 
-let highlightVoucherBanner = null;
+let highlightVoucherObj = null;
 
 function loadHighlightVoucher() {
     const jsonUrl = '../data/vouchers.json';
@@ -72,34 +72,28 @@ function loadHighlightVoucher() {
             return fetch(sheetUrl)
                 .then(res => res.json())
                 .then(data => processHighlightData(data))
-                .catch(err => console.warn('Không thể tải banner voucher highlight:', err));
+                .catch(err => console.warn('Không thể tải voucher highlight:', err));
         });
 }
 
 function processHighlightData(data) {
     if (!Array.isArray(data)) return null;
 
-    // 1. Tìm dòng có is_highlight = true (hoặc 'TRUE', 'true', 1)
+    // Lọc dòng có is_highlight = true (giới hạn lấy 1 dòng)
     const item = data.find(v => {
         const val = v.is_highlight ?? v.IS_HIGHLIGHT ?? v.isHighlight;
         return String(val).trim().toLowerCase() === 'true' || val === 1 || val === true;
     });
 
     if (item) {
-        // 2. Lấy URL ảnh banner từ cột url_img, urlImg, image, banner, ...
-        let rawImg = (item.url_img || item.URL_IMG || item.urlImg || item.image || item.IMAGE || item.banner || item.img || '').toString().trim();
-        if (rawImg.startsWith('[') && rawImg.endsWith(']')) {
-            rawImg = rawImg.slice(1, -1).trim();
-        }
+        highlightVoucherObj = {
+            code: String(item.code || '').trim().toUpperCase(),
+            title: String(item.title || item.code || ''),
+            desc: String(item.desc || ''),
+            minOrder: Number(String(item.minOrder || 0).replace(/[^0-9]/g, '')) || 0
+        };
 
-        // Làm sạch URL ảnh nếu là chuỗi
-        if (typeof cleanImageUrl === 'function') {
-            rawImg = cleanImageUrl(rawImg);
-        }
-
-        highlightVoucherBanner = rawImg;
-
-        // 3. QUAN TRỌNG: Gọi re-render lại trang sản phẩm nếu dữ liệu sản phẩm đã có sẵn
+        // Render lại trang nếu thông tin sản phẩm đã sẵn sàng
         if (currentProduct && typeof renderProductContent === 'function') {
             const urlParams = new URLSearchParams(window.location.search);
             const colorParam = urlParams.get('color') || '';
@@ -111,7 +105,7 @@ function processHighlightData(data) {
             renderProductContent(currentProduct, colorIdx);
         }
     }
-    return highlightVoucherBanner;
+    return highlightVoucherObj;
 }
 
 function initProductPage() {
@@ -249,12 +243,18 @@ function renderProductContent(p, colorIdx) {
         </div>
     </div>`;
 
-    // Tạo HTML cho banner voucher highlight (chỉ hiển thị xem, không sao chép/áp dụng)
-    const highlightBannerHtml = highlightVoucherBanner ? `
-        <div class="w-full my-3 overflow-hidden rounded-none shadow-xs select-none pointer-events-none">
-            <img src="${highlightVoucherBanner}" alt="Voucher Highlight" class="w-full h-auto object-cover block">
+    const highlightBannerHtml = highlightVoucherObj ? `
+    <div class="w-full my-4 p-4 bg-slate-50 border border-slate-200/80 shadow-xs select-none pointer-events-none flex items-center justify-between gap-3">
+        <div class="space-y-1 flex-1 min-w-0">
+            <div class="flex items-center gap-2">
+                <span class="bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest px-2 py-0.5">ƯU ĐÃI NỔI BẬT</span>
+                <span class="text-xs font-mono font-bold text-slate-700 bg-white border border-slate-200 px-2 py-0.5">${highlightVoucherObj.code}</span>
+            </div>
+            <h4 class="font-extrabold text-xs sm:text-sm text-slate-900 uppercase tracking-tight truncate">${highlightVoucherObj.title}</h4>
+            <p class="text-[11px] text-slate-500 font-medium leading-tight">${highlightVoucherObj.desc || (highlightVoucherObj.minOrder > 0 ? `Áp dụng cho đơn hàng từ ${highlightVoucherObj.minOrder.toLocaleString('vi-VN')}đ` : '')}</p>
         </div>
-    ` : '';
+    </div>
+` : '';
 
     // IN VÀO DOM
     const container = document.getElementById('product-content-body');

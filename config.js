@@ -422,9 +422,13 @@ function clearAllCartItems() {
     }
 
     modal.innerHTML = `
-        <div onclick="event.stopPropagation()" class="bg-white w-full max-w-sm border border-slate-200 shadow-2xl p-6 sm:p-7 text-center font-['Montserrat'] transform transition-all duration-200 scale-95">
-            <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-800">
-                <i data-lucide="trash-2" class="w-5 h-5 stroke-[1.75]"></i>
+        <div onclick="event.stopPropagation()" class="bg-white w-full max-w-sm border border-slate-200 shadow-2xl p-6 sm:p-8 text-center font-['Montserrat'] transform transition-all duration-200 scale-95">
+            <!-- LOGO INSIDE+ ĐỒNG BỘ MÀU SẮC MENU -->
+            <div class="mb-4">
+                <span class="inline-flex items-center font-black text-2xl tracking-tighter uppercase">
+                    <span class="text-slate-900">INSIDE</span>
+                    <span class="text-blue-500 font-black relative -top-2 left-1 inline-block">+</span>
+                </span>
             </div>
             
             <h3 class="text-sm font-extrabold uppercase tracking-widest text-slate-900 mb-2">Xác nhận xóa giỏ hàng</h3>
@@ -432,10 +436,10 @@ function clearAllCartItems() {
             
             <div class="grid grid-cols-2 gap-3">
                 <button onclick="closeConfirmClearModal()" class="w-full py-3 bg-white border border-slate-300 text-slate-700 font-bold text-xs uppercase tracking-wider hover:border-slate-900 hover:text-slate-900 transition cursor-pointer">
-                    Hủy bỏ
+                    HỦY BỎ
                 </button>
                 <button onclick="executeClearCart()" class="w-full py-3 bg-slate-950 text-white font-bold text-xs uppercase tracking-wider hover:bg-black transition cursor-pointer">
-                    Xóa tất cả
+                    XÓA TẤT CẢ
                 </button>
             </div>
         </div>
