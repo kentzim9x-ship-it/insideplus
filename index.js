@@ -211,7 +211,7 @@ function navigateToProduct(productId, category, colorIdx = 0) {
     const formattedColor = formatColorCode(colorIdx, cleanCat);
 
     // Gom chung URL điều hướng về trang Product duy nhất
-    window.location.href = `../PRODUCT/product.html?product=${encodeURIComponent(formattedProduct)}&color=${encodeURIComponent(formattedColor)}`;
+    window.location.href = `../insideplus/PRODUCT/product.html?product=${encodeURIComponent(formattedProduct)}&color=${encodeURIComponent(formattedColor)}`;
 }
 
 function formatProductCode(productId, category) {
