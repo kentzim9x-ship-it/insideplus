@@ -6,10 +6,6 @@ let visualFilterCategories = [];
 let activeVisualFilter = "ALL";
 let originalProducts = [];
 let currentFilteredProducts = [];
-let currentSelectedSize = null;
-let currentGalleryImages = [];
-let currentGalleryIndex = 0;
-let currentQuantity = 1;
 let currentFilterETag = null;
 
 // --- Cấu hình Phân trang / Infinite Scroll ---
@@ -203,7 +199,6 @@ function loadProductsData() {
             renderDynamicFilterOptions();
             renderCatalog(originalProducts);
             if (typeof updateCartBadge === 'function') updateCartBadge();
-            checkAndOpenProductFromUrl();
 
             // Bắt đầu kích hoạt kiểm tra ngầm phiên bản JSON tĩnh trên GitHub
             checkStaticJsonUpdatesSilently(jsonUrl);
@@ -251,104 +246,13 @@ function checkStaticJsonUpdatesSilently(jsonUrl) {
         });
 }
 
-function changeQty(delta) {
-    currentQuantity = Math.max(1, currentQuantity + delta);
-    const qtyInput = document.getElementById('qty-input-val');
-    if (qtyInput) qtyInput.innerText = currentQuantity;
-}
-
-function addToCart(productId, colorIdx) {
-    const p = originalProducts.find(x => x.id === productId);
-    if (!p) return;
-    const activeColor = p.colors[colorIdx];
-
-    if (!currentSelectedSize) {
-        const sizeBox = document.getElementById('size-selection-container');
-        if (sizeBox) {
-            let errorTip = document.getElementById('size-error-tooltip');
-            if (!errorTip) {
-                errorTip = document.createElement('div');
-                errorTip.id = 'size-error-tooltip';
-                errorTip.className = 'absolute -top-10 left-0 bg-[#222] text-white text-[11px] font-bold px-3 py-1.5 shadow-lg tracking-wide z-20 flex items-center gap-1 animate-bounce';
-                errorTip.innerHTML = `Vui lòng chọn kích cỡ`;
-                sizeBox.style.position = 'relative';
-                sizeBox.appendChild(errorTip);
-                setTimeout(() => errorTip.remove(), 2500);
-            }
-        }
-        return;
-    }
-
-    const newItem = {
-        productId: p.id,
-        name: p.name,
-        category: p.category,
-        price: p.price,
-        image: activeColor.images[0],
-        colorName: activeColor.name,
-        size: currentSelectedSize,
-        quantity: currentQuantity,
-        colorsData: p.colors
-    };
-
-    if (typeof cartItems !== 'undefined') {
-        const existingIndex = cartItems.findIndex(i => i.productId === newItem.productId && i.colorName === newItem.colorName && i.size === newItem.size);
-        if (existingIndex > -1) {
-            cartItems[existingIndex].quantity += currentQuantity;
-        } else {
-            cartItems.push(newItem);
-        }
-    }
-
-    updateCartBadge();
-    showAddedNotification(newItem);
-}
-
-function showAddedNotification(item) {
-    const existingPopup = document.getElementById('added-toast-popup');
-    if (existingPopup) existingPopup.remove();
-
-    const codePrefix = formatProductCode(item.productId, item.category);
-    const toast = document.createElement('div');
-    toast.id = 'added-toast-popup';
-    toast.className = 'fixed top-24 right-6 z-[200] bg-white border border-slate-200 shadow-2xl p-4 w-80 animate-fade-in';
-    toast.innerHTML = `
-        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-3">
-            <span class="text-xs font-black uppercase text-slate-900 tracking-wider">Đã thêm vào giỏ hàng</span>
-            <button onclick="document.getElementById('added-toast-popup').remove(); updateCartBadge();" class="text-slate-400 hover:text-slate-900"><i data-lucide="x" class="w-4 h-4"></i></button>
-        </div>
-        <div class="flex gap-3 items-center mb-4">
-            <img src="${item.image}" loading="lazy" class="w-14 h-16 object-cover bg-slate-100">
-            <div>
-                <h4 class="font-bold text-xs uppercase text-slate-900 line-clamp-1">${item.name}</h4>
-                <p class="text-[11px] text-slate-500 mt-0.5">${item.colorName} - ${codePrefix} | S: ${item.size} | SL: ${item.quantity}</p>
-            </div>
-        </div>
-        <div class="grid grid-cols-2 gap-2">
-            <button onclick="document.getElementById('added-toast-popup').remove(); updateCartBadge();" class="w-full bg-white border border-slate-300 text-slate-800 py-2.5 font-bold text-[11px] uppercase tracking-wider hover:border-slate-900 transition">Đóng</button>
-            <button onclick="document.getElementById('added-toast-popup').remove(); updateCartBadge(); openCartModal();" class="w-full bg-slate-900 text-white py-2.5 font-bold text-[11px] uppercase tracking-wider hover:bg-slate-800 transition">Xem giỏ hàng</button>
-        </div>
-    `;
-    document.body.appendChild(toast);
-    if (window.lucide) lucide.createIcons({ root: toast });
-}
-
 function navigateToProduct(productId, category, colorIdx = 0) {
     const cleanCat = String(category || '').trim().toLowerCase();
-    const targetPage = getCategoryPageUrl(cleanCat);
-    const isCurrentPage = targetPage.includes('sock.html');
-
-    if (isCurrentPage) {
-        const searchModal = document.getElementById('search-modal');
-        if (searchModal && !searchModal.classList.contains('hidden')) {
-            closeSearchModal();
-        }
-        openProductDrawer(productId, colorIdx);
-    } else {
-        const code = formatProductCode(productId, cleanCat);
-        const color = formatColorCode(colorIdx, cleanCat);
-        window.location.href = `${targetPage}?product=${encodeURIComponent(code)}&color=${encodeURIComponent(color)}`;
-    }
+    const formattedProduct = formatProductCode(productId, cleanCat);
+    const formattedColor = formatColorCode(colorIdx, cleanCat);
+    
+    // Gom chung URL điều hướng về trang Product duy nhất
+    window.location.href = `../PRODUCT/product.html?product=${encodeURIComponent(formattedProduct)}&color=${encodeURIComponent(formattedColor)}`;
 }
 
 function getCategoryPageUrl(category) {
@@ -386,44 +290,6 @@ function parseColorIndexFromCode(colorCode) {
     const numMatch = colorCode.match(/\d+/);
     if (!numMatch) return 0;
     return Math.max(0, parseInt(numMatch[0], 10) - 1);
-}
-
-function updateProductUrlParam(productId, colorIdx, isReplace = false) {
-    if (productId) {
-        const p = originalProducts.find(item => item.id === productId);
-        const category = p ? p.category : 'inside';
-        const formattedProduct = formatProductCode(productId, category);
-        const formattedColor = formatColorCode(colorIdx, category);
-        const newUrl = window.location.pathname + '?product=' + encodeURIComponent(formattedProduct) + '&color=' + encodeURIComponent(formattedColor);
-
-        if (isReplace) {
-            window.history.replaceState({ productId: productId, colorIdx: colorIdx }, '', newUrl);
-        } else {
-            window.history.pushState({ productId: productId, colorIdx: colorIdx }, '', newUrl);
-        }
-    } else {
-        window.history.pushState({}, '', window.location.pathname);
-    }
-}
-
-function checkAndOpenProductFromUrl() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const productParam = urlParams.get('product');
-    const colorParam = urlParams.get('color');
-
-    if (productParam) {
-        const productId = parseProductIdFromCode(productParam);
-        if (productId) {
-            const p = originalProducts.find(item => item.id === productId);
-            if (p) {
-                let colorIdx = parseColorIndexFromCode(colorParam);
-                if (colorIdx < 0 || colorIdx >= (p.colors || []).length) colorIdx = 0;
-                openProductDrawer(productId, colorIdx, false);
-            }
-        }
-    } else {
-        closeProductDrawer(false);
-    }
 }
 
 function addProductToViewed(product) {
@@ -631,28 +497,6 @@ window.addEventListener('pageshow', function (event) {
     if (event.persisted) {
         clearAllBoldActiveStates();
     }
-});
-
-window.addEventListener('popstate', function (e) {
-    const infoDrawer = document.getElementById('info-drawer');
-    if (infoDrawer && !infoDrawer.classList.contains('hidden')) closeInfoDrawer();
-
-    const introDrawer = document.getElementById('intro-drawer');
-    if (introDrawer && !introDrawer.classList.contains('hidden')) closeIntroDrawer();
-
-    const galleryModal = document.getElementById('gallery-modal');
-    if (galleryModal && !galleryModal.classList.contains('hidden')) closeGalleryModal();
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const productParam = urlParams.get('product');
-
-    requestAnimationFrame(() => {
-        if (!productParam) {
-            closeProductDrawer(false);
-        } else {
-            checkAndOpenProductFromUrl();
-        }
-    });
 });
 
 function handleMenuBtnClick(element) {
@@ -1000,306 +844,23 @@ function toggleSortDropdown(device) {
     if (drop) drop.classList.toggle('hidden');
 }
 
-let savedCategoryScrollY = 0;
-
-function openProductDrawer(id, colorIdx, shouldUpdateUrl) {
+// Thay thế hàm openProductDrawer cũ
+function openProductDrawer(id, colorIdx) {
     const p = originalProducts.find(item => String(item.id).trim() === String(id).trim());
     if (!p) return;
-
-    const drawer = document.getElementById('product-drawer');
     
-    // KHÔNG cần lưu savedCategoryScrollY nữa vì body không bị mất vị trí cuộn
-    window.currentActiveProductId = p.id;
-    const initialColorIdx = (typeof colorIdx === 'number') ? colorIdx : 0;
-    currentSelectedSize = null;
-    currentQuantity = 1;
-
-    addProductToViewed(p);
-    renderDrawerContent(p, initialColorIdx);
-    renderRecentViewedSlider(p.id);
-
-    if (drawer) {
-        drawer.classList.remove('hidden');
-        drawer.scrollTop = 0;
+    const category = p.category || 'sock';
+    const formattedProduct = formatProductCode(p.id, category);
+    const formattedColor = formatColorCode(colorIdx || 0, category);
+    
+    // Đóng modal tìm kiếm nếu đang mở
+    const searchModal = document.getElementById('search-modal');
+    if (searchModal && !searchModal.classList.contains('hidden')) {
+        closeSearchModal();
     }
-
-    drawer.classList.add('is-active');
-    document.body.classList.add('drawer-open'); // Chỉ gán khóa overflow
-
-    if (shouldUpdateUrl !== false) {
-        updateProductUrlParam(p.id, initialColorIdx);
-    }
-}
-
-function closeProductDrawer(shouldUpdateUrl) {
-    const drawer = document.getElementById('product-drawer');
-    if (drawer) {
-        drawer.classList.add('hidden');
-        drawer.scrollTop = 0;
-        drawer.classList.remove('drawer-open');
-    }
-
-    // Bỏ khóa cuộn body
-    document.body.classList.remove('drawer-open');
-
-    // KHÔNG CẦN gọi window.scrollTo(0, savedCategoryScrollY) nữa!
-    // Vị trí cuộn của trang danh mục bên dưới VẪN GIỮ NGUYÊN 100%.
-
-    if (shouldUpdateUrl !== false) {
-        updateProductUrlParam(null, null);
-    }
-}
-
-function changeDrawerColor(productId, colorIdx) {
-    const p = originalProducts.find(x => x.id === productId);
-    if (!p) return;
-
-    renderDrawerContent(p, colorIdx);
-    updateProductUrlParam(p.id, colorIdx, true);
-
-    const drawer = document.getElementById('product-drawer');
-    if (drawer) {
-        drawer.scrollTop = 0;
-    }
-}
-
-function checkColorOutOfStock(colorObj) {
-    if (!colorObj) return false;
-    if (Boolean(colorObj.outOfStock)) return true; // Kiểm tra trực tiếp cấp màu
-    if (Array.isArray(colorObj.sizes) && colorObj.sizes.length > 0) {
-        return colorObj.sizes.every(s => Boolean(s.outOfStock) || s.stock === 0);
-    }
-    return false;
-}
-
-function renderDrawerContent(p, colorIdx) {
-    const activeColor = p.colors && p.colors[colorIdx] ? p.colors[colorIdx] : { name: '', hex: '', images: [''], sizes: [] };
-    const availableSizes = activeColor.sizes || [];
-    currentGalleryImages = activeColor.images || [];
-
-    if (!currentSelectedSize || !availableSizes.some(s => s.name === currentSelectedSize)) {
-        const firstAvailable = availableSizes.find(s => !s.outOfStock);
-        if (firstAvailable) currentSelectedSize = firstAvailable.name;
-        else if (availableSizes.length > 0) currentSelectedSize = availableSizes[0].name;
-    }
-
-    const selectedSizeObj = availableSizes.find(s => s.name === currentSelectedSize);
-
-    // --- THÊM LOGIC TÍNH TOÁN BADGE TỒN KHO ---
-    let stockBadgeHtml = '';
-    let maxStock = 999;
-
-    if (selectedSizeObj) {
-        // Đánh giá hết hàng dựa trên thuộc tính outOfStock hoặc stock = 0
-        const isOutOfStock = selectedSizeObj.outOfStock || selectedSizeObj.stock === 0;
-        maxStock = selectedSizeObj.stock !== undefined ? selectedSizeObj.stock : (isOutOfStock ? 0 : 50);
-
-        if (currentQuantity > maxStock && maxStock > 0) {
-            stockBadgeHtml = `<span class="text-red-600 font-bold text-[11px] bg-red-50 px-2 py-0.5 rounded-sm">Còn ${maxStock} SP</span>`;
-        } else if (maxStock < 20 && maxStock > 0) {
-            stockBadgeHtml = `<span class="text-amber-600 font-bold text-[11px] bg-amber-50 px-2 py-0.5 rounded-sm">Sắp hết hàng</span>`;
-        }
-    }
-
-    // Cập nhật lại điều kiện vô hiệu hóa nút bấm nếu stock = 0
-    const isSelectedSizeOutOfStock = selectedSizeObj ? (selectedSizeObj.outOfStock || selectedSizeObj.stock === 0) : false;
-    const isAllSizesOutOfStock = availableSizes.length > 0 && availableSizes.every(s => (s.outOfStock || s.stock === 0));
-    const showOutOfStockBtn = isSelectedSizeOutOfStock || isAllSizesOutOfStock;
-
-    const activeShopeeUrl = activeColor.shopeeUrl || "https://shopee.vn";
-    const activeTiktokUrl = activeColor.tiktokUrl || "https://tiktok.com";
-
-    const imagesHtml = `
-    <div class="block sm:hidden -mx-4 -mt-2 sm:mx-0 sm:mt-0 mb-6">
-        <div class="relative w-full aspect-[3/4] bg-slate-100 overflow-hidden mb-3" onclick="openGalleryModal(window.currentMobileImgIdx || 0)">
-            <img id="mobile-main-img" src="${activeColor.images[0] || ''}" loading="lazy" class="w-full h-full object-cover">
-            <button onclick="event.stopPropagation(); openGalleryModal(window.currentMobileImgIdx || 0)" class="zoom-icon-btn !opacity-100 !scale-100" title="Xem ảnh">
-                <i data-lucide="search" class="w-4 h-4 text-slate-800"></i>
-            </button>
-        </div>
-
-        <div class="flex gap-2.5 overflow-x-auto px-4 no-scrollbar">
-            ${(activeColor.images || []).map((img, imgIdx) => `
-                <button onclick="changeMobileMainImage('${img}',${imgIdx})" 
-                    class="mobile-thumb-btn flex-none w-16 aspect-[3/4] bg-slate-100 overflow-hidden border-b-2 transition-all pb-0.5 ${imgIdx === 0 ? 'border-slate-900 opacity-100' : 'border-transparent opacity-50'}">
-                    <img src="${img}" loading="lazy" class="w-full h-full object-cover">
-                </button>
-            `).join('')}
-        </div>
-    </div>
-
-    <div class="hidden sm:grid grid-cols-2 gap-4">
-        ${(activeColor.images || []).map((img, imgIdx) => `
-            <div class="product-detail-img-container aspect-[4/5] bg-slate-100 shadow-sm" onclick="openGalleryModal(${imgIdx})">
-                <img src="${img}" loading="lazy" class="w-full h-full object-cover">
-                <button onclick="event.stopPropagation(); openGalleryModal(${imgIdx})" class="zoom-icon-btn" title="Xem ảnh">
-                    <i data-lucide="search" class="w-4 h-4 text-slate-800"></i>
-                </button>
-            </div>
-        `).join('')}
-    </div>`;
-
-    const colorsHtml = (p.colors || []).map((c, cIdx) => {
-        const cIsAllOutOfStock = c.sizes && c.sizes.length > 0 && c.sizes.every(s => Boolean(s.outOfStock) || s.stock === 0);
-        const strikeClass = cIsAllOutOfStock ? 'color-out-of-stock' : '';
-        const activeClass = cIdx === colorIdx ? 'ring-2 ring-slate-900 ring-offset-2' : '';
-
-        return `<div class="color-btn-wrapper p-0.5">
-        <button onclick="changeDrawerColor('${p.id}', ${cIdx})" 
-            class="w-6 h-6 rounded-full border border-slate-300 transition-all relative ${strikeClass} ${activeClass}" 
-            style="background-color: ${c.hex};" title="${c.name}">
-        </button>
-    </div>`;
-    }).join('');
-
-    const sizesHtml = availableSizes.map(s => {
-        const isSelected = currentSelectedSize === s.name;
-        // Bổ sung kiểm tra s.stock === 0
-        const isOutOfStock = s.outOfStock || s.stock === 0;
-
-        const btnStyle = isOutOfStock
-            ? (isSelected
-                ? 'bg-slate-100 text-slate-400 border-slate-900 ring-2 ring-slate-900'
-                : 'bg-slate-100 text-slate-300 border-slate-200')
-            : (isSelected
-                ? 'bg-slate-950 text-white border-slate-950'
-                : 'bg-white text-slate-800 border-slate-200 hover:border-slate-900');
-
-        return `<button onclick="currentSelectedSize='${s.name}'; renderDrawerContent(originalProducts.find(x => x.id==='${p.id}'), ${colorIdx})" 
-            class="w-12 h-12 border text-sm font-black transition flex items-center justify-center ${btnStyle}">${s.name}</button>`;
-    }).join('');
-
-    const actionBtnHtml = showOutOfStockBtn ?
-        '<button disabled class="w-full bg-[#e2e8f0] text-[#64748b] py-4 px-6 font-bold text-xs uppercase tracking-widest pointer-events-none cursor-not-allowed text-center">HẾT HÀNG!</button>' :
-        `<div class="flex items-center gap-3">
-            <div class="flex items-center border border-slate-300 bg-white px-3 py-2.5">
-                <button onclick="changeQty(-1)" class="px-2 text-sm font-bold text-slate-700 hover:text-black">-</button>
-                <span id="qty-input-val" class="px-3 text-sm font-bold text-slate-900">${currentQuantity}</span>
-                <button onclick="changeQty(1)" class="px-2 text-sm font-bold text-slate-700 hover:text-black">+</button>
-            </div>
-            <button onclick="addToCart('${p.id}', ${colorIdx})" class="flex-1 bg-slate-950 text-white py-3.5 px-6 font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition text-center">Thêm vào giỏ hàng</button>
-        </div>
-        <div class="space-y-2 pt-1">
-            <a href="${activeShopeeUrl}" target="_blank" class="w-full bg-[#EE4D2D] text-white py-3.5 px-6 font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:opacity-90 transition">MUA TRÊN SHOPEE MALL</a>
-            <a href="${activeTiktokUrl}" target="_blank" class="w-full bg-slate-950 text-white py-3.5 px-6 font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-slate-800 transition">MUA TRÊN TIKTOK SHOP</a>
-        </div>`;
-
-    const policyHtml = `
-    <div class="bg-slate-50 border border-slate-100 rounded-none p-4 my-6 space-y-3.5">
-        <div class="flex items-center gap-3 text-xs font-semibold text-slate-800">
-            <i data-lucide="truck" class="w-4 h-4 text-slate-700 shrink-0"></i>
-            <span>Miễn phí vận chuyển đơn từ 399.000 đ.</span>
-        </div>
-        <div class="border-t border-slate-200/60 pt-3 flex items-center gap-3 text-xs font-semibold text-slate-800">
-            <i data-lucide="rotate-ccw" class="w-4 h-4 text-slate-700 shrink-0"></i>
-            <span>Miễn phí đổi trả trong 60 ngày</span>
-        </div>
-        <div class="border-t border-slate-200/60 pt-3 flex items-center gap-3 text-xs font-semibold text-slate-800">
-            <i data-lucide="package-check" class="w-4 h-4 text-slate-700 shrink-0"></i>
-            <span>Kiểm tra hàng trước khi thanh toán</span>
-        </div>
-    </div>`;
-
-    const infoMenuHtml = `
-    <div class="border-t border-slate-200 mt-6 pt-2">
-        <button onclick="openInfoDrawer()" class="w-full py-4 flex items-center justify-between border-b border-slate-100 text-sm font-bold text-slate-900 hover:text-slate-600 transition">
-            <span>Thông tin sản phẩm</span>
-            <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
-        </button>
-        <button onclick="openIntroDrawer()" class="w-full py-4 flex items-center justify-between border-b border-slate-100 text-sm font-bold text-slate-900 hover:text-slate-600 transition">
-            <span>Giới thiệu sản phẩm</span>
-            <i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i>
-        </button>
-    </div>`;
-
-    const drawerBody = document.getElementById('drawer-content-body');
-    if (drawerBody) {
-        window.currentMobileImgIdx = 0;
-        drawerBody.innerHTML = `
-        <div class="lg:col-span-8 flex flex-col space-y-6">${imagesHtml}</div>
-        <div class="lg:col-span-4 flex flex-col space-y-6 sticky top-28 h-fit">
-            <div>
-                <span class="text-[10px] font-black uppercase text-slate-400">INSIDE+</span>
-                <h2 class="text-2xl font-black uppercase text-slate-900 mt-1">${p.name}</h2>
-                <div class="flex items-center gap-3 mt-3">
-                    <span class="text-2xl font-black text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
-                    ${(p.originalPrice && p.originalPrice > p.price) ? `
-                        <span class="text-sm text-slate-400 line-through">${p.originalPrice.toLocaleString('vi-VN')}đ</span>
-                        <span class="bg-slate-100 text-slate-600 font-bold text-xs px-2 py-0.5">
-                            -${Math.round((1 - p.price / p.originalPrice) * 100)}%
-                        </span>
-                    ` : ''}
-                </div>
-            </div>
-            <div class="space-y-2">
-                <span class="text-xs font-bold uppercase text-slate-700">MÀU: <span class="font-black">${(activeColor.name || '').toUpperCase()}</span></span>
-                <div class="flex gap-2 items-center">${colorsHtml}</div>
-            </div>
-            <div class="space-y-2" id="size-selection-container">
-                <div class="flex justify-between items-center">
-                    <!-- SỬA LẠI KHỐI NÀY ĐỂ HIỂN THỊ BADGE -->
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-bold uppercase text-slate-700">KÍCH CỠ: <span class="font-black text-slate-900">${currentSelectedSize || ''}</span></span>
-                        ${stockBadgeHtml}
-                    </div>
-                    <button onclick="openSizeModal()" class="text-xs font-bold text-blue-600 hover:underline">Hướng dẫn chọn size</button>
-                </div>
-                <div class="flex gap-2 flex-wrap">${sizesHtml}</div>
-            </div>
-            <div class="space-y-3 pt-2">${actionBtnHtml}</div>
-            ${policyHtml}
-            ${infoMenuHtml}
-        </div>`;
-
-        if (window.lucide) lucide.createIcons({ root: drawerBody });
-    }
-}
-
-function changeMobileMainImage(imgUrl, imgIdx) {
-    const mainImg = document.getElementById('mobile-main-img');
-    if (mainImg) {
-        mainImg.src = imgUrl;
-        window.currentMobileImgIdx = imgIdx;
-    }
-    const thumbs = document.querySelectorAll('.mobile-thumb-btn');
-    thumbs.forEach((btn, idx) => {
-        if (idx === imgIdx) {
-            btn.classList.remove('border-transparent', 'opacity-50');
-            btn.classList.add('border-slate-900', 'opacity-100');
-        } else {
-            btn.classList.remove('border-slate-900', 'opacity-100');
-            btn.classList.add('border-transparent', 'opacity-50');
-        }
-    });
-}
-
-function openGalleryModal(index) {
-    if (!currentGalleryImages || currentGalleryImages.length === 0) return;
-    currentGalleryIndex = index;
-    updateGalleryModalView();
-    document.getElementById('gallery-modal').classList.remove('hidden');
-    if (window.lucide) lucide.createIcons({ root: document.getElementById('gallery-modal') });
-}
-
-function closeGalleryModal() {
-    document.getElementById('gallery-modal').classList.add('hidden');
-}
-
-function updateGalleryModalView() {
-    const imgEl = document.getElementById('gallery-modal-img');
-    const counterEl = document.getElementById('gallery-counter');
-    if (imgEl) imgEl.src = currentGalleryImages[currentGalleryIndex];
-    if (counterEl) counterEl.innerText = `${currentGalleryIndex + 1}/${currentGalleryImages.length}`;
-}
-
-function prevGalleryImage() {
-    currentGalleryIndex = (currentGalleryIndex > 0) ? currentGalleryIndex - 1 : currentGalleryImages.length - 1;
-    updateGalleryModalView();
-}
-
-function nextGalleryImage() {
-    currentGalleryIndex = (currentGalleryIndex < currentGalleryImages.length - 1) ? currentGalleryIndex + 1 : 0;
-    updateGalleryModalView();
+    
+    // Chuyển hướng sang file product.html nằm ở thư mục PRODUCT cùng cấp
+    window.location.href = `../PRODUCT/product.html?product=${encodeURIComponent(formattedProduct)}&color=${encodeURIComponent(formattedColor)}`;
 }
 
 function openFilterDrawer() {
@@ -1465,12 +1026,6 @@ function renderViewedProducts() {
     if (window.lucide) lucide.createIcons({ root: container });
 }
 
-function openSizeModal() {
-    document.getElementById('size-modal').classList.remove('hidden');
-    if (window.lucide) lucide.createIcons({ root: document.getElementById('size-modal') });
-}
-function closeSizeModal() { document.getElementById('size-modal').classList.add('hidden'); }
-
 function toggleChatMenu() {
     const group = document.getElementById('social-links-group');
     const icon = document.getElementById('chat-icon');
@@ -1480,144 +1035,12 @@ function toggleChatMenu() {
 }
 
 function scrollToTop() {
-    const productDrawer = document.getElementById('product-drawer');
-    if (productDrawer && !productDrawer.classList.contains('hidden')) {
-        productDrawer.scrollTo({ top: 0, behavior: 'smooth' });
-    } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-}
-
-function openInfoDrawer() {
-    const p = originalProducts.find(x => x.id === window.currentActiveProductId);
-    if (!p) return;
-
-    const guides = (p.usageGuideText && p.usageGuideText.length > 0) ? p.usageGuideText : [
-        "Giặt máy ở chế độ nhẹ, nhiệt độ thường (30°C).",
-        "Không sử dụng hóa chất tẩy có chứa clo.",
-        "Phơi trong bóng mát.",
-        "Sấy khô ở nhiệt độ thấp.",
-        "Là ở nhiệt độ thấp (tối đa 110°C).",
-        "Giặt với sản phẩm cùng màu.",
-        "Không là lên chi tiết trang trí."
-    ];
-
-    const contentEl = document.getElementById('info-drawer-content');
-    if (contentEl) {
-        contentEl.innerHTML = `
-        <div class="grid grid-cols-[70px_1fr] gap-x-4 gap-y-3 pb-4 border-b border-slate-100">
-            <span class="font-bold text-slate-900">Mã SP</span>
-            <span class="text-slate-600">${p.id ? p.id.toUpperCase() : ''}</span>
-    
-            <span class="font-bold text-slate-900">Chất liệu</span>
-            <span class="text-slate-600">${p.materialText || ''}</span>
-        </div>
-        <div class="pt-4 space-y-3">
-            <h4 class="font-bold text-slate-900 text-sm">Mô tả sản phẩm</h4>
-            <p class="text-slate-600 leading-relaxed">${p.descriptionText || ''}</p>
-        </div>
-        <div class="pt-4 space-y-3">
-            <h4 class="font-bold text-slate-900 text-sm">Hướng dẫn sử dụng</h4>
-            <ul class="space-y-2 text-slate-600 list-disc pl-4">
-                ${guides.map(item => `<li>${item}</li>`).join('')}
-            </ul>
-        </div>`;
-    }
-
-    const drawer = document.getElementById('info-drawer');
-    if (drawer) {
-        drawer.classList.remove('hidden');
-        setTimeout(() => {
-            document.getElementById('info-overlay').classList.remove('opacity-0');
-            document.getElementById('info-panel').classList.remove('translate-x-full');
-        }, 10);
-
-        const productDrawer = document.getElementById('product-drawer');
-        if (productDrawer) productDrawer.classList.add('drawer-open');
-
-        if (window.lucide) lucide.createIcons({ root: drawer });
-    }
-}
-
-function closeInfoDrawer() {
-    const overlay = document.getElementById('info-overlay');
-    const panel = document.getElementById('info-panel');
-    const drawer = document.getElementById('info-drawer');
-
-    if (overlay && panel && drawer) {
-        overlay.classList.add('opacity-0');
-        panel.classList.add('translate-x-full');
-        setTimeout(() => {
-            drawer.classList.add('hidden');
-            const productDrawer = document.getElementById('product-drawer');
-            if (productDrawer) productDrawer.classList.remove('drawer-open');
-        }, 300);
-    }
-}
-
-function openIntroDrawer() {
-    const p = originalProducts.find(x => x.id === window.currentActiveProductId);
-    if (!p) return;
-
-    const imagesToDisplay = (p.introImages && p.introImages.length > 0)
-        ? p.introImages
-        : (p.colors && p.colors[0] ? p.colors[0].images : []);
-
-    const contentEl = document.getElementById('intro-drawer-content');
-    if (contentEl) {
-        contentEl.innerHTML = imagesToDisplay.map((img, idx) => `
-            <img src="${img}" loading="lazy" class="w-full h-auto block object-cover px-3 ${idx === 0 ? 'pt-3' : ''}">
-        `).join('');
-    }
-
-    const drawer = document.getElementById('intro-drawer');
-    if (drawer) {
-        drawer.classList.remove('hidden');
-        setTimeout(() => {
-            document.getElementById('intro-overlay').classList.remove('opacity-0');
-            document.getElementById('intro-panel').classList.remove('translate-x-full');
-        }, 10);
-
-        const productDrawer = document.getElementById('product-drawer');
-        if (productDrawer) productDrawer.classList.add('drawer-open');
-
-        if (window.lucide) lucide.createIcons({ root: drawer });
-    }
-}
-
-function closeIntroDrawer() {
-    const overlay = document.getElementById('info-overlay');
-    const panel = document.getElementById('intro-panel');
-    const drawer = document.getElementById('intro-drawer');
-
-    if (overlay && panel && drawer) {
-        overlay.classList.add('opacity-0');
-        panel.classList.add('translate-x-full');
-        setTimeout(() => {
-            drawer.classList.add('hidden');
-            const productDrawer = document.getElementById('product-drawer');
-            if (productDrawer) productDrawer.classList.remove('drawer-open');
-        }, 300);
-    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 window.addEventListener('resize', checkFilterSliderArrows);
 
 document.addEventListener('keydown', function (e) {
-    const galleryModal = document.getElementById('gallery-modal');
-    const isGalleryOpen = galleryModal && !galleryModal.classList.contains('hidden');
-
-    if (isGalleryOpen) {
-        if (e.key === 'ArrowLeft') {
-            prevGalleryImage();
-            return;
-        }
-        if (e.key === 'ArrowRight') {
-            nextGalleryImage();
-            return;
-        }
-    }
-
     if (e.key === 'Escape' || e.key === 'Esc') {
         const quickAddModal = document.getElementById('quick-add-cart-modal');
         if (quickAddModal && !quickAddModal.classList.contains('hidden')) {
@@ -1643,29 +1066,6 @@ document.addEventListener('keydown', function (e) {
             return;
         }
 
-        const infoDrawer = document.getElementById('info-drawer');
-        if (infoDrawer && !infoDrawer.classList.contains('hidden')) {
-            closeInfoDrawer();
-            return;
-        }
-
-        const introDrawer = document.getElementById('intro-drawer');
-        if (introDrawer && !introDrawer.classList.contains('hidden')) {
-            closeIntroDrawer();
-            return;
-        }
-
-        if (isGalleryOpen) {
-            closeGalleryModal();
-            return;
-        }
-
-        const sizeModal = document.getElementById('size-modal');
-        if (sizeModal && !sizeModal.classList.contains('hidden')) {
-            closeSizeModal();
-            return;
-        }
-
         const searchModal = document.getElementById('search-modal');
         if (searchModal && !searchModal.classList.contains('hidden')) {
             closeSearchModal();
@@ -1682,12 +1082,6 @@ document.addEventListener('keydown', function (e) {
         if (mobileNav && !mobileNav.classList.contains('hidden')) {
             toggleMobileNavDrawer();
             clearAllBoldActiveStates();
-            return;
-        }
-
-        const productDrawer = document.getElementById('product-drawer');
-        if (productDrawer && !productDrawer.classList.contains('hidden')) {
-            closeProductDrawer(true);
             return;
         }
 
@@ -1754,28 +1148,17 @@ document.addEventListener('touchend', function (e) {
     }
 
     if (deltaX > 60 && deltaX > deltaY) {
-        const drawers = ['quick-edit-drawer', 'voucher-drawer', 'cart-modal', 'info-drawer', 'intro-drawer', 'search-modal'];
+        const drawers = ['quick-edit-drawer', 'voucher-drawer', 'cart-modal', 'search-modal'];
         for (let id of drawers) {
             const el = document.getElementById(id);
             if (el && !el.classList.contains('hidden')) {
                 if (id === 'quick-edit-drawer' && typeof closeQuickEditDrawer === 'function') closeQuickEditDrawer();
                 if (id === 'voucher-drawer' && typeof closeVoucherDrawer === 'function') closeVoucherDrawer();
                 if (id === 'cart-modal' && typeof closeCartModal === 'function') closeCartModal();
-                if (id === 'info-drawer') closeInfoDrawer();
-                if (id === 'intro-drawer') closeIntroDrawer();
                 if (id === 'search-modal') closeSearchModal();
                 return;
             }
         }
-    }
-
-    const galleryModal = document.getElementById('gallery-modal');
-    if (galleryModal && !galleryModal.classList.contains('hidden')) {
-        if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > deltaY) {
-            if (deltaX < 0) nextGalleryImage();
-            else prevGalleryImage();
-        }
-        return;
     }
 }, { passive: true });
 
