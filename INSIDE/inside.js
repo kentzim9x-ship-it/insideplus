@@ -1058,12 +1058,6 @@ document.addEventListener('keydown', function (e) {
             closeVoucherBadgeModal();
             return;
         }
-
-        const clearModal = document.getElementById('confirm-clear-modal');
-        if (clearModal && !clearModal.classList.contains('hidden')) {
-            closeConfirmClearModal();
-            return;
-        }
     }
 });
 
