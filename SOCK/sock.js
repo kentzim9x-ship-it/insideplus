@@ -791,6 +791,18 @@ function setupInfiniteScroll() {
     catalogIntersectionObserver.observe(sentinel);
 }
 
+function checkColorOutOfStock(colorObj) {
+    if (!colorObj) return false;
+    // Kiểm tra c.outOfStock trực tiếp ở cấp màu
+    if (Boolean(colorObj.outOfStock)) return true;
+
+    // Kiểm tra danh sách kích cỡ thuộc màu
+    if (Array.isArray(colorObj.sizes) && colorObj.sizes.length > 0) {
+        return colorObj.sizes.every(s => Boolean(s.outOfStock) || s.stock === 0);
+    }
+    return false;
+}
+
 function changeCatalogThumbColor(id, colorIdx) {
     const p = originalProducts.find(item => item.id === id);
     if (!p) return;

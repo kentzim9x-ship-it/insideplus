@@ -425,6 +425,18 @@ function addProductToViewed(product) {
     localStorage.setItem('viewed_products', JSON.stringify(viewed));
 }
 
+function checkColorOutOfStock(colorObj) {
+    if (!colorObj) return false;
+    // Kiểm tra c.outOfStock trực tiếp ở cấp màu
+    if (Boolean(colorObj.outOfStock)) return true;
+
+    // Kiểm tra danh sách kích cỡ thuộc màu
+    if (Array.isArray(colorObj.sizes) && colorObj.sizes.length > 0) {
+        return colorObj.sizes.every(s => Boolean(s.outOfStock) || s.stock === 0);
+    }
+    return false;
+}
+
 function renderRecentViewedSlider(currentProductId) {
     const viewed = JSON.parse(localStorage.getItem('viewed_products') || '[]');
     const container = document.getElementById('recent-viewed-slider');
