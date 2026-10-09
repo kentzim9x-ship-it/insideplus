@@ -411,13 +411,74 @@ function closeCartModal() {
 
 function clearAllCartItems() {
     if (cartItems.length === 0) return;
-    if (confirm("Bạn có chắc chắn muốn xóa toàn bộ sản phẩm khỏi giỏ hàng không?")) {
-        cartItems = [];
-        activeVoucher = null;
-        updateCartBadge();
-        renderCartModalContent();
-        showCartToast("Đã xóa toàn bộ sản phẩm khỏi giỏ hàng");
+
+    // Tạo Modal xác nhận tùy chỉnh
+    let modal = document.getElementById('confirm-clear-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'confirm-clear-modal';
+        modal.className = 'fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs transition-opacity duration-200 opacity-0 hidden';
+        document.body.appendChild(modal);
     }
+
+    modal.innerHTML = `
+        <div onclick="event.stopPropagation()" class="bg-white w-full max-w-sm border border-slate-200 shadow-2xl p-6 sm:p-7 text-center font-['Montserrat'] transform transition-all duration-200 scale-95">
+            <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-800">
+                <i data-lucide="trash-2" class="w-5 h-5 stroke-[1.75]"></i>
+            </div>
+            
+            <h3 class="text-sm font-extrabold uppercase tracking-widest text-slate-900 mb-2">Xác nhận xóa giỏ hàng</h3>
+            <p class="text-xs text-slate-500 font-medium leading-relaxed mb-6">Bạn có chắc chắn muốn xóa tất cả sản phẩm khỏi giỏ hàng không?</p>
+            
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="closeConfirmClearModal()" class="w-full py-3 bg-white border border-slate-300 text-slate-700 font-bold text-xs uppercase tracking-wider hover:border-slate-900 hover:text-slate-900 transition cursor-pointer">
+                    Hủy bỏ
+                </button>
+                <button onclick="executeClearCart()" class="w-full py-3 bg-slate-950 text-white font-bold text-xs uppercase tracking-wider hover:bg-black transition cursor-pointer">
+                    Xóa tất cả
+                </button>
+            </div>
+        </div>
+    `;
+
+    modal.classList.remove('hidden');
+    if (window.lucide) lucide.createIcons({ root: modal });
+
+    requestAnimationFrame(() => {
+        modal.classList.remove('opacity-0');
+        const content = modal.firstElementChild;
+        if (content) {
+            content.classList.remove('scale-95');
+            content.classList.add('scale-100');
+        }
+    });
+
+    modal.onclick = closeConfirmClearModal;
+}
+
+function closeConfirmClearModal() {
+    const modal = document.getElementById('confirm-clear-modal');
+    if (!modal || modal.classList.contains('hidden')) return;
+
+    modal.classList.add('opacity-0');
+    const content = modal.firstElementChild;
+    if (content) {
+        content.classList.remove('scale-100');
+        content.classList.add('scale-95');
+    }
+
+    setTimeout(() => {
+        modal.classList.add('hidden');
+    }, 200);
+}
+
+function executeClearCart() {
+    closeConfirmClearModal();
+    cartItems = [];
+    activeVoucher = null;
+    updateCartBadge();
+    renderCartModalContent();
+    showCartToast("Đã xóa toàn bộ sản phẩm khỏi giỏ hàng");
 }
 
 function toggleSubtotalDetails() {

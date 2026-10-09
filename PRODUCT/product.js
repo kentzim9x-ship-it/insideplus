@@ -7,9 +7,8 @@ let currentQuantity = 1;
 
 document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
-    loadHighlightVoucher().finally(() => {
-        loadProductsData();
-    });
+    loadHighlightVoucher();
+    loadProductsData();
 });
 
 function loadProductsData() {
@@ -80,19 +79,37 @@ function loadHighlightVoucher() {
 function processHighlightData(data) {
     if (!Array.isArray(data)) return null;
 
-    // Tìm dòng có is_highlight = true (hoặc 'true' / 'TRUE' / 1), giới hạn lấy 1
+    // 1. Tìm dòng có is_highlight = true (hoặc 'TRUE', 'true', 1)
     const item = data.find(v => {
         const val = v.is_highlight ?? v.IS_HIGHLIGHT ?? v.isHighlight;
         return String(val).trim().toLowerCase() === 'true' || val === 1 || val === true;
     });
 
     if (item) {
-        // Lấy đường dẫn ảnh banner từ các tên cột phổ biến (banner, image, banner_url, img, v.v.)
-        let rawImg = (item.banner || item.BANNER || item.image || item.IMAGE || item.banner_url || item.img || '').toString().trim();
+        // 2. Lấy URL ảnh banner từ cột url_img, urlImg, image, banner, ...
+        let rawImg = (item.url_img || item.URL_IMG || item.urlImg || item.image || item.IMAGE || item.banner || item.img || '').toString().trim();
         if (rawImg.startsWith('[') && rawImg.endsWith(']')) {
             rawImg = rawImg.slice(1, -1).trim();
         }
+
+        // Làm sạch URL ảnh nếu là chuỗi
+        if (typeof cleanImageUrl === 'function') {
+            rawImg = cleanImageUrl(rawImg);
+        }
+
         highlightVoucherBanner = rawImg;
+
+        // 3. QUAN TRỌNG: Gọi re-render lại trang sản phẩm nếu dữ liệu sản phẩm đã có sẵn
+        if (currentProduct && typeof renderProductContent === 'function') {
+            const urlParams = new URLSearchParams(window.location.search);
+            const colorParam = urlParams.get('color') || '';
+            let colorIdx = 0;
+            if (colorParam) {
+                const numMatch = colorParam.match(/\d+/);
+                if (numMatch) colorIdx = Math.max(0, parseInt(numMatch[0], 10) - 1);
+            }
+            renderProductContent(currentProduct, colorIdx);
+        }
     }
     return highlightVoucherBanner;
 }
@@ -234,10 +251,10 @@ function renderProductContent(p, colorIdx) {
 
     // Tạo HTML cho banner voucher highlight (chỉ hiển thị xem, không sao chép/áp dụng)
     const highlightBannerHtml = highlightVoucherBanner ? `
-    <div class="w-full my-4 overflow-hidden rounded-none shadow-sm select-none pointer-events-none">
-        <img src="${highlightVoucherBanner}" alt="Voucher Highlight" class="w-full h-auto object-cover block">
-    </div>
-` : '';
+        <div class="w-full my-3 overflow-hidden rounded-none shadow-xs select-none pointer-events-none">
+            <img src="${highlightVoucherBanner}" alt="Voucher Highlight" class="w-full h-auto object-cover block">
+        </div>
+    ` : '';
 
     // IN VÀO DOM
     const container = document.getElementById('product-content-body');
