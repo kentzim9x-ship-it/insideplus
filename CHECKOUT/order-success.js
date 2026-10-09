@@ -1,3 +1,26 @@
+function generateOrderQRCode() {
+    const qrContainer = document.getElementById('qrcode-container');
+    if (!qrContainer) return;
+
+    // Lấy chính xác đường dẫn URL trang xác nhận đơn hàng hiện tại
+    const currentOrderUrl = window.location.href;
+
+    // Xóa nội dung cũ nếu có
+    qrContainer.innerHTML = '';
+
+    // Tạo mã QR Code
+    if (typeof QRCode !== 'undefined') {
+        new QRCode(qrContainer, {
+            text: currentOrderUrl,
+            width: 120,
+            height: 120,
+            colorDark: "#0F172A",
+            colorLight: "#FFFFFF",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    }
+}
+
 function getEstimatedDeliveryDate() {
     const now = new Date();
     now.setDate(now.getDate() + 3);
@@ -18,6 +41,10 @@ function getEstimatedDeliveryDate() {
 document.addEventListener('DOMContentLoaded', () => {
     if (window.lucide) lucide.createIcons();
 
+    // 1. Tạo QR Code chứa đường dẫn đơn hàng
+    generateOrderQRCode();
+
+    // 2. Điền thông tin đơn hàng
     const urlParams = new URLSearchParams(window.location.search);
     const orderId = urlParams.get('orderId');
 
@@ -27,7 +54,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const displayAddress = document.getElementById('display-address');
     const displayTotalAmount = document.getElementById('display-total-amount');
 
-    // Lấy thông tin đơn hàng vừa lưu trong bộ nhớ
     const savedOrder = JSON.parse(localStorage.getItem('inside_last_order') || 'null');
 
     if (savedOrder && (!orderId || savedOrder.orderId === orderId)) {
@@ -42,7 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
             displayTotalAmount.innerText = `${(savedOrder.totalAmount || 0).toLocaleString('vi-VN')} đ${statusText}`;
         }
 
-        // Render toàn bộ các sản phẩm thực tế trong đơn
         renderOrderItems(savedOrder.items || []);
     } else {
         if (displayOrderId) displayOrderId.innerText = orderId || 'INSIDE-UNKNOWN';

@@ -12,6 +12,8 @@
         rel="stylesheet">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- QRCode JS Generator CDN (Dùng để tạo QR Code tự động) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <!-- Custom CSS -->
     <link rel="stylesheet" href="checkout.css">
 </head>
@@ -42,27 +44,30 @@
 
             <!-- MINH HỌA GIAO HÀNG (SHIPPER CƯỠI XE MÁY) -->
             <div class="flex justify-center pt-2">
-                <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-slate-50 flex items-center justify-center p-2">
-                    <img src="https://res.cloudinary.com/puyb3jyd/image/upload/v1791566669/_.gif" 
-                         alt="Delivery Courier"
-                         class="w-full h-full object-contain">
+                <div
+                    class="w-36 h-36 sm:w-40 sm:h-40 rounded-full bg-[#e8c37d]/25 flex items-center justify-center p-4 transition-all">
+                    <img src="https://res.cloudinary.com/puyb3jyd/image/upload/v1791566669/_.gif" alt="Delivery Courier"
+                        class="w-full h-full object-contain">
                 </div>
             </div>
 
             <!-- TIÊU ĐỀ & TRẠNG THÁI ĐƠN HÀNG -->
             <div class="space-y-1">
                 <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">Trạng thái đơn hàng</h1>
-                <p class="text-xs sm:text-sm text-slate-500 font-normal">Đơn hàng của bạn đang được xử lý và chuẩn bị giao đến bạn</p>
+                <p class="text-xs sm:text-sm text-slate-500 font-normal">Đơn hàng của bạn đang được xử lý và chuẩn bị
+                    giao đến bạn</p>
             </div>
 
             <!-- KHỐI DANH SÁCH SẢN PHẨM -->
             <div id="order-items-container" class="bg-[#f8f9fa] p-4 rounded-xl space-y-3 text-left">
-                <div class="flex items-center justify-center py-4 text-xs text-slate-400">Đang tải thông tin đơn hàng...</div>
+                <div class="flex items-center justify-center py-4 text-xs text-slate-400">Đang tải thông tin đơn hàng...
+                </div>
             </div>
 
             <!-- KHỐI BẢNG TỔNG QUAN (ORDER SUMMARY) -->
             <div class="bg-[#f8f9fa] p-5 rounded-xl text-left space-y-3">
-                <h3 class="font-bold text-xs sm:text-sm text-slate-900 uppercase tracking-wider pb-1 border-b border-slate-200/60">
+                <h3
+                    class="font-bold text-xs sm:text-sm text-slate-900 uppercase tracking-wider pb-1 border-b border-slate-200/60">
                     Chi tiết đơn hàng
                 </h3>
 
@@ -74,7 +79,8 @@
 
                     <div class="flex justify-between items-start text-slate-600 gap-4">
                         <span class="shrink-0">Địa chỉ giao hàng</span>
-                        <span id="display-address" class="font-medium text-slate-900 text-right truncate max-w-[220px]">...</span>
+                        <span id="display-address"
+                            class="font-medium text-slate-900 text-right truncate max-w-[220px]">...</span>
                     </div>
 
                     <div class="flex justify-between items-center text-slate-600">
@@ -94,10 +100,21 @@
                 </div>
             </div>
 
-            <!-- NÚT HÀNH ĐỘNG -->
-            <div class="space-y-3 pt-2">
+            <!-- THÊM KHỐI MÃ QR CODE LƯU ĐƯỜNG DẪN ĐƠN HÀNG -->
+            <div
+                class="bg-[#f8f9fa] p-4 rounded-xl border border-dashed border-slate-200 flex flex-col items-center justify-center space-y-2">
+                <p class="text-[11px] sm:text-xs text-slate-500 font-medium">Lưu hoặc quét mã QR bên dưới để tra cứu lại
+                    đơn hàng:</p>
+                <div id="qrcode-container"
+                    class="bg-white p-2.5 rounded-lg border border-slate-200 shadow-xs flex items-center justify-center">
+                </div>
+                <span class="text-[10px] text-slate-400 font-mono">Chụp màn hình mã QR này để lưu lại</span>
+            </div>
+
+            <!-- NÚT HÀNH ĐỘNG (Đã thu nhỏ font-size ở bản Mobile: text-[11px] sm:text-sm) -->
+            <div class="space-y-3 pt-1">
                 <a href="../index.html"
-                    class="w-full py-3.5 sm:py-4 bg-[#18181b] hover:bg-black text-white font-bold text-xs sm:text-sm uppercase tracking-widest rounded-full transition duration-200 shadow-md inline-block text-center">
+                    class="w-full py-3.5 sm:py-4 px-3 bg-[#18181b] hover:bg-black text-white font-bold text-[11px] sm:text-sm uppercase tracking-wider sm:tracking-widest rounded-full transition duration-200 shadow-md inline-block text-center">
                     Theo dõi đơn hàng / Tiếp tục mua sắm
                 </a>
 
@@ -111,7 +128,8 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-400 font-bold uppercase tracking-wider mt-8">
+    <footer
+        class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-400 font-bold uppercase tracking-wider mt-8">
         <p>© 2026 INSIDE⁺. Minimalist Concept Layout.</p>
     </footer>
 
