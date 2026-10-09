@@ -76,7 +76,7 @@ async function handlePlaceOrder(e) {
             alert(`Đặt hàng thành công!\nMã đơn hàng của bạn là: ${result.orderId}\nCảm ơn quý khách ${orderPayload.customer.fullName}!`);
 
             // Chuyển hướng về trang chủ index.html[cite: 2]
-            window.location.href = 'index.html';
+            window.location.href = '../index.html';
         } else {
             alert('Có lỗi xảy ra trong quá trình lưu đơn hàng: ' + (result.error || 'Vui lòng thử lại!'));
         }
@@ -547,7 +547,7 @@ function renderCheckoutSummary() {
 
     if (!cartItems || cartItems.length === 0) {
         alert('Giỏ hàng trống!');
-        window.location.href = 'index.html';
+        window.location.href = '../index.html';
         return;
     }
 
