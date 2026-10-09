@@ -7,6 +7,8 @@
     <link rel="icon" type="image/png" href="https://res.cloudinary.com/puyb3jyd/image/upload/v1790447212/insideplus_logo_icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <link rel="stylesheet" href="../SOCK/sock.css">
     <link rel="stylesheet" href="product.css">
 </head>
 <body class="antialiased selection:bg-slate-900 selection:text-white bg-white">
@@ -49,24 +51,40 @@
         </div>
     </header>
 
+    <!-- MOBILE FULL-SCREEN NAVIGATION MENU -->
+    <div id="mobile-nav-drawer" class="fixed inset-0 z-[110] hidden md:hidden">
+        <div id="mobile-nav-panel" class="absolute top-0 left-0 w-full h-full bg-[#363636]/95 backdrop-blur-md text-white shadow-2xl -translate-x-full transition-transform duration-300 ease-out flex flex-col justify-between p-5 sm:p-8">
+            <div>
+                <div class="flex justify-end mb-6">
+                    <button onclick="handleCloseDrawerBtnClick(this)" class="text-slate-200 hover:text-white transition focus:outline-none p-1">
+                        <i data-lucide="x" class="w-7 h-7 stroke-[1.5] -mr-2.5"></i>
+                    </button>
+                </div>
+                <nav class="flex flex-col space-y-3 pl-1 pr-0">
+                    <a href="../INSIDE/inside.html" class="drawer-nav-item flex items-center justify-between text-xl font-black uppercase tracking-[0.18em] text-white hover:text-slate-300 transition no-underline"><span>INSIDE</span><i data-lucide="chevron-right" class="w-5 h-5 text-slate-300 -mr-1"></i></a>
+                    <a href="../SOCK/sock.html" class="drawer-nav-item flex items-center justify-between text-xl font-black uppercase tracking-[0.18em] text-white hover:text-slate-300 transition no-underline"><span>SOCK</span><i data-lucide="chevron-right" class="w-5 h-5 text-slate-300 -mr-1"></i></a>
+                    <a href="../TSHIRT/tshirt.html" class="drawer-nav-item flex items-center justify-between text-xl font-black uppercase tracking-[0.18em] text-white hover:text-slate-300 transition no-underline"><span>T-SHIRT</span><i data-lucide="chevron-right" class="w-5 h-5 text-slate-300 -mr-1"></i></a>
+                </nav>
+            </div>
+            <div class="pl-1 pb-2 text-[14px] font-bold uppercase tracking-widest text-slate-400">© 2026 INSIDE+ CONCEPT</div>
+        </div>
+    </div>
+
     <!-- MAIN PRODUCT CONTENT -->
     <div class="pt-28 md:pt-36 pb-12 min-h-screen">
         <div class="w-full px-4 sm:px-8 lg:px-12 xl:px-16 pt-2 sm:pt-4 pb-4">
             
-            <!-- BREADCRUMB ĐỘNG -->
             <nav class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400 mb-6">
                 <a href="../index.html" class="hover:text-slate-900">Trang chủ</a><span>/</span>
                 <a href="javascript:history.back()" id="breadcrumb-category" class="hover:text-slate-900">SẢN PHẨM</a><span>/</span>
                 <span class="text-slate-900 line-clamp-1" id="breadcrumb-product-name">CHI TIẾT</span>
             </nav>
 
-            <!-- KHUNG RENDER SẢN PHẨM -->
             <div id="product-content-body" class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
                 <!-- Javascript sẽ render thông tin chi tiết vào đây -->
             </div>
         </div>
 
-        <!-- MỤC ĐÃ XEM -->
         <div class="w-full px-4 sm:px-8 lg:px-12 xl:px-16 mt-16 md:mt-24 pt-12 border-t border-slate-100 pb-16">
             <div class="flex items-center justify-between mb-8">
                 <h3 class="text-lg md:text-xl font-semibold uppercase tracking-[0.15em] text-slate-900">ĐÃ XEM GẦN ĐÂY</h3>
@@ -79,7 +97,7 @@
         </div>
     </div>
 
-    <!-- FOOTER -->
+    <!-- FOOTER ĐỒNG BỘ -->
     <footer id="main-footer" class="bg-white text-slate-700 pt-16 pb-12 border-t border-slate-200 mt-auto">
         <div class="w-full px-4 sm:px-8 lg:px-12 xl:px-16 grid grid-cols-1 md:grid-cols-4 gap-8 pb-12 border-b border-slate-100">
             <div class="space-y-4">
@@ -95,23 +113,53 @@
                 </ul>
             </div>
             <div>
-                <h4 class="text-xs font-black uppercase text-slate-900 tracking-wider mb-4">Kết nối</h4>
+                <h4 class="text-xs font-black uppercase text-slate-900 tracking-wider mb-4">Sàn thương mại điện tử</h4>
                 <ul class="space-y-2 text-xs font-bold text-slate-600">
-                    <li><a href="#" class="hover:text-slate-950 flex items-center gap-2"><i data-lucide="shopping-bag" class="w-4 h-4 text-orange-500"></i> SHOPEE MALL</a></li>
-                    <li><a href="#" class="hover:text-slate-950 flex items-center gap-2"><i data-lucide="video" class="w-4 h-4 text-slate-900"></i> TIKTOK SHOP</a></li>
+                    <li><a href="https://shopee.vn" target="_blank" class="hover:text-slate-950 flex items-center gap-2 transition"><i data-lucide="shopping-bag" class="w-4 h-4 text-orange-500"></i> SHOPEE MALL</a></li>
+                    <li><a href="https://tiktok.com" target="_blank" class="hover:text-slate-950 flex items-center gap-2 transition"><i data-lucide="video" class="w-4 h-4 text-slate-900"></i> TIKTOK SHOP</a></li>
                 </ul>
             </div>
             <div>
                 <h4 class="text-xs font-black uppercase text-slate-900 tracking-wider mb-4">Hỗ trợ khách hàng</h4>
+                <p class="text-xs text-slate-600 leading-relaxed font-medium mb-3">Giao hàng cực nhanh và chính sách đổi trả uy tín qua TPD.</p>
                 <p class="text-xs font-black text-slate-900 uppercase">HOTLINE: 0988.XXX.XXX</p>
             </div>
         </div>
         <div class="w-full px-4 sm:px-8 lg:px-12 xl:px-16 pt-8 text-center text-xs text-slate-400 font-bold uppercase">© 2026 INSIDE+. Minimalist Concept Layout.</div>
     </footer>
 
+
     <!-- CÁC MODALS & DRAWERS XEM CHI TIẾT SẢN PHẨM -->
+
+    <!-- 1. Info Drawer -->
+    <div id="info-drawer" class="fixed inset-0 z-[130] hidden">
+        <div id="info-overlay" onclick="closeInfoDrawer()" class="absolute inset-0 bg-slate-950/40 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+        <div id="info-panel" class="absolute top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl translate-x-full transition-transform duration-300 ease-out flex flex-col">
+            <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+                <h3 class="text-xl font-bold text-slate-900">Thông tin sản phẩm</h3>
+                <button onclick="closeInfoDrawer()" class="p-2 -mr-2 text-slate-400 hover:text-slate-900 transition focus:outline-none">
+                    <i data-lucide="x" class="w-6 h-6 stroke-[1.5]"></i>
+                </button>
+            </div>
+            <div id="info-drawer-content" class="flex-1 overflow-y-auto p-6 space-y-6 text-xs text-slate-800 leading-relaxed custom-scroll"></div>
+        </div>
+    </div>
+
+    <!-- 2. Intro Drawer -->
+    <div id="intro-drawer" class="fixed inset-0 z-[130] hidden">
+        <div id="intro-overlay" onclick="closeIntroDrawer()" class="absolute inset-0 bg-slate-950/40 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+        <div id="intro-panel" class="absolute top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl translate-x-full transition-transform duration-300 ease-out flex flex-col">
+            <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between shrink-0">
+                <h3 class="text-xl font-bold text-slate-900">Giới thiệu sản phẩm</h3>
+                <button onclick="closeIntroDrawer()" class="p-2 -mr-2 text-slate-400 hover:text-slate-900 transition focus:outline-none">
+                    <i data-lucide="x" class="w-6 h-6 stroke-[1.5]"></i>
+                </button>
+            </div>
+            <div id="intro-drawer-content" class="flex-1 overflow-y-auto no-scrollbar p-0 space-y-0"></div>
+        </div>
+    </div>
     
-    <!-- 1. Size Modal -->
+    <!-- 3. Size Modal -->
     <div id="size-modal" class="fixed inset-0 z-[120] hidden bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
         <div class="bg-white max-w-2xl w-full p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto custom-scroll rounded-none">
             <button onclick="closeSizeModal()" class="absolute top-6 right-6 p-2 text-slate-400 hover:text-slate-900 transition"><i data-lucide="x" class="w-6 h-6"></i></button>
@@ -123,7 +171,7 @@
         </div>
     </div>
 
-    <!-- 2. Gallery Modal Lightbox -->
+    <!-- 4. Gallery Modal Lightbox -->
     <div id="gallery-modal" class="fixed inset-0 z-[150] hidden bg-[#f8f9fa]/95 backdrop-blur-md flex items-center justify-center">
         <button onclick="closeGalleryModal()" class="absolute top-6 right-6 z-20 w-10 h-10 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center text-slate-600 hover:text-slate-900 transition">
             <i data-lucide="x" class="w-8 h-8"></i>
@@ -140,27 +188,103 @@
         </div>
     </div>
 
-    <!-- 3. Info Drawer -->
-    <div id="info-drawer" class="fixed inset-0 z-[130] hidden">
-        <div id="info-overlay" onclick="closeInfoDrawer()" class="absolute inset-0 bg-slate-950/40 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
-        <div id="info-panel" class="absolute top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl translate-x-full transition-transform duration-300 ease-out flex flex-col">
-            <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
-                <h3 class="text-xl font-bold text-slate-900">Thông tin sản phẩm</h3>
-                <button onclick="closeInfoDrawer()" class="p-2 -mr-2 text-slate-400 hover:text-slate-900 transition"><i data-lucide="x" class="w-6 h-6 stroke-[1.5]"></i></button>
+    <!-- 5. TÌM KIẾM MODAL -->
+    <div id="search-modal" class="fixed inset-0 z-[110] hidden h-[100dvh] w-full bg-black/40 backdrop-blur-sm overflow-y-auto custom-scroll transition-opacity duration-300">
+        <div class="search-content-wrapper bg-white w-full min-h-screen shadow-2xl">
+            <div class="w-full max-w-5xl mx-auto px-4 pt-2 pb-2 md:px-6 md:pt-10 md:pb-8 flex items-center justify-between border-b border-slate-900/10">
+                <div class="flex-1 max-w-3xl relative flex items-center">
+                    <i data-lucide="search" class="w-7 h-7 text-slate-900 mr-4 stroke-[2.5]"></i>
+                    <input type="text" id="search-input" oninput="handleSearchInput(this.value)" placeholder="TÌM KIẾM SẢN PHẨM..." class="w-full bg-transparent text-xl sm:text-2xl font-black text-slate-900 placeholder:text-slate-300 uppercase tracking-tight focus:outline-none">
+                </div>
+                <button onclick="handleCloseSearchBtnClick(this)" class="p-3 -mr-3 text-slate-400 hover:text-slate-900 transition-colors">
+                    <i data-lucide="x" class="w-8 h-8 -mr-0.5 text-black stroke-[1.5]"></i>
+                </button>
             </div>
-            <div id="info-drawer-content" class="flex-1 overflow-y-auto p-6 space-y-6 text-xs text-slate-800 leading-relaxed custom-scroll"></div>
+            <div class="w-full max-w-5xl mx-auto px-6 py-10 space-y-12">
+                <div>
+                    <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+                        <h4 id="search-results-title" class="text-xs font-black uppercase text-slate-900 tracking-[0.2em] flex items-center gap-2"><i data-lucide="history" class="w-4 h-4 text-slate-400"></i> Sản phẩm đã xem</h4>
+                        <button id="btn-clear-history" onclick="clearViewedProducts()" class="text-[11px] font-bold text-slate-400 hover:text-slate-900 uppercase tracking-wider transition">Xóa lịch sử</button>
+                    </div>
+                    <div id="viewed-products-container" class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6"></div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- 4. Intro Drawer -->
-    <div id="intro-drawer" class="fixed inset-0 z-[130] hidden">
-        <div id="intro-overlay" onclick="closeIntroDrawer()" class="absolute inset-0 bg-slate-950/40 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
-        <div id="intro-panel" class="absolute top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl translate-x-full transition-transform duration-300 ease-out flex flex-col">
-            <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between shrink-0">
-                <h3 class="text-xl font-bold text-slate-900">Giới thiệu sản phẩm</h3>
-                <button onclick="closeIntroDrawer()" class="p-2 -mr-2 text-slate-400 hover:text-slate-900 transition"><i data-lucide="x" class="w-6 h-6 stroke-[1.5]"></i></button>
+    <!-- 6. GIỎ HÀNG MODAL -->
+    <div id="cart-modal" class="fixed inset-0 z-[150] hidden">
+        <div id="cart-overlay" onclick="closeCartModal()" class="absolute inset-0 bg-slate-950/40 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+        <div id="cart-panel" class="absolute top-0 right-0 h-full w-full max-w-2xl bg-white shadow-2xl translate-x-full transition-transform duration-300 ease-out flex flex-col">
+            <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <h3 class="text-xl font-black uppercase text-slate-900 tracking-tight">GIỎ HÀNG</h3>
+                    <span id="cart-modal-title-badge" class="bg-[#b91c1c] text-white text-[11px] font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button id="btn-clear-all-cart" onclick="clearAllCartItems()" class="text-xs font-bold text-black-600 hover:text-black-800 hover:underline uppercase hidden">Xóa tất cả</button>
+                    <button onclick="closeCartModal()" class="p-1 text-slate-400 hover:text-slate-900 transition"><i data-lucide="x" class="w-6 h-6"></i></button>
+                </div>
             </div>
-            <div id="intro-drawer-content" class="flex-1 overflow-y-auto no-scrollbar p-0 space-y-0"></div>
+            <div id="free-ship-banner" class="bg-blue-50 px-6 py-2.5 border-b border-blue-100 hidden"><p id="free-ship-text" class="text-xs text-blue-900 font-medium"></p></div>
+            <div id="cart-content-body" class="flex-1 overflow-y-auto p-6 space-y-4 custom-scroll"></div>
+            <div id="cart-footer-section" class="p-6 border-t border-slate-200 bg-white space-y-4">
+                <div class="flex justify-between items-center text-xs font-bold text-slate-800">
+                    <span>MÃ GIẢM GIÁ</span>
+                    <button onclick="openVoucherDrawer()" class="text-blue-600 hover:underline flex items-center gap-1 font-bold"><span id="selected-voucher-label">Chọn hoặc nhập mã</span> <i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+                </div>
+                <div id="subtotal-details-box" class="hidden space-y-2 border-t border-slate-100 pt-3 text-xs font-bold text-slate-700">
+                    <div class="flex justify-between"><span>Giá trị đơn hàng</span><span id="summary-subtotal" class="font-normal text-slate-900">0 đ</span></div>
+                    <div id="discount-row" class="flex justify-between text-red-600 hidden"><span>Giảm giá trực tiếp</span><span id="summary-discount" class="font-bold">-0 đ</span></div>
+                    <div id="voucher-discount-row" class="flex justify-between text-red-600 hidden"><span id="voucher-discount-title">Mã giảm giá</span><span id="summary-voucher-discount" class="font-bold">-0 đ</span></div>
+                </div>
+                <div class="flex justify-between items-center text-sm font-bold border-t border-slate-100 pt-3">
+                    <span class="text-slate-500 flex items-center gap-1 cursor-pointer select-none" onclick="toggleSubtotalDetails()">TẠM TÍNH <i id="subtotal-chevron-icon" data-lucide="chevron-down" class="w-4 h-4 transition-transform"></i></span>
+                    <span id="cart-total-price" class="text-slate-900 text-lg font-black">0đ</span>
+                </div>
+                <button onclick="handleCheckoutRedirect()" id="btn-proceed-checkout" class="w-full bg-slate-950 text-white py-4 font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition">Thanh toán</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. VOUCHER & QUICK EDIT (Copy y hệt từ sock.html) -->
+    <div id="voucher-drawer" class="fixed inset-0 z-[170] hidden">
+        <div id="voucher-overlay" onclick="closeVoucherDrawer()" class="absolute inset-0 bg-slate-950/40 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+        <div id="voucher-panel" class="absolute top-0 right-0 h-full w-full max-w-2xl bg-white shadow-2xl translate-x-full transition-transform duration-300 ease-out flex flex-col">
+            <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <button onclick="closeVoucherDrawer()" class="text-slate-800 hover:text-black"><i data-lucide="arrow-left" class="w-6 h-6"></i></button>
+                    <h3 class="text-lg font-black uppercase text-slate-900">Mã ưu đãi</h3>
+                </div>
+                <button onclick="closeVoucherDrawer()" class="text-slate-400 hover:text-slate-900"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div class="p-5 bg-white border-b border-slate-100">
+                <div class="flex gap-2">
+                    <input type="text" id="manual-voucher-input" oninput="handleManualVoucherInput()" placeholder="NHẬP MÃ ƯU ĐÃI" class="flex-1 border border-slate-300 px-4 py-3 text-xs font-black uppercase tracking-wider text-slate-900 focus:outline-none focus:border-slate-900">
+                    <button id="btn-apply-manual-voucher" onclick="applyManualVoucher()" disabled class="px-6 py-3.5 bg-slate-200 text-slate-400 font-black text-xs uppercase tracking-widest cursor-not-allowed transition">ÁP DỤNG</button>
+                </div>
+            </div>
+            <div id="voucher-list-container" class="flex-1 overflow-y-auto p-6 space-y-4 custom-scroll bg-slate-50"></div>
+            <div class="p-6 border-t border-slate-200 bg-white">
+                <button onclick="closeVoucherDrawer()" class="w-full bg-slate-950 text-white py-4 font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition">Áp dụng</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="quick-edit-drawer" class="fixed inset-0 z-[180] hidden">
+        <div id="quick-edit-overlay" onclick="closeQuickEditDrawer()" class="absolute inset-0 bg-slate-950/40 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+        <div id="quick-edit-panel" class="absolute top-0 right-0 h-full w-full max-w-2xl bg-white shadow-2xl translate-x-full transition-transform duration-300 ease-out flex flex-col">
+            <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <button onclick="closeQuickEditDrawer()" class="text-slate-800 hover:text-black"><i data-lucide="arrow-left" class="w-6 h-6"></i></button>
+                    <h3 class="text-lg font-black uppercase text-slate-900">Điều chỉnh sản phẩm</h3>
+                </div>
+                <button onclick="closeQuickEditDrawer()" class="text-slate-400 hover:text-slate-900"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div id="quick-edit-body" class="flex-1 overflow-y-auto p-6 space-y-6 custom-scroll"></div>
+            <div class="p-6 border-t border-slate-200 bg-white">
+                <button onclick="saveQuickEdit()" class="w-full bg-slate-950 text-white py-4 font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition">Cập nhật giỏ hàng</button>
+            </div>
         </div>
     </div>
 
