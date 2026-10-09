@@ -244,55 +244,55 @@ function renderProductContent(p, colorIdx) {
     </div>`;
 
     // Đọc thông tin voucher từ object
-    const voucherTitle = highlightVoucherObj ? highlightVoucherObj.title : 'GIẢM 50.000đ';
-    const voucherCode = highlightVoucherObj ? highlightVoucherObj.code : 'INSIDE2026';
-    const voucherDesc = highlightVoucherObj
-        ? (highlightVoucherObj.desc || (highlightVoucherObj.minOrder > 0 ? `Đơn hàng từ ${highlightVoucherObj.minOrder.toLocaleString('vi-VN')}đ` : 'Áp dụng cho mọi đơn hàng'))
-        : 'Chương trình ưu đãi đặc biệt dành cho khách hàng mua sắm tại INSIDE+';
+const voucherTitle = highlightVoucherObj ? highlightVoucherObj.title : 'GIẢM 50.000Đ';
+const voucherCode = highlightVoucherObj ? highlightVoucherObj.code : 'INSIDE50';
+const voucherDesc = highlightVoucherObj 
+    ? (highlightVoucherObj.desc || (highlightVoucherObj.minOrder > 0 ? `Đơn hàng tối thiểu ${highlightVoucherObj.minOrder.toLocaleString('vi-VN')}đ` : 'Áp dụng cho mọi đơn hàng'))
+    : 'Đơn hàng tối thiểu 300.000đ';
 
-    // Ảnh mẫu thời trang
-    const fashionImg = (highlightVoucherObj && highlightVoucherObj.urlImg)
-        ? highlightVoucherObj.urlImg
-        : 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600';
+// Ảnh mẫu thời trang
+const fashionImg = (highlightVoucherObj && highlightVoucherObj.urlImg) 
+    ? highlightVoucherObj.urlImg 
+    : 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600';
 
-    const highlightBannerHtml = highlightVoucherObj ? `
-    <div class="w-full my-5 select-none pointer-events-none font-['Montserrat'] shadow-md overflow-hidden border border-slate-200">
-        <div class="grid grid-cols-12 min-h-[160px] sm:min-h-[180px]">
+const highlightBannerHtml = highlightVoucherObj ? `
+    <div class="w-full my-6 select-none pointer-events-none font-['Montserrat'] shadow-md overflow-hidden border border-slate-200/80">
+        <div class="grid grid-cols-12 min-h-[190px] sm:min-h-[220px]">
             
-            <!-- BÊN TRÁI: NỀN SÁNG CHỨA THÔNG TIN CHI TIẾT (ĐÃ CĂN GIỮA NỘI DUNG) -->
-            <div class="col-span-7 sm:col-span-7 bg-[#f8f6f0] text-slate-900 p-4 sm:p-6 flex flex-col justify-center gap-2">
+            <!-- BÊN TRÁI: KHỐI THÔNG TIN CĂN GIỮA VÀ TĂNG KÍCH THƯỚC -->
+            <div class="col-span-7 sm:col-span-7 bg-[#f8f6f0] text-slate-900 p-5 sm:p-8 flex flex-col justify-center items-start space-y-3">
                 <div>
-                    <span class="text-[8px] sm:text-[10px] font-extrabold uppercase tracking-[0.2em] text-slate-500 block">SPECIAL VOUCHER</span>
-                    <h3 class="text-base sm:text-2xl font-black uppercase tracking-tight text-[#ea580c] leading-none mt-1">
+                    <span class="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-[0.2em] text-slate-500 block">DAILY VOUCHER</span>
+                    <h3 class="text-xl sm:text-3xl lg:text-4xl font-black uppercase tracking-tight text-[#ea580c] leading-none mt-1">
                         ${voucherTitle}
                     </h3>
                 </div>
 
                 <div>
-                    <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-[#ea580c] block mb-0.5">INSIDE+ SPECIAL OFFER</span>
-                    <p class="text-[8px] sm:text-[10px] text-slate-500 font-medium leading-tight line-clamp-2">
+                    <span class="text-[9px] sm:text-[11px] font-bold uppercase tracking-wider text-[#ea580c] block mb-0.5">INSIDE+ DAILY OFFER</span>
+                    <p class="text-[10px] sm:text-[12px] text-slate-500 font-semibold leading-tight line-clamp-2">
                         ${voucherDesc}
                     </p>
                 </div>
 
                 <div class="pt-1">
-                    <div class="inline-block bg-[#1c2e24] text-white text-[8px] sm:text-[10px] font-black uppercase tracking-widest px-2.5 py-1">
+                    <div class="inline-block bg-[#1c2e24] text-white text-[9px] sm:text-[11px] font-black uppercase tracking-widest px-3 py-1.5">
                         VOUCHER DISCOUNT
                     </div>
                 </div>
             </div>
 
-            <!-- BÊN PHẢI: NỀN TỐI VỚI VÒNG TRÒN HÌNH ẢNH TO HƠN & CĂN GIỮA -->
-            <div class="col-span-5 sm:col-span-5 bg-[#1c2e24] text-white p-2.5 sm:p-3 flex flex-col justify-between items-center relative overflow-hidden">
+            <!-- BÊN PHẢI: KHUNG TỐI VỚI VÒNG TRÒN ẢNH RỚN HƠN & CĂN GIỮA TUYỆT ĐỐI -->
+            <div class="col-span-5 sm:col-span-5 bg-[#1c2e24] text-white relative p-4 flex items-center justify-center overflow-hidden">
                 
-                <!-- Vòng tròn ảnh to hơn (w-28 h-28 trên mobile / w-36 h-36 trên desktop) -->
-                <div class="w-24 h-24 sm:w-36 sm:h-36 rounded-full overflow-hidden border-2 border-white/20 shadow-inner my-auto relative shrink-0">
+                <!-- Vòng tròn ảnh to hơn & căn chính giữa -->
+                <div class="w-28 h-28 sm:w-40 sm:h-40 lg:w-44 lg:h-44 rounded-full overflow-hidden border-2 border-white/20 shadow-lg relative shrink-0">
                     <img src="${fashionImg}" alt="Fashion Model" class="w-full h-full object-cover object-top">
                 </div>
 
-                <!-- Mã CODE góc dưới bên phải -->
-                <div class="w-full text-right pt-0.5">
-                    <span class="text-[8px] sm:text-[10px] font-mono font-bold tracking-widest text-emerald-200">
+                <!-- Mã CODE nhỏ nhắn đặt sát góc phải dưới -->
+                <div class="absolute bottom-2 right-2.5 sm:bottom-3 sm:right-4 z-10">
+                    <span class="text-[8px] sm:text-[10px] font-mono font-bold tracking-widest text-emerald-200/90 uppercase">
                         CODE : ${voucherCode}
                     </span>
                 </div>
