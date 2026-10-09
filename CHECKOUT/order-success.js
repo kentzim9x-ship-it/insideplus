@@ -2,18 +2,14 @@ function generateOrderQRCode() {
     const qrContainer = document.getElementById('qrcode-container');
     if (!qrContainer) return;
 
-    // Lấy chính xác đường dẫn URL trang xác nhận đơn hàng hiện tại
     const currentOrderUrl = window.location.href;
-
-    // Xóa nội dung cũ nếu có
     qrContainer.innerHTML = '';
 
-    // Tạo mã QR Code
     if (typeof QRCode !== 'undefined') {
         new QRCode(qrContainer, {
             text: currentOrderUrl,
-            width: 120,
-            height: 120,
+            width: 160,  // Tăng kích thước từ 120px lên 160px cho to và rõ nét
+            height: 160,
             colorDark: "#0F172A",
             colorLight: "#FFFFFF",
             correctLevel: QRCode.CorrectLevel.H
