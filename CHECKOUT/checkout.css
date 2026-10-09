@@ -115,3 +115,34 @@ body {
         transform: scale(1);
     }
 }
+
+/* Vết bấm khuyết bán nguyệt trên và dưới cho thẻ Ticket QR */
+.ticket-notch-top {
+    position: absolute;
+    top: -8px;
+    right: 140px; /* Vị trí khớp với vạch phân cách giữa 2 cột */
+    width: 16px;
+    height: 16px;
+    background-color: #ffffff; /* Trùng với nền trắng ngoài card */
+    border-radius: 9999px;
+    border-bottom: 1px solid #f1f5f9;
+    z-index: 10;
+}
+
+.ticket-notch-bottom {
+    position: absolute;
+    bottom: -8px;
+    right: 140px;
+    width: 16px;
+    height: 16px;
+    background-color: #ffffff;
+    border-radius: 9999px;
+    border-top: 1px solid #f1f5f9;
+    z-index: 10;
+}
+
+@media (max-width: 640px) {
+    .ticket-notch-top, .ticket-notch-bottom {
+        right: 110px; /* Điều chỉnh vị trí khuyết lỗ trên màn hình di động */
+    }
+}

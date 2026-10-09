@@ -5,11 +5,14 @@ function generateOrderQRCode() {
     const currentOrderUrl = window.location.href;
     qrContainer.innerHTML = '';
 
+    // Lấy kích thước linh hoạt theo màn hình
+    const qrSize = window.innerWidth < 640 ? 95 : 110;
+
     if (typeof QRCode !== 'undefined') {
         new QRCode(qrContainer, {
             text: currentOrderUrl,
-            width: 160,  // Tăng kích thước từ 120px lên 160px cho to và rõ nét
-            height: 160,
+            width: qrSize,
+            height: qrSize,
             colorDark: "#0F172A",
             colorLight: "#FFFFFF",
             correctLevel: QRCode.CorrectLevel.H

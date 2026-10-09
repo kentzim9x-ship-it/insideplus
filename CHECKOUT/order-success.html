@@ -99,10 +99,33 @@
                 </div>
             </div>
 
-            <!-- KHỐI MÃ QR CODE (PHÓNG TO, RÕ NÉT, BỎ HẾT CHỮ HINT/NOTE XUNG QUANH) -->
-            <div class="flex flex-col items-center justify-center pt-2">
-                <div id="qrcode-container"
-                    class="bg-white p-3 rounded-xl border border-slate-200/80 shadow-xs flex items-center justify-center">
+            <!-- KHỐI MÃ QR VÉ TICKET THEO MẪU (BẰNG ĐỘ RỘNG CÁC KHUNG TRÊN, NỀN XÁM, KHUYẾT LỖ VÉ) -->
+            <div
+                class="relative bg-[#f8f9fa] p-4 sm:p-5 rounded-xl border border-slate-100 overflow-hidden flex items-center justify-between gap-3 w-full my-4">
+                <!-- Vết khuyết lỗ vé trên và dưới -->
+                <div class="ticket-notch-top"></div>
+                <div class="ticket-notch-bottom"></div>
+
+                <!-- Cột trái: Văn bản thông điệp theo kiểu mẫu -->
+                <div class="flex-1 text-left pr-2 sm:pr-4 space-y-1">
+                    <p class="font-extrabold text-xs sm:text-sm text-slate-800 uppercase tracking-wider leading-snug">
+                        QUÉT MÃ QR
+                    </p>
+                    <p class="font-medium text-[11px] sm:text-xs text-slate-500 uppercase tracking-wider">
+                        ĐỂ XEM VÀ TRA CỨU
+                    </p>
+                    <p class="font-extrabold text-xs sm:text-sm text-slate-800 uppercase tracking-wider leading-snug">
+                        CHI TIẾT ĐƠN HÀNG
+                    </p>
+                </div>
+
+                <!-- Đường nét đứt phân cách giữa 2 phần -->
+                <div class="h-20 sm:h-24 border-r-2 border-dashed border-slate-300 mx-1 sm:mx-2"></div>
+
+                <!-- Cột phải: Khung chứa mã QR Code -->
+                <div
+                    class="shrink-0 flex items-center justify-center p-1 sm:p-1.5 bg-white rounded-lg border border-slate-200/80 shadow-xs">
+                    <div id="qrcode-container"></div>
                 </div>
             </div>
 
@@ -113,15 +136,13 @@
                     Theo dõi đơn hàng / Tiếp tục mua sắm
                 </a>
 
-                <p
-                    class="text-[11px] sm:text-xs text-emerald-600 font-medium flex items-start sm:items-center justify-center gap-2 text-left sm:text-center">
-                    <!-- Nút Ping xanh căn đỉnh dòng chữ trên mobile và căn giữa trên PC -->
-                    <span class="relative flex h-2 w-2 shrink-0 mt-1 sm:mt-0">
+                <p class="text-[11px] sm:text-xs text-emerald-600 font-medium text-center leading-relaxed">
+                    <!-- Đặt chấm ping inline ngay trước chữ để luôn bám theo dòng chữ đầu tiên mà vẫn giữ căn giữa toàn khối -->
+                    <span class="inline-flex relative h-2 w-2 mr-1.5 align-middle -mt-0.5">
                         <span
                             class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                         <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                    </span>
-                    <span>Đơn hàng đã được xác nhận và đang trong quá trình vận chuyển</span>
+                    </span><span>Đơn hàng đã được xác nhận và đang trong quá trình vận chuyển</span>
                 </p>
             </div>
 
