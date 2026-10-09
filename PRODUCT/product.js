@@ -484,11 +484,13 @@ function renderRecentViewedSlider(currentProductId) {
             
             <h4 class="font-bold text-slate-900 text-xs sm:text-sm uppercase tracking-tight line-clamp-1 mb-1">${p.name}</h4>
             
-            <div class="flex items-center gap-2">
-                <span class="text-xs sm:text-sm font-bold text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
+            <<div class="flex items-center gap-2.5 flex-wrap">
+                <span class="text-xl sm:text-2xl font-bold text-slate-900">${product.price.toLocaleString('vi-VN')}đ</span>
                 ${hasDiscount ? `
-                    <span class="text-[11px] text-slate-400 line-through font-normal">${p.originalPrice.toLocaleString('vi-VN')}đ</span>
-                    <span class="bg-[#f1f3f9] text-[#556b92] font-semibold text-[11px] px-1.5 py-0.5 rounded-xs">-${discountPercent}%</span>
+                    <span class="text-xs sm:text-sm text-slate-400 line-through font-normal">${product.originalPrice.toLocaleString('vi-VN')}đ</span>
+                    <span class="bg-[#f1f3f9] text-[#556b92] font-semibold text-[11px] px-1.5 py-0.5 rounded-xs">
+                        -${discountPercent}%
+                    </span>
                 ` : ''}
             </div>
         </div>`;
