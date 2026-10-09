@@ -243,15 +243,33 @@ function renderProductContent(p, colorIdx) {
         </div>
     </div>`;
 
+    const voucherTitle = highlightVoucherObj ? highlightVoucherObj.title : 'NHẬP MÃ ƯU ĐÃI';
+    const voucherCode = highlightVoucherObj ? highlightVoucherObj.code : 'INSIDE2026';
+    const voucherDesc = highlightVoucherObj ? (highlightVoucherObj.desc || (highlightVoucherObj.minOrder > 0 ? `ĐƠN TỪ ${highlightVoucherObj.minOrder.toLocaleString('vi-VN')}Đ` : 'DÀNH CHO HỘI VIÊN')) : 'ƯU ĐÃI ĐẶC BIỆT';
+
     const highlightBannerHtml = highlightVoucherObj ? `
-    <div class="w-full my-4 p-4 bg-slate-50 border border-slate-200/80 shadow-xs select-none pointer-events-none flex items-center justify-between gap-3">
-        <div class="space-y-1 flex-1 min-w-0">
-            <div class="flex items-center gap-2">
-                <span class="bg-slate-900 text-white text-[9px] font-black uppercase tracking-widest px-2 py-0.5">ƯU ĐÃI NỔI BẬT</span>
-                <span class="text-xs font-mono font-bold text-slate-700 bg-white border border-slate-200 px-2 py-0.5">${highlightVoucherObj.code}</span>
+    <div class="w-full my-4 select-none pointer-events-none drop-shadow-md font-['Montserrat']">
+        <div class="relative w-full h-24 sm:h-28 bg-[#ea580c] text-white flex items-center overflow-hidden rounded-xs" 
+             style="clip-path: polygon(
+                 0% 0%, 100% 0%, 
+                 100% 35%, 97% 50%, 100% 65%, 
+                 100% 100%, 0% 100%, 
+                 0% 65%, 3% 50%, 0% 35%
+             );">
+            
+            <!-- CUỐNG VÉ TRÁI (BẢN XÁM / TRẮNG DẠNG RĂNG CƯA CẮT) -->
+            <div class="w-1/3 h-full bg-[#f1f5f9] text-slate-900 flex flex-col items-center justify-center border-r-2 border-dashed border-slate-300 relative px-2 text-center">
+                <span class="text-[8px] sm:text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 rotate-180 [writing-mode:vertical-lr] absolute left-2 opacity-60 hidden sm:block">INSIDE+</span>
+                <span class="text-lg sm:text-2xl font-black tracking-tighter text-[#ea580c] leading-none">${voucherCode}</span>
+                <span class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-500 mt-1">MÃ GIẢM GIÁ</span>
             </div>
-            <h4 class="font-extrabold text-xs sm:text-sm text-slate-900 uppercase tracking-tight truncate">${highlightVoucherObj.title}</h4>
-            <p class="text-[11px] text-slate-500 font-medium leading-tight">${highlightVoucherObj.desc || (highlightVoucherObj.minOrder > 0 ? `Áp dụng cho đơn hàng từ ${highlightVoucherObj.minOrder.toLocaleString('vi-VN')}đ` : '')}</p>
+
+            <!-- THÂN VÉ PHẢI (MÀU CAM NỔI BẬT) -->
+            <div class="w-2/3 h-full p-3 sm:p-4 flex flex-col justify-center items-center text-center bg-[#ea580c]">
+                <h3 class="text-base sm:text-xl font-black uppercase tracking-tight text-white leading-tight line-clamp-1">${voucherTitle}</h3>
+                <p class="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-widest text-orange-100 mt-1 opacity-90">${voucherDesc}</p>
+            </div>
+
         </div>
     </div>
 ` : '';
