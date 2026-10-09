@@ -79,21 +79,28 @@ function loadHighlightVoucher() {
 function processHighlightData(data) {
     if (!Array.isArray(data)) return null;
 
-    // Lọc dòng có is_highlight = true (giới hạn lấy 1 dòng)
+    // Tìm dòng voucher có is_highlight = true
     const item = data.find(v => {
         const val = v.is_highlight ?? v.IS_HIGHLIGHT ?? v.isHighlight;
         return String(val).trim().toLowerCase() === 'true' || val === 1 || val === true;
     });
 
     if (item) {
+        // Lấy URL ảnh từ các cột tương ứng trong GG Sheet/JSON (url_img, urlImg, image, banner, img, v.v.)
+        let rawImg = (item.url_img || item.URL_IMG || item.urlImg || item.image || item.IMAGE || item.banner || item.img || '').toString().trim();
+        if (rawImg.startsWith('[') && rawImg.endsWith(']')) {
+            rawImg = rawImg.slice(1, -1).trim();
+        }
+
         highlightVoucherObj = {
             code: String(item.code || '').trim().toUpperCase(),
             title: String(item.title || item.code || ''),
             desc: String(item.desc || ''),
-            minOrder: Number(String(item.minOrder || 0).replace(/[^0-9]/g, '')) || 0
+            minOrder: Number(String(item.minOrder || 0).replace(/[^0-9]/g, '')) || 0,
+            urlImg: rawImg // Lưu URL ảnh tương ứng từ dữ liệu
         };
 
-        // Render lại trang nếu thông tin sản phẩm đã sẵn sàng
+        // Render lại giao diện chi tiết sản phẩm nếu sản phẩm đã nạp xong
         if (currentProduct && typeof renderProductContent === 'function') {
             const urlParams = new URLSearchParams(window.location.search);
             const colorParam = urlParams.get('color') || '';
@@ -244,22 +251,22 @@ function renderProductContent(p, colorIdx) {
     </div>`;
 
     // Đọc thông tin voucher từ object
-const voucherTitle = highlightVoucherObj ? highlightVoucherObj.title : 'GIẢM 50.000Đ';
-const voucherCode = highlightVoucherObj ? highlightVoucherObj.code : 'INSIDE50';
-const voucherDesc = highlightVoucherObj 
-    ? (highlightVoucherObj.desc || (highlightVoucherObj.minOrder > 0 ? `Đơn hàng tối thiểu ${highlightVoucherObj.minOrder.toLocaleString('vi-VN')}đ` : 'Áp dụng cho mọi đơn hàng'))
-    : 'Đơn hàng tối thiểu 300.000đ';
+    const voucherTitle = highlightVoucherObj ? highlightVoucherObj.title : 'GIẢM 50.000Đ';
+    const voucherCode = highlightVoucherObj ? highlightVoucherObj.code : 'INSIDE50';
+    const voucherDesc = highlightVoucherObj
+        ? (highlightVoucherObj.desc || (highlightVoucherObj.minOrder > 0 ? `Đơn hàng tối thiểu ${highlightVoucherObj.minOrder.toLocaleString('vi-VN')}đ` : 'Áp dụng cho mọi đơn hàng'))
+        : 'Đơn hàng tối thiểu 300.000đ';
 
-// Ảnh mẫu thời trang
-const fashionImg = (highlightVoucherObj && highlightVoucherObj.urlImg) 
-    ? highlightVoucherObj.urlImg 
-    : 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600';
+    // Lấy URL ảnh từ voucher đính kèm trong GG Sheet / JSON, nếu không có mới dùng ảnh mặc định
+    const fashionImg = (highlightVoucherObj && highlightVoucherObj.urlImg)
+        ? highlightVoucherObj.urlImg
+        : 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600';
 
-const highlightBannerHtml = highlightVoucherObj ? `
+    const highlightBannerHtml = highlightVoucherObj ? `
     <div class="w-full my-6 select-none pointer-events-none font-['Montserrat'] shadow-md overflow-hidden border border-slate-200/80">
         <div class="grid grid-cols-12 min-h-[190px] sm:min-h-[220px]">
             
-            <!-- BÊN TRÁI: KHỐI THÔNG TIN CĂN GIỮA VÀ TĂNG KÍCH THƯỚC -->
+            <!-- BÊN TRÁI: KHỐI THÔNG TIN CĂN GIỮA -->
             <div class="col-span-7 sm:col-span-7 bg-[#f8f6f0] text-slate-900 p-5 sm:p-8 flex flex-col justify-center items-start space-y-3">
                 <div>
                     <span class="text-[9px] sm:text-[11px] font-extrabold uppercase tracking-[0.2em] text-slate-500 block">DAILY VOUCHER</span>
@@ -282,16 +289,16 @@ const highlightBannerHtml = highlightVoucherObj ? `
                 </div>
             </div>
 
-            <!-- BÊN PHẢI: KHUNG TỐI VỚI VÒNG TRÒN ẢNH RỚN HƠN & CĂN GIỮA TUYỆT ĐỐI -->
-            <div class="col-span-5 sm:col-span-5 bg-[#1c2e24] text-white relative p-4 flex items-center justify-center overflow-hidden">
+            <!-- BÊN PHẢI: KHUNG TỐI CÓ VÒNG TRÒN ẢNH VÀ MÃ CODE SÁT GÓC -->
+            <div class="col-span-5 sm:col-span-5 bg-[#1c2e24] text-white relative p-3 sm:p-4 flex items-center justify-center overflow-hidden">
                 
-                <!-- Vòng tròn ảnh to hơn & căn chính giữa -->
-                <div class="w-28 h-28 sm:w-40 sm:h-40 lg:w-44 lg:h-44 rounded-full overflow-hidden border-2 border-white/20 shadow-lg relative shrink-0">
-                    <img src="${fashionImg}" alt="Fashion Model" class="w-full h-full object-cover object-top">
+                <!-- Vòng tròn ảnh lớn đặt chính giữa -->
+                <div class="w-28 h-28 sm:w-36 sm:h-36 lg:w-40 lg:h-40 rounded-full overflow-hidden border-2 border-white/20 shadow-lg relative shrink-0 -mt-2">
+                    <img src="${fashionImg}" alt="Voucher Image" class="w-full h-full object-cover object-top">
                 </div>
 
-                <!-- Mã CODE nhỏ nhắn đặt sát góc phải dưới -->
-                <div class="absolute bottom-2 right-2.5 sm:bottom-3 sm:right-4 z-10">
+                <!-- Mã CODE chuyển sát góc dưới bên phải không bị che hay đè vào ảnh -->
+                <div class="absolute bottom-1.5 right-2 sm:bottom-2.5 sm:right-3.5 z-20">
                     <span class="text-[8px] sm:text-[10px] font-mono font-bold tracking-widest text-emerald-200/90 uppercase">
                         CODE : ${voucherCode}
                     </span>
