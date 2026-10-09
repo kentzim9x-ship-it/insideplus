@@ -3,7 +3,7 @@ const CHECKOUT_SESSION_KEY = 'inside_checkout_form_data';
 // 1. HÀM ĐÓNG GÓI DỮ LIỆU ĐƠN HÀNG CHUẨN
 function buildOrderPayload() {
     const paymentMethodEl = document.querySelector('input[name="payment_method"]:checked');
-    const paymentMethod = paymentMethodEl ? paymentMethodEl.value : 'COD'; // COD hoặc BANK_TRANSFER
+    const paymentMethod = paymentMethodEl ? paymentMethodEl.value : 'COD';
     
     const cartItems = JSON.parse(localStorage.getItem('inside_cart') || '[]');
     const activeVoucher = JSON.parse(localStorage.getItem('inside_active_voucher') || 'null');
@@ -14,9 +14,15 @@ function buildOrderPayload() {
     const wardName = wardSelect && wardSelect.selectedIndex >= 0 ? wardSelect.options[wardSelect.selectedIndex].text : '';
     const detailAddress = document.getElementById('address')?.value.trim() || '';
 
-    // Tính tổng thanh toán thực tế
+    // Lấy thông tin phí vận chuyển
+    const shippingFeeEl = document.getElementById('summary-shipping-fee');
+    const shippingFeeText = shippingFeeEl ? shippingFeeEl.innerText.trim() : '0 đ';
+    const isFreeShipping = shippingFeeText.toLowerCase().includes('miễn phí') || shippingFeeText === '0 đ';
+    const shippingFee = isFreeShipping ? 0 : (parseInt(shippingFeeText.replace(/[^0-9]/g, ''), 10) || 30000);
+
+    // Lấy tổng thanh toán cuối cùng
     const finalTotalEl = document.getElementById('summary-final-total');
-    const finalTotalText = finalTotalEl ? finalTotalEl.innerText.replace(/[^0-9]/g, '') : '0';
+    const totalAmount = finalTotalEl ? (parseInt(finalTotalEl.innerText.replace(/[^0-9]/g, ''), 10) || 0) : 0;
 
     return {
         customer: {
@@ -42,8 +48,13 @@ function buildOrderPayload() {
             image: item.image,
             totalPrice: item.price * item.quantity
         })),
+        shipping: {
+            fee: shippingFee,
+            isFreeShipping: isFreeShipping,
+            feeText: isFreeShipping ? 'Miễn phí vận chuyển' : `${shippingFee.toLocaleString('vi-VN')} đ`
+        },
         voucher: activeVoucher ? activeVoucher.code : null,
-        totalAmount: parseInt(finalTotalText, 10) || 0
+        totalAmount: totalAmount
     };
 }
 
@@ -55,7 +66,6 @@ async function handlePlaceOrder(e) {
     const originalBtnText = submitBtn ? submitBtn.innerText : 'Thanh toán';
 
     try {
-        // Hiển thị trạng thái Loading
         if (submitBtn) {
             submitBtn.disabled = true;
             submitBtn.innerText = 'ĐANG XỬ LÝ...';
@@ -64,25 +74,23 @@ async function handlePlaceOrder(e) {
         // Đóng gói dữ liệu đơn hàng
         const orderPayload = buildOrderPayload();
 
-        // Gửi qua OrderService lên Google Apps Script
+        // Gửi dữ liệu lên Google Apps Script
         const result = await OrderService.createOrder(orderPayload);
 
         if (result && result.success) {
-            // Gắn orderId vừa sinh vào payload và lưu vào localStorage để trang order-success hiển thị
+            // Đính kèm Mã đơn hàng thực tế vừa sinh
             orderPayload.orderId = result.orderId;
+
+            // LƯU ĐỆM ĐƠN HÀNG VÀO LOCALSTORAGE TRƯỚC KHI XÓA GIỎ HÀNG
             localStorage.setItem('inside_last_order', JSON.stringify(orderPayload));
 
-            // Xóa sạch giỏ hàng và dữ liệu đệm phiên thanh toán
+            // Xóa giỏ hàng sau khi đã lưu thông tin đơn thành công[cite: 2]
             localStorage.removeItem('inside_cart');
             localStorage.removeItem('inside_active_voucher');
             sessionStorage.removeItem(CHECKOUT_SESSION_KEY);
 
-            // Điều hướng dựa theo phương thức thanh toán
-            if (orderPayload.payment.method === 'BANK_TRANSFER') {
-                window.location.href = `payment-qr.html?orderId=${result.orderId}`;
-            } else {
-                window.location.href = `order-success.html?orderId=${result.orderId}`;
-            }
+            // Điều hướng sang trang Order Success đúng orderId
+            window.location.href = `order-success.html?orderId=${result.orderId}`;
         } else {
             alert('Có lỗi xảy ra trong quá trình lưu đơn hàng: ' + (result.error || 'Vui lòng thử lại!'));
         }
