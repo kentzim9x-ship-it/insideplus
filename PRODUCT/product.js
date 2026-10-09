@@ -11,33 +11,59 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function loadProductsData() {
-    fetch('../data/products_sock.json')
+    // 1. Nhận diện file JSON cần tải dựa vào tiền tố màu (CS, CT, CI) trên URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const colorParam = urlParams.get('color') || '';
+    
+    let jsonUrl = '../data/products_inside.json'; // Mặc định
+    if (colorParam.startsWith('CS')) {
+        jsonUrl = '../data/products_sock.json';
+    } else if (colorParam.startsWith('CT')) {
+        jsonUrl = '../data/products_tshirt.json';
+    }
+
+    // 2. Fetch đúng file JSON
+    fetch(jsonUrl)
         .then(res => res.json())
         .then(data => {
             originalProducts = processRawProductsData(data);
-            initProductPage();
+            initProductPage(); // Gọi hàm render sau khi đã có dữ liệu
         })
-        .catch(err => console.error("Lỗi tải dữ liệu sản phẩm:", err));
+        .catch(err => {
+            console.error("Lỗi tải dữ liệu sản phẩm:", err);
+            document.getElementById('product-content-body').innerHTML = `<h3 class="text-center w-full col-span-full py-20 text-slate-500">Lỗi kết nối dữ liệu. Vui lòng tải lại trang.</h3>`;
+        });
 }
 
 function processRawProductsData(data) {
     return (Array.isArray(data) ? data : []).map((item, index) => {
         let colors = [];
-        try { colors = JSON.parse(item.colorsJSON || item.colors || "[]"); } catch (e) { }
+        try { colors = JSON.parse(item.colorsJSON || item.colors || "[]"); } 
+        catch(e) { if (Array.isArray(item.colors)) colors = item.colors; }
         colors = colors.map(c => ({ ...c, images: (c.images || []).map(img => String(img).replace(/^["']|["']$/g, '').trim()) }));
+        
         let introImages = [];
-        try { introImages = JSON.parse(item.introImages || "[]").map(img => String(img).replace(/^["']|["']$/g, '').trim()); } catch (e) { }
+        try { introImages = JSON.parse(item.introImages || "[]").map(img => String(img).replace(/^["']|["']$/g, '').trim()); } 
+        catch(e) { if (Array.isArray(item.introImages)) introImages = item.introImages; }
+        
         let usageGuideText = [];
-        try { usageGuideText = JSON.parse(item.usageGuideText || "[]"); } catch (e) { }
+        try { usageGuideText = JSON.parse(item.usageGuideText || "[]"); } 
+        catch(e) { if (Array.isArray(item.usageGuideText)) usageGuideText = item.usageGuideText; }
 
-        const cleanPrice = Number(String(item.price || 0).replace(/[^0-9]/g, '')) || 0;
-        const cleanOrigPrice = Number(String(item.originalPrice || 0).replace(/[^0-9]/g, '')) || 0;
+        const cleanPrice = Number(String(item.price || item.PRICE || 0).replace(/[^0-9]/g, '')) || 0;
+        const cleanOrigPrice = Number(String(item.originalPrice || item.ORIGINALPRICE || 0).replace(/[^0-9]/g, '')) || 0;
+
+        // 3. QUAN TRỌNG: Bổ sung item.ID (chữ hoa) để mapping chính xác ID từ JSON
+        const rawId = item.id || item.ID || item.productId || `SP_${index}`;
 
         return {
             ...item,
-            id: String(item.id || item.productId || `SP_${index}`).trim(),
-            price: cleanPrice, originalPrice: cleanOrigPrice,
-            colors: colors, introImages: introImages, usageGuideText: usageGuideText
+            id: String(rawId).trim(),
+            price: cleanPrice, 
+            originalPrice: cleanOrigPrice,
+            colors: colors, 
+            introImages: introImages, 
+            usageGuideText: usageGuideText
         };
     });
 }
