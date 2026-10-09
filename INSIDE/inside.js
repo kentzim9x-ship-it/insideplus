@@ -252,8 +252,9 @@ function getCategoryPageUrl(category) {
 }
 
 function getColorPrefix(category) {
-    if (category === 'sock') return 'CS';
-    if (category === 'tshirt') return 'CT';
+    const cleanCat = String(category || '').trim().toLowerCase();
+    if (cleanCat === 'sock') return 'CS';
+    if (cleanCat === 'tshirt') return 'CT';
     return 'CI';
 }
 
@@ -289,14 +290,11 @@ function addProductToViewed(product) {
         name: product.name,
         price: product.price,
         originalPrice: product.originalPrice,
-        category: product.category,
-        pageUrl: getCategoryPageUrl(product.category),
+        category: product.category || 'tshirt', // Lưu đúng category
         images: product.colors && product.colors[0] ? product.colors[0].images : [],
         colors: product.colors
     });
-    if (viewed.length > 8) {
-        viewed = viewed.slice(0, 8);
-    }
+    if (viewed.length > 8) viewed = viewed.slice(0, 8);
     localStorage.setItem('viewed_products', JSON.stringify(viewed));
 }
 

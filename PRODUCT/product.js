@@ -383,14 +383,45 @@ function openSizeModal() { document.getElementById('size-modal').classList.remov
 function closeSizeModal() { document.getElementById('size-modal').classList.add('hidden'); }
 
 // LỊCH SỬ ĐÃ XEM
+// 1. Xác định tiền tố màu dựa trên danh mục
+function getColorPrefix(category) {
+    const cleanCat = String(category || '').trim().toLowerCase();
+    if (cleanCat === 'sock') return 'CS';
+    if (cleanCat === 'tshirt') return 'CT';
+    return 'CI';
+}
+
+function formatColorCode(colorIdx, category) {
+    const prefix = getColorPrefix(category);
+    const num = (typeof colorIdx === 'number' ? colorIdx : 0) + 1;
+    return prefix + String(num).padStart(2, '0');
+}
+
+// 2. Lấy đường dẫn trang danh mục tương ứng
+function getCategoryPageUrl(category) {
+    const cleanCat = String(category || '').trim().toLowerCase();
+    if (cleanCat === 'sock') return '../SOCK/sock.html';
+    if (cleanCat === 'tshirt') return '../TSHIRT/tshirt.html';
+    return '../INSIDE/inside.html';
+}
+
+// 3. Lưu sản phẩm vào lịch sử đã xem
 function addProductToViewed(product) {
     let viewed = JSON.parse(localStorage.getItem('viewed_products') || '[]');
     viewed = viewed.filter(p => p.id !== product.id);
     viewed.unshift({
-        id: product.id, name: product.name, price: product.price, originalPrice: product.originalPrice, category: product.category,
-        images: product.colors && product.colors[0] ? product.colors[0].images : [], colors: product.colors
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        originalPrice: product.originalPrice,
+        category: product.category || 'inside', // Lưu đúng danh mục
+        pageUrl: getCategoryPageUrl(product.category),
+        images: product.colors && product.colors[0] ? product.colors[0].images : [],
+        colors: product.colors
     });
-    if (viewed.length > 8) viewed = viewed.slice(0, 8);
+    if (viewed.length > 8) {
+        viewed = viewed.slice(0, 8);
+    }
     localStorage.setItem('viewed_products', JSON.stringify(viewed));
 }
 
