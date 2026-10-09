@@ -64,15 +64,15 @@ function renderOrderItems(items) {
         return;
     }
 
+    const fallbackImg = 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=300';
+
     container.innerHTML = items.map(item => `
-        <div class="flex items-center gap-3.5 py-2 border-b border-slate-100 last:border-0">
-            <div class="flex justify-center pt-2">
-                <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-slate-50 flex items-center justify-center p-2">
-                    <!-- Ảnh Shipper giao xe máy chuẩn theo hình mẫu -->
-                    <img src="https://cdni.iconscout.com/illustration/premium/thumb/courier-delivery-illustration-download-in-svg-png-gif-file-formats--delivering-order-scooter-logistics-pack-people-illustrations-3324933.png?f=webp&w=600" 
-                         alt="Delivery Courier"
-                         class="w-full h-full object-contain">
-                </div>
+        <div class="flex items-center gap-3.5 py-2.5 border-b border-slate-100 last:border-0">
+            <div class="w-14 h-14 bg-white rounded-lg border border-slate-200/80 p-1 shrink-0 overflow-hidden flex items-center justify-center">
+                <img src="${item.image || fallbackImg}" 
+                     onerror="this.onerror=null; this.src='${fallbackImg}';"
+                     alt="${item.name}" 
+                     class="w-full h-full object-cover rounded">
             </div>
             <div class="flex-1 min-w-0">
                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">INSIDE⁺</span>
