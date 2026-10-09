@@ -316,11 +316,14 @@ function addProductToViewed(product) {
         name: product.name,
         price: product.price,
         originalPrice: product.originalPrice,
-        category: product.category || 'tshirt', // Lưu đúng category
+        category: product.category,
+        pageUrl: getCategoryPageUrl(product.category),
         images: product.colors && product.colors[0] ? product.colors[0].images : [],
         colors: product.colors
     });
-    if (viewed.length > 8) viewed = viewed.slice(0, 8);
+    if (viewed.length > 8) {
+        viewed = viewed.slice(0, 8);
+    }
     localStorage.setItem('viewed_products', JSON.stringify(viewed));
 }
 

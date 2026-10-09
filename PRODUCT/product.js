@@ -429,21 +429,53 @@ function renderRecentViewedSlider(currentProductId) {
     const viewed = JSON.parse(localStorage.getItem('viewed_products') || '[]');
     const container = document.getElementById('recent-viewed-slider');
     if (!container) return;
+
     const viewedFiltered = viewed.filter(p => p.id !== currentProductId);
 
     if (viewedFiltered.length === 0) {
         container.innerHTML = '<p class="text-xs text-slate-400 font-bold uppercase tracking-wider py-4">Chưa có sản phẩm nào khác đã xem.</p>';
+        updateRecentSliderArrows();
         return;
     }
+
     container.innerHTML = viewedFiltered.map(p => {
         const img1 = (p.images && p.images[0]) || '';
-        return `<div class="flex-none w-[calc(50%-12px)] lg:w-[calc(25%-18px)] group cursor-pointer" onclick="window.location.href='product.html?product=${p.id.toUpperCase()}&color=CS01'">
-            <div class="relative aspect-[3/4] bg-slate-100 overflow-hidden mb-3"><img src="${img1}" class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"></div>
+        const img2 = (p.images && p.images[1]) || img1;
+        const hasDiscount = p.originalPrice && p.originalPrice > p.price;
+        const discountPercent = hasDiscount ? Math.round((1 - p.price / p.originalPrice) * 100) : 0;
+
+        const colorsDots = (p.colors || []).map((c, cIdx) => {
+            const isColorOutOfStock = checkColorOutOfStock(c);
+            const strikeClass = isColorOutOfStock ? 'color-out-of-stock' : '';
+
+            return `<button onclick="event.stopPropagation(); changeRecentThumbColor('${p.id}', ${cIdx})" class="w-5 h-5 relative rounded-full border border-slate-300 transition-all ${strikeClass}" style="background-color: ${c.hex};" title="${c.name}"></button>`;
+        }).join('');
+
+        return `<div class="flex-none w-[calc(50%-12px)] lg:w-[calc(25%-18px)] group cursor-pointer" onclick="navigateToProduct('${p.id}', '${p.category || 'sock'}', 0)">
+            <div class="relative aspect-[3/4] bg-slate-100 overflow-hidden mb-3">
+                <img id="recent-thumb-${p.id}" src="${img1}" loading="lazy" data-img1="${img1}" data-img2="${img2}" 
+                onmouseenter="this.src=this.getAttribute('data-img2'); this.classList.add('scale-105');" 
+                onmouseleave="this.src=this.getAttribute('data-img1'); this.classList.remove('scale-105');" 
+                class="w-full h-full object-cover transition-transform duration-500 ease-out">
+            </div>
+            
+            <div class="flex items-center gap-2 mb-2 flex-wrap">${colorsDots}</div>
+            
             <h4 class="font-bold text-slate-900 text-xs sm:text-sm uppercase tracking-tight line-clamp-1 mb-1">${p.name}</h4>
-            <div class="flex items-center gap-2"><span class="text-xs sm:text-sm font-bold text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span></div>
+            
+            <div class="flex items-center gap-2">
+                <span class="text-xs sm:text-sm font-bold text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
+                ${hasDiscount ? `
+                    <span class="text-[11px] text-slate-400 line-through font-normal">${p.originalPrice.toLocaleString('vi-VN')}đ</span>
+                    <span class="bg-[#f1f3f9] text-[#556b92] font-semibold text-[11px] px-1.5 py-0.5 rounded-xs">-${discountPercent}%</span>
+                ` : ''}
+            </div>
         </div>`;
     }).join('');
+
+    setTimeout(updateRecentSliderArrows, 50);
 }
+
 function scrollRecentSlider(direction) {
     const container = document.getElementById('recent-viewed-slider');
     if (!container) return;
@@ -591,16 +623,18 @@ function renderViewedProducts() {
         container.innerHTML = '<p class="col-span-full text-center text-xs text-slate-400 font-bold uppercase tracking-wider py-8">Bạn chưa xem sản phẩm nào gần đây.</p>';
         return;
     }
-    container.innerHTML = viewed.map(p => `
-        <div class="group cursor-pointer" onclick="window.location.href='product.html?product=${p.id.toUpperCase()}&color=CS01'">
+
+    container.innerHTML = viewed.map(p => {
+        return `<div class="group cursor-pointer" onclick="navigateToProduct('${p.id}', '${p.category || 'sock'}', 0)">
             <div class="relative aspect-[3/4] bg-slate-100 overflow-hidden border border-slate-100">
-                <img src="${p.images ? p.images[0] : ''}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                <span class="absolute top-2 left-2 bg-white/90 text-[9px] font-black uppercase text-slate-900 px-2 py-0.5">${p.category || ''}</span>
+                <img src="${p.images ? p.images[0] : ''}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                <span class="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-[9px] font-black uppercase tracking-widest text-slate-900 px-2 py-0.5">${p.category || ''}</span>
             </div>
-        </div>
-    `).join('');
+        </div>`;
+    }).join('');
     if (window.lucide) lucide.createIcons({ root: container });
 }
+
 function clearViewedProducts() {
     localStorage.removeItem('viewed_products');
     renderViewedProducts();
