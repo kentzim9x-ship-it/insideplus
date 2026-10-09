@@ -89,6 +89,8 @@ function renderProductContent(p, colorIdx) {
     const activeColor = p.colors && p.colors[colorIdx] ? p.colors[colorIdx] : p.colors[0];
     const availableSizes = activeColor.sizes || [];
     currentGalleryImages = activeColor.images || [];
+    const hasDiscount = p.originalPrice && Number(p.originalPrice) > Number(p.price);
+    const discountPercent = hasDiscount ? Math.round((1 - Number(p.price) / Number(p.originalPrice)) * 100) : 0;
 
     if (!currentSelectedSize || !availableSizes.some(s => s.name === currentSelectedSize)) {
         const firstAvailable = availableSizes.find(s => !s.outOfStock);
@@ -194,10 +196,15 @@ function renderProductContent(p, colorIdx) {
         <div class="lg:col-span-4 flex flex-col space-y-6 sticky top-28 h-fit">
             <div>
                 <span class="text-[10px] font-black uppercase text-slate-400">${p.category || 'INSIDE+'}</span>
-                <h2 class="text-2xl font-black uppercase text-slate-900 mt-1">${p.name}</h2>
-                <div class="flex items-center gap-3 mt-3">
-                    <span class="text-2xl font-black text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
-                    ${(p.originalPrice > p.price) ? `<span class="text-sm text-slate-400 line-through">${p.originalPrice.toLocaleString('vi-VN')}đ</span> <span class="bg-slate-100 text-slate-600 font-bold text-xs px-2 py-0.5">-${Math.round((1 - p.price / p.originalPrice) * 100)}%</span>` : ''}
+                <h2 class="text-2xl font-black uppercase text-slate-900 mt-1 mb-3">${p.name}</h2>
+                <div class="flex items-center gap-2.5 flex-wrap">
+                    <span class="text-xl sm:text-2xl font-bold text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
+                    ${hasDiscount ? `
+                        <span class="text-xs sm:text-sm text-slate-400 line-through font-normal">${p.originalPrice.toLocaleString('vi-VN')}đ</span>
+                        <span class="bg-[#f1f3f9] text-[#556b92] font-semibold text-[11px] px-1.5 py-0.5 rounded-xs">
+                            -${discountPercent}%
+                        </span>
+                    ` : ''}
                 </div>
             </div>
             <div class="space-y-2" id="size-selection-container">
@@ -484,13 +491,11 @@ function renderRecentViewedSlider(currentProductId) {
             
             <h4 class="font-bold text-slate-900 text-xs sm:text-sm uppercase tracking-tight line-clamp-1 mb-1">${p.name}</h4>
             
-            <<div class="flex items-center gap-2.5 flex-wrap">
-                <span class="text-xl sm:text-2xl font-bold text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
+            <div class="flex items-center gap-2">
+                <span class="text-xs sm:text-sm font-bold text-slate-900">${p.price.toLocaleString('vi-VN')}đ</span>
                 ${hasDiscount ? `
-                    <span class="text-xs sm:text-sm text-slate-400 line-through font-normal">${p.originalPrice.toLocaleString('vi-VN')}đ</span>
-                    <span class="bg-[#f1f3f9] text-[#556b92] font-semibold text-[11px] px-1.5 py-0.5 rounded-xs">
-                        -${discountPercent}%
-                    </span>
+                    <span class="text-[11px] text-slate-400 line-through font-normal">${p.originalPrice.toLocaleString('vi-VN')}đ</span>
+                    <span class="bg-[#f1f3f9] text-[#556b92] font-semibold text-[11px] px-1.5 py-0.5 rounded-xs">-${discountPercent}%</span>
                 ` : ''}
             </div>
         </div>`;
