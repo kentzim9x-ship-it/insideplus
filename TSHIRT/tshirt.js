@@ -1043,17 +1043,10 @@ function renderViewedProducts() {
     }
 
     container.innerHTML = viewed.map(p => {
-        const targetPage = getCategoryPageUrl(p.category);
-        const isCurrentPage = targetPage.includes('tshirt.html');
-
-        const clickAction = isCurrentPage
-            ? `openProductDrawer('${p.id}', 0); closeSearchModal();`
-            : `window.location.href='${targetPage}?product=${formatProductCode(p.id, p.category)}&color=${formatColorCode(0, p.category)}'`;
-
-        return `<div class="group cursor-pointer" onclick="${clickAction}">
+        return `<div class="group cursor-pointer" onclick="navigateToProduct('${p.id}', '${p.category || 'sock'}', 0)">
             <div class="relative aspect-[3/4] bg-slate-100 overflow-hidden border border-slate-100">
                 <img src="${p.images ? p.images[0] : ''}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                <span class="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-[9px] font-black uppercase tracking-widest text-slate-900 px-2 py-0.5">${p.category}</span>
+                <span class="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-[9px] font-black uppercase tracking-widest text-slate-900 px-2 py-0.5">${p.category || ''}</span>
             </div>
         </div>`;
     }).join('');
