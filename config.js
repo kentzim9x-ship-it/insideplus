@@ -732,16 +732,17 @@ function handleCheckoutRedirect() {
     localStorage.setItem('inside_cart', JSON.stringify(cartItems));
     localStorage.setItem('inside_active_voucher', JSON.stringify(activeVoucher));
 
-    const isInSubFolder = window.location.pathname.includes('/INSIDE/') ||
-        window.location.pathname.includes('/SOCK/') ||
-        window.location.pathname.includes('/TSHIRT/') ||
-        window.location.pathname.includes('/inside/') ||
-        window.location.pathname.includes('/sock/') ||
-        window.location.pathname.includes('/tshirt/');
+    // Kiểm tra xem đang ở thư mục con nào (PRODUCT, SOCK, TSHIRT, INSIDE)
+    const pathname = window.location.pathname;
+    const isInSubFolder = pathname.includes('/PRODUCT/') || pathname.includes('/product/') ||
+        pathname.includes('/INSIDE/') || pathname.includes('/inside/') ||
+        pathname.includes('/SOCK/') || pathname.includes('/sock/') ||
+        pathname.includes('/TSHIRT/') || pathname.includes('/tshirt/');
 
+    // Nếu đang ở thư mục con, cần lùi lại một cấp (../) để ra thư mục gốc rồi mới đi vào CHECKOUT/
     const prefix = isInSubFolder ? '../' : '';
 
-    window.location.href = prefix + 'checkout.html';
+    window.location.href = prefix + 'CHECKOUT/checkout.html';
 }
 
 function removeCartItem(index) {
