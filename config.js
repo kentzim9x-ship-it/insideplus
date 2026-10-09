@@ -1653,49 +1653,31 @@ function saveQuickEdit() {
 
 function openProductDrawerFromCart(productId, colorName, category) {
     const cat = (category || 'inside').toLowerCase();
-    const targetPage = getCategoryPageUrl(cat);
+    const pCode = formatProductCode(productId, cat);
 
-    const currentFileName = window.location.pathname.split('/').pop().toLowerCase();
-    const targetFileName = targetPage.split('/').pop().toLowerCase();
-
-    if (currentFileName !== targetFileName) {
-        sessionStorage.setItem('auto_open_cart', 'true');
-        const pCode = formatProductCode(productId, cat);
-
-        let colorIdx = 0;
-        const p = (typeof originalProducts !== 'undefined') ? originalProducts.find(x => x.id === productId) : null;
-        if (p) {
-            colorIdx = p.colors.findIndex(c => c.name === colorName);
-            if (colorIdx === -1) colorIdx = 0;
-        }
-
-        const cCode = formatColorCode(colorIdx, cat);
-
-        // Xác định đường dẫn tương đối để trỏ đúng vào PRODUCT/product.html từ bất kỳ trang nào
-        const isInSubFolder = window.location.pathname.includes('/INSIDE/') ||
-            window.location.pathname.includes('/SOCK/') ||
-            window.location.pathname.includes('/TSHIRT/') ||
-            window.location.pathname.includes('/PRODUCT/') ||
-            window.location.pathname.includes('/inside/') ||
-            window.location.pathname.includes('/sock/') ||
-            window.location.pathname.includes('/tshirt/') ||
-            window.location.pathname.includes('/product/');
-
-        const prefix = isInSubFolder ? '../' : './';
-        window.location.href = prefix + `PRODUCT/product.html?product=${encodeURIComponent(pCode)}&color=${encodeURIComponent(cCode)}`;
-    }
-
-    if (typeof originalProducts !== 'undefined') {
-        const p = originalProducts.find(x => x.id === productId);
-        if (!p) return;
-
-        let colorIdx = p.colors.findIndex(c => c.name === colorName);
+    let colorIdx = 0;
+    const p = (typeof originalProducts !== 'undefined') ? originalProducts.find(x => x.id === productId) : null;
+    if (p) {
+        colorIdx = p.colors.findIndex(c => c.name === colorName);
         if (colorIdx === -1) colorIdx = 0;
-
-        if (typeof openProductDrawer === 'function') {
-            openProductDrawer(productId, colorIdx, true);
-        }
     }
+
+    const cCode = formatColorCode(colorIdx, cat);
+
+    // Đánh dấu cờ để khi sang trang product.html, giỏ hàng sẽ tự động bật mở lại
+    sessionStorage.setItem('auto_open_cart', 'true');
+
+    const isInSubFolder = window.location.pathname.includes('/INSIDE/') ||
+        window.location.pathname.includes('/SOCK/') ||
+        window.location.pathname.includes('/TSHIRT/') ||
+        window.location.pathname.includes('/PRODUCT/') ||
+        window.location.pathname.includes('/inside/') ||
+        window.location.pathname.includes('/sock/') ||
+        window.location.pathname.includes('/tshirt/') ||
+        window.location.pathname.includes('/product/');
+
+    const prefix = isInSubFolder ? '../' : './';
+    window.location.href = prefix + `PRODUCT/product.html?product=${encodeURIComponent(pCode)}&color=${encodeURIComponent(cCode)}`;
 }
 
 // Lắng nghe sự kiện nạp xong trang

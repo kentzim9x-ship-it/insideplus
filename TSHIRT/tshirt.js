@@ -1,7 +1,3 @@
-if ('scrollRestoration' in history) {
-    history.scrollRestoration = 'manual';
-}
-
 let visualFilterCategories = [];
 let activeVisualFilter = "ALL";
 let originalProducts = [];
@@ -1130,12 +1126,6 @@ document.addEventListener('touchend', function (e) {
     const deltaX = touchEndX - touchStartX;
     const deltaY = Math.abs(touchEndY - touchStartY);
 
-    const filterDrawer = document.getElementById('filter-drawer');
-    if (filterDrawer && !filterDrawer.classList.contains('hidden')) {
-        closeFilterDrawer();
-        return;
-    }
-
     const quickModal = document.getElementById('quick-add-cart-modal');
     if (quickModal && !quickModal.classList.contains('hidden')) {
         const currentTouchEndY = e.changedTouches[0].clientY;
@@ -1167,6 +1157,7 @@ document.addEventListener('touchend', function (e) {
                 if (id === 'voucher-drawer' && typeof closeVoucherDrawer === 'function') closeVoucherDrawer();
                 if (id === 'cart-modal' && typeof closeCartModal === 'function') closeCartModal();
                 if (id === 'search-modal') closeSearchModal();
+                if (id === 'filter-drawer' && !filterDrawer.classList.contains('hidden')) closeFilterDrawer();
                 return;
             }
         }

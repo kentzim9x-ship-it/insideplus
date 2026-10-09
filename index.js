@@ -179,30 +179,30 @@ function handleSearchInput(query) {
     const container = document.getElementById('viewed-products-container');
 
     if (!query.trim()) {
-        titleEl.innerHTML = `<i data-lucide="history" class="w-4 h-4 text-slate-400"></i> Sản phẩm đã xem`;
+        titleEl.innerHTML = '<i data-lucide="history" class="w-4 h-4 text-slate-400"></i> Sản phẩm đã xem';
         clearBtn.classList.remove('hidden');
         renderViewedProducts();
         return;
     }
 
-    titleEl.innerHTML = `<i data-lucide="search" class="w-4 h-4 text-slate-400"></i> Kết quả tìm kiếm cho "${query}"`;
+    titleEl.innerHTML = '<i data-lucide="search" class="w-4 h-4 text-slate-400"></i> Kết quả tìm kiếm cho "' + query + '"';
     clearBtn.classList.add('hidden');
 
-    const matches = allSampleProducts.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
+    const matches = originalProducts.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
     if (matches.length === 0) {
-        container.innerHTML = `<p class="col-span-full text-center text-lg text-slate-400 font-bold uppercase tracking-wider py-8">Không tìm thấy sản phẩm nào.</p>`;
+        container.innerHTML = '<p class="col-span-full text-center text-xs text-slate-400 font-bold uppercase tracking-wider py-8">Không tìm thấy sản phẩm nào.</p>';
         return;
     }
 
     container.innerHTML = matches.map(p => `
-        <div class="group cursor-pointer" onclick="window.location.href='${p.path}'">
+        <div class="group cursor-pointer" onclick="openProductDrawer('${p.id}', 0); closeSearchModal();">
             <div class="relative aspect-[3/4] bg-slate-100 overflow-hidden border border-slate-100">
-                <img src="${p.image}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                <img src="${p.colors && p.colors[0] && p.colors[0].images ? p.colors[0].images[0] : ''}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
                 <span class="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-[9px] font-black uppercase tracking-widest text-slate-900 px-2 py-0.5">${p.category}</span>
             </div>
         </div>
     `).join('');
-    if (window.lucide) lucide.createIcons();
+    if (window.lucide) lucide.createIcons({ root: container });
 }
 
 function renderViewedProducts() {
@@ -211,21 +211,19 @@ function renderViewedProducts() {
     if (!container) return;
 
     if (viewed.length === 0) {
-        container.innerHTML = `<p class="col-span-full text-center text-lg text-slate-400 font-bold uppercase tracking-wider py-8">Bạn chưa xem sản phẩm nào gần đây.</p>`;
+        container.innerHTML = '<p class="col-span-full text-center text-xs text-slate-400 font-bold uppercase tracking-wider py-8">Bạn chưa xem sản phẩm nào gần đây.</p>';
         return;
     }
 
     container.innerHTML = viewed.map(p => {
-        let path = `${p.category.toUpperCase()}/${p.category.toLowerCase()}.html`;
-        return `
-        <div class="group cursor-pointer" onclick="window.location.href='${path}'">
+        return `<div class="group cursor-pointer" onclick="navigateToProduct('${p.id}', '${p.category || 'sock'}', 0)">
             <div class="relative aspect-[3/4] bg-slate-100 overflow-hidden border border-slate-100">
-                <img src="${p.images ? p.images[0] : p.image}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                <span class="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-[9px] font-black uppercase tracking-widest text-slate-900 px-2 py-0.5">${p.category}</span>
+                <img src="${p.images ? p.images[0] : ''}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                <span class="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-[9px] font-black uppercase tracking-widest text-slate-900 px-2 py-0.5">${p.category || ''}</span>
             </div>
-        </div>
-    `}).join('');
-    if (window.lucide) lucide.createIcons();
+        </div>`;
+    }).join('');
+    if (window.lucide) lucide.createIcons({ root: container });
 }
 
 function toggleChatMenu() {

@@ -1,7 +1,3 @@
-if ('scrollRestoration' in history) {
-    history.scrollRestoration = 'manual';
-}
-
 let visualFilterCategories = [];
 let activeVisualFilter = "ALL";
 let originalProducts = [];
@@ -239,7 +235,7 @@ function navigateToProduct(productId, category, colorIdx = 0) {
     const cleanCat = String(category || '').trim().toLowerCase();
     const formattedProduct = formatProductCode(productId, cleanCat);
     const formattedColor = formatColorCode(colorIdx, cleanCat);
-    
+
     // Gom chung URL điều hướng về trang Product duy nhất
     window.location.href = `../PRODUCT/product.html?product=${encodeURIComponent(formattedProduct)}&color=${encodeURIComponent(formattedColor)}`;
 }
@@ -823,17 +819,17 @@ function toggleSortDropdown(device) {
 function openProductDrawer(id, colorIdx) {
     const p = originalProducts.find(item => String(item.id).trim() === String(id).trim());
     if (!p) return;
-    
+
     const category = p.category || 'sock';
     const formattedProduct = formatProductCode(p.id, category);
     const formattedColor = formatColorCode(colorIdx || 0, category);
-    
+
     // Đóng modal tìm kiếm nếu đang mở
     const searchModal = document.getElementById('search-modal');
     if (searchModal && !searchModal.classList.contains('hidden')) {
         closeSearchModal();
     }
-    
+
     // Chuyển hướng sang file product.html nằm ở thư mục PRODUCT cùng cấp
     window.location.href = `../PRODUCT/product.html?product=${encodeURIComponent(formattedProduct)}&color=${encodeURIComponent(formattedColor)}`;
 }
@@ -1096,12 +1092,6 @@ document.addEventListener('touchend', function (e) {
     const deltaX = touchEndX - touchStartX;
     const deltaY = Math.abs(touchEndY - touchStartY);
 
-    const filterDrawer = document.getElementById('filter-drawer');
-    if (filterDrawer && !filterDrawer.classList.contains('hidden')) {
-        closeFilterDrawer();
-        return;
-    }
-
     const quickModal = document.getElementById('quick-add-cart-modal');
     if (quickModal && !quickModal.classList.contains('hidden')) {
         const currentTouchEndY = e.changedTouches[0].clientY;
@@ -1133,6 +1123,7 @@ document.addEventListener('touchend', function (e) {
                 if (id === 'voucher-drawer' && typeof closeVoucherDrawer === 'function') closeVoucherDrawer();
                 if (id === 'cart-modal' && typeof closeCartModal === 'function') closeCartModal();
                 if (id === 'search-modal') closeSearchModal();
+                if (id === 'filter-drawer' && !filterDrawer.classList.contains('hidden')) closeFilterDrawer();
                 return;
             }
         }
