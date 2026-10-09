@@ -7,7 +7,9 @@ let currentQuantity = 1;
 
 document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
-    loadProductsData();
+    loadHighlightVoucher().finally(() => {
+        loadProductsData();
+    });
 });
 
 function loadProductsData() {
@@ -53,6 +55,46 @@ function processRawProductsData(data) {
 
         return { ...item, id: String(rawId).trim(), price: cleanPrice, originalPrice: cleanOrigPrice, colors: colors, introImages: introImages, usageGuideText: usageGuideText };
     });
+}
+
+let highlightVoucherBanner = null;
+
+function loadHighlightVoucher() {
+    const jsonUrl = '../data/vouchers.json';
+    const sheetUrl = 'https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=VOUCHERS';
+
+    return fetch(jsonUrl)
+        .then(res => {
+            if (!res.ok) throw new Error('Không tải được file JSON tĩnh');
+            return res.json();
+        })
+        .then(data => processHighlightData(data))
+        .catch(() => {
+            return fetch(sheetUrl)
+                .then(res => res.json())
+                .then(data => processHighlightData(data))
+                .catch(err => console.warn('Không thể tải banner voucher highlight:', err));
+        });
+}
+
+function processHighlightData(data) {
+    if (!Array.isArray(data)) return null;
+
+    // Tìm dòng có is_highlight = true (hoặc 'true' / 'TRUE' / 1), giới hạn lấy 1
+    const item = data.find(v => {
+        const val = v.is_highlight ?? v.IS_HIGHLIGHT ?? v.isHighlight;
+        return String(val).trim().toLowerCase() === 'true' || val === 1 || val === true;
+    });
+
+    if (item) {
+        // Lấy đường dẫn ảnh banner từ các tên cột phổ biến (banner, image, banner_url, img, v.v.)
+        let rawImg = (item.banner || item.BANNER || item.image || item.IMAGE || item.banner_url || item.img || '').toString().trim();
+        if (rawImg.startsWith('[') && rawImg.endsWith(']')) {
+            rawImg = rawImg.slice(1, -1).trim();
+        }
+        highlightVoucherBanner = rawImg;
+    }
+    return highlightVoucherBanner;
 }
 
 function initProductPage() {
@@ -190,6 +232,13 @@ function renderProductContent(p, colorIdx) {
         </div>
     </div>`;
 
+    // Tạo HTML cho banner voucher highlight (chỉ hiển thị xem, không sao chép/áp dụng)
+    const highlightBannerHtml = highlightVoucherBanner ? `
+    <div class="w-full my-4 overflow-hidden rounded-none shadow-sm select-none pointer-events-none">
+        <img src="${highlightVoucherBanner}" alt="Voucher Highlight" class="w-full h-auto object-cover block">
+    </div>
+` : '';
+
     // IN VÀO DOM
     const container = document.getElementById('product-content-body');
     if (container) {
@@ -210,15 +259,30 @@ function renderProductContent(p, colorIdx) {
                     ` : ''}
                 </div>
             </div>
+            
             <div class="space-y-2" id="size-selection-container">
-                <span class="text-xs font-bold uppercase text-slate-700">MÀU: <span class="font-black">${(activeColor.name || '').toUpperCase()}</span></span><div class="flex gap-2 items-center">${colorsHtml}</div>
+                <span class="text-xs font-bold uppercase text-slate-700">MÀU: <span class="font-black">${(activeColor.name || '').toUpperCase()}</span></span>
+                <div class="flex gap-2 items-center">${colorsHtml}</div>
             </div>
-            <div class="space-y-2">
-                <div class="flex justify-between items-center"><div class="flex items-center gap-2"><span class="text-xs font-bold uppercase text-slate-700">KÍCH CỠ: <span class="font-black text-slate-900">${currentSelectedSize || ''}</span></span>${stockBadgeHtml}</div><button onclick="openSizeModal()" class="text-xs font-bold text-blue-600 hover:underline">Hướng dẫn chọn size</button></div>
+            
+            <!-- KHU VỰC SIZE + NÚT HƯỚNG DẪN BÊN DƯỚI -->
+            <div class="space-y-2.5">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold uppercase text-slate-700">KÍCH CỠ: <span class="font-black text-slate-900">${currentSelectedSize || ''}</span></span>
+                    ${stockBadgeHtml}
+                </div>
                 <div class="flex gap-2 flex-wrap">${sizesHtml}</div>
+                <div>
+                    <button onclick="openSizeModal()" class="text-xs font-bold text-blue-800 underline hover:text-blue-900 transition">Hướng dẫn chọn size</button>
+                </div>
             </div>
+
+            <!-- NỔI BẬT VOUCHER HIGHLIGHT (CHỈ XEM) -->
+            ${highlightBannerHtml}
+
             <div class="space-y-3 pt-2">${actionBtnHtml}</div>
             ${policyHtml}
+            
             <div class="border-t border-slate-200 mt-6 pt-2">
                 <button onclick="openInfoDrawer()" class="w-full py-4 flex items-center justify-between border-b border-slate-100 text-sm font-bold text-slate-900 hover:text-slate-600"><span>Thông tin sản phẩm</span><i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i></button>
                 <button onclick="openIntroDrawer()" class="w-full py-4 flex items-center justify-between border-b border-slate-100 text-sm font-bold text-slate-900 hover:text-slate-600"><span>Giới thiệu sản phẩm</span><i data-lucide="chevron-right" class="w-5 h-5 text-slate-400"></i></button>
