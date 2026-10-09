@@ -1682,6 +1682,13 @@ function openProductDrawerFromCart(productId, colorName, category) {
 
 // Lắng nghe sự kiện nạp xong trang
 document.addEventListener('DOMContentLoaded', () => {
+    if (sessionStorage.getItem('auto_open_cart') === 'true') {
+        sessionStorage.removeItem('auto_open_cart');
+        if (typeof openCartModal === 'function') {
+            openCartModal();
+        }
+    }
+
     attachQuickAddHoverEvents();
     loadVouchersData();
 });

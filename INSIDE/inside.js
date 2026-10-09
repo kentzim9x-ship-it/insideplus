@@ -1,3 +1,4 @@
+
 let visualFilterCategories = [];
 let activeVisualFilter = "ALL";
 let originalProducts = [];
@@ -1123,7 +1124,7 @@ document.addEventListener('touchend', function (e) {
                 if (id === 'voucher-drawer' && typeof closeVoucherDrawer === 'function') closeVoucherDrawer();
                 if (id === 'cart-modal' && typeof closeCartModal === 'function') closeCartModal();
                 if (id === 'search-modal') closeSearchModal();
-                if (id === 'filter-drawer' && !filterDrawer.classList.contains('hidden')) closeFilterDrawer();
+                if (id === 'filter-drawer') closeFilterDrawer();
                 return;
             }
         }

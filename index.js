@@ -205,6 +205,32 @@ function handleSearchInput(query) {
     if (window.lucide) lucide.createIcons({ root: container });
 }
 
+function navigateToProduct(productId, category, colorIdx = 0) {
+    const cleanCat = String(category || '').trim().toLowerCase();
+    const formattedProduct = formatProductCode(productId, cleanCat);
+    const formattedColor = formatColorCode(colorIdx, cleanCat);
+
+    // Gom chung URL điều hướng về trang Product duy nhất
+    window.location.href = `../PRODUCT/product.html?product=${encodeURIComponent(formattedProduct)}&color=${encodeURIComponent(formattedColor)}`;
+}
+
+function formatProductCode(productId, category) {
+    return String(productId || '').toUpperCase();
+}
+
+function getColorPrefix(category) {
+    const cleanCat = String(category || '').trim().toLowerCase();
+    if (cleanCat === 'sock') return 'CS';
+    if (cleanCat === 'tshirt') return 'CT';
+    return 'CI';
+}
+
+function formatColorCode(colorIdx, category) {
+    const prefix = getColorPrefix(category);
+    const num = (typeof colorIdx === 'number' ? colorIdx : 0) + 1;
+    return prefix + String(num).padStart(2, '0');
+}
+
 function renderViewedProducts() {
     const viewed = JSON.parse(localStorage.getItem('viewed_products') || '[]');
     const container = document.getElementById('viewed-products-container');
