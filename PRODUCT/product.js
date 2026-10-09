@@ -437,6 +437,15 @@ function checkColorOutOfStock(colorObj) {
     return false;
 }
 
+function navigateToProduct(productId, category, colorIdx = 0) {
+    const cleanCat = String(category || '').trim().toLowerCase();
+    const formattedProduct = formatProductCode(productId, cleanCat);
+    const formattedColor = formatColorCode(colorIdx, cleanCat);
+
+    // Gom chung URL điều hướng về trang Product duy nhất
+    window.location.href = `../PRODUCT/product.html?product=${encodeURIComponent(formattedProduct)}&color=${encodeURIComponent(formattedColor)}`;
+}
+
 function renderRecentViewedSlider(currentProductId) {
     const viewed = JSON.parse(localStorage.getItem('viewed_products') || '[]');
     const container = document.getElementById('recent-viewed-slider');
