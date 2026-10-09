@@ -244,23 +244,23 @@ function renderProductContent(p, colorIdx) {
     </div>`;
 
     // Đọc thông tin voucher từ object
-    const voucherTitle = highlightVoucherObj ? highlightVoucherObj.title : 'GIẢM 50.000đ';
-    const voucherCode = highlightVoucherObj ? highlightVoucherObj.code : 'INSIDE2026';
-    const voucherDesc = highlightVoucherObj
-        ? (highlightVoucherObj.desc || (highlightVoucherObj.minOrder > 0 ? `Đơn hàng từ ${highlightVoucherObj.minOrder.toLocaleString('vi-VN')}đ` : 'Áp dụng cho mọi đơn hàng'))
-        : 'Chương trình ưu đãi đặc biệt dành cho khách hàng mua sắm tại INSIDE+';
+const voucherTitle = highlightVoucherObj ? highlightVoucherObj.title : 'GIẢM 50.000đ';
+const voucherCode = highlightVoucherObj ? highlightVoucherObj.code : 'INSIDE2026';
+const voucherDesc = highlightVoucherObj 
+    ? (highlightVoucherObj.desc || (highlightVoucherObj.minOrder > 0 ? `Đơn hàng từ ${highlightVoucherObj.minOrder.toLocaleString('vi-VN')}đ` : 'Áp dụng cho mọi đơn hàng'))
+    : 'Chương trình ưu đãi đặc biệt dành cho khách hàng mua sắm tại INSIDE+';
 
-    // Ảnh mẫu thời trang
-    const fashionImg = (highlightVoucherObj && highlightVoucherObj.urlImg)
-        ? highlightVoucherObj.urlImg
-        : 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600';
+// Ảnh mẫu thời trang
+const fashionImg = (highlightVoucherObj && highlightVoucherObj.urlImg) 
+    ? highlightVoucherObj.urlImg 
+    : 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600';
 
-    const highlightBannerHtml = highlightVoucherObj ? `
+const highlightBannerHtml = highlightVoucherObj ? `
     <div class="w-full my-5 select-none pointer-events-none font-['Montserrat'] shadow-md overflow-hidden border border-slate-200">
         <div class="grid grid-cols-12 min-h-[160px] sm:min-h-[180px]">
             
-            <!-- BÊN TRÁI: NỀN SÁNG CHỨA THÔNG TIN CHI TIẾT -->
-            <div class="col-span-7 sm:col-span-7 bg-[#f8f6f0] text-slate-900 p-3.5 sm:p-5 flex flex-col justify-between">
+            <!-- BÊN TRÁI: NỀN SÁNG CHỨA THÔNG TIN CHI TIẾT (ĐÃ CĂN GIỮA NỘI DUNG) -->
+            <div class="col-span-7 sm:col-span-7 bg-[#f8f6f0] text-slate-900 p-4 sm:p-6 flex flex-col justify-center gap-2">
                 <div>
                     <span class="text-[8px] sm:text-[10px] font-extrabold uppercase tracking-[0.2em] text-slate-500 block">DAILY VOUCHER</span>
                     <h3 class="text-base sm:text-2xl font-black uppercase tracking-tight text-[#ea580c] leading-none mt-1">
@@ -268,30 +268,30 @@ function renderProductContent(p, colorIdx) {
                     </h3>
                 </div>
 
-                <div class="my-1">
+                <div>
                     <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-[#ea580c] block mb-0.5">INSIDE+ DAILY OFFER</span>
                     <p class="text-[8px] sm:text-[10px] text-slate-500 font-medium leading-tight line-clamp-2">
                         ${voucherDesc}
                     </p>
                 </div>
 
-                <div>
+                <div class="pt-1">
                     <div class="inline-block bg-[#1c2e24] text-white text-[8px] sm:text-[10px] font-black uppercase tracking-widest px-2.5 py-1">
                         VOUCHER DISCOUNT
                     </div>
                 </div>
             </div>
 
-            <!-- BÊN PHẢI: NỀN TỐI VỚI KHUNG ẢNH TRÒN & MÃ CODE -->
-            <div class="col-span-5 sm:col-span-5 bg-[#1c2e24] text-white p-3 flex flex-col justify-between items-center relative overflow-hidden">
+            <!-- BÊN PHẢI: NỀN TỐI VỚI VÒNG TRÒN HÌNH ẢNH TO HƠN & CĂN GIỮA -->
+            <div class="col-span-5 sm:col-span-5 bg-[#1c2e24] text-white p-2.5 sm:p-3 flex flex-col justify-between items-center relative overflow-hidden">
                 
-                <!-- Khung ảnh người mẫu tròn lồng ở giữa -->
-                <div class="w-20 h-20 sm:w-28 sm:h-28 rounded-full overflow-hidden border-2 border-white/20 shadow-inner my-auto relative shrink-0">
+                <!-- Vòng tròn ảnh to hơn (w-28 h-28 trên mobile / w-36 h-36 trên desktop) -->
+                <div class="w-24 h-24 sm:w-36 sm:h-36 rounded-full overflow-hidden border-2 border-white/20 shadow-inner my-auto relative shrink-0">
                     <img src="${fashionImg}" alt="Fashion Model" class="w-full h-full object-cover object-top">
                 </div>
 
                 <!-- Mã CODE góc dưới bên phải -->
-                <div class="w-full text-right pt-1">
+                <div class="w-full text-right pt-0.5">
                     <span class="text-[8px] sm:text-[10px] font-mono font-bold tracking-widest text-emerald-200">
                         CODE : ${voucherCode}
                     </span>
