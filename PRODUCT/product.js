@@ -13,8 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
 function loadProductsData() {
     const urlParams = new URLSearchParams(window.location.search);
     const colorParam = urlParams.get('color') || '';
-    
-    let jsonUrl = '../data/products_inside.json'; 
+
+    let jsonUrl = '../data/products_inside.json';
     if (colorParam.startsWith('CS')) jsonUrl = '../data/products_sock.json';
     else if (colorParam.startsWith('CT')) jsonUrl = '../data/products_tshirt.json';
 
@@ -22,7 +22,7 @@ function loadProductsData() {
         .then(res => res.json())
         .then(data => {
             originalProducts = processRawProductsData(data);
-            initProductPage(); 
+            initProductPage();
             // KÍCH HOẠT LẠI BADGE GIỎ HÀNG VÀ VOUCHER TỪ CONFIG.JS
             if (typeof updateCartBadge === 'function') updateCartBadge();
         })
@@ -35,14 +35,14 @@ function loadProductsData() {
 function processRawProductsData(data) {
     return (Array.isArray(data) ? data : []).map((item, index) => {
         let colors = [];
-        try { colors = JSON.parse(item.colorsJSON || item.colors || "[]"); } catch(e) { if (Array.isArray(item.colors)) colors = item.colors; }
+        try { colors = JSON.parse(item.colorsJSON || item.colors || "[]"); } catch (e) { if (Array.isArray(item.colors)) colors = item.colors; }
         colors = colors.map(c => ({ ...c, images: (c.images || []).map(img => String(img).replace(/^["']|["']$/g, '').trim()) }));
-        
+
         let introImages = [];
-        try { introImages = JSON.parse(item.introImages || "[]").map(img => String(img).replace(/^["']|["']$/g, '').trim()); } catch(e) { if (Array.isArray(item.introImages)) introImages = item.introImages; }
-        
+        try { introImages = JSON.parse(item.introImages || "[]").map(img => String(img).replace(/^["']|["']$/g, '').trim()); } catch (e) { if (Array.isArray(item.introImages)) introImages = item.introImages; }
+
         let usageGuideText = [];
-        try { usageGuideText = JSON.parse(item.usageGuideText || "[]"); } catch(e) { if (Array.isArray(item.usageGuideText)) usageGuideText = item.usageGuideText; }
+        try { usageGuideText = JSON.parse(item.usageGuideText || "[]"); } catch (e) { if (Array.isArray(item.usageGuideText)) usageGuideText = item.usageGuideText; }
 
         const cleanPrice = Number(String(item.price || item.PRICE || 0).replace(/[^0-9]/g, '')) || 0;
         const cleanOrigPrice = Number(String(item.originalPrice || item.ORIGINALPRICE || 0).replace(/[^0-9]/g, '')) || 0;
@@ -58,7 +58,7 @@ function initProductPage() {
     const colorParam = urlParams.get('color');
 
     if (!productParam) {
-        window.location.href = '../index.html'; 
+        window.location.href = '../index.html';
         return;
     }
 
@@ -71,10 +71,10 @@ function initProductPage() {
         document.getElementById('breadcrumb-category').innerText = currentProduct.category || "SẢN PHẨM";
 
         let colorIdx = 0;
-        if(colorParam) {
+        if (colorParam) {
             const numMatch = colorParam.match(/\d+/);
-            if(numMatch) colorIdx = Math.max(0, parseInt(numMatch[0], 10) - 1);
-            if(colorIdx >= currentProduct.colors.length) colorIdx = 0;
+            if (numMatch) colorIdx = Math.max(0, parseInt(numMatch[0], 10) - 1);
+            if (colorIdx >= currentProduct.colors.length) colorIdx = 0;
         }
 
         addProductToViewed(currentProduct);
@@ -154,8 +154,8 @@ function renderProductContent(p, colorIdx) {
     const activeShopeeUrl = activeColor.shopeeUrl || "https://shopee.vn";
     const activeTiktokUrl = activeColor.tiktokUrl || "https://tiktok.com";
 
-    const actionBtnHtml = showOutOfStockBtn ? 
-        '<button disabled class="w-full bg-[#e2e8f0] text-[#64748b] py-4 px-6 font-bold text-xs uppercase tracking-widest pointer-events-none cursor-not-allowed text-center">HẾT HÀNG!</button>' : 
+    const actionBtnHtml = showOutOfStockBtn ?
+        '<button disabled class="w-full bg-[#e2e8f0] text-[#64748b] py-4 px-6 font-bold text-xs uppercase tracking-widest pointer-events-none cursor-not-allowed text-center">HẾT HÀNG!</button>' :
         `<div class="flex items-center gap-3">
             <div class="flex items-center border border-slate-300 bg-white px-3 py-2.5">
                 <button onclick="changeQty(-1)" class="px-2 text-sm font-bold text-slate-700 hover:text-black">-</button>
@@ -625,6 +625,15 @@ document.addEventListener('touchend', function (e) {
     const touchEndY = e.changedTouches[0].screenY;
     const deltaX = touchEndX - touchStartX;
     const deltaY = Math.abs(touchEndY - touchStartY);
+
+    const mobileNav = document.getElementById('mobile-nav-drawer');
+    if (mobileNav && !mobileNav.classList.contains('hidden')) {
+        if (deltaX < -50 && Math.abs(deltaX) > deltaY) {
+            toggleMobileNavDrawer();
+            clearAllBoldActiveStates();
+            return;
+        }
+    }
 
     if (deltaX > 60 && deltaX > deltaY) {
         const drawers = ['quick-edit-drawer', 'voucher-drawer', 'cart-modal', 'info-drawer', 'intro-drawer', 'search-modal'];
