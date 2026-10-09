@@ -244,32 +244,32 @@ function renderProductContent(p, colorIdx) {
     </div>`;
 
     // Đọc thông tin voucher từ object
-const voucherTitle = highlightVoucherObj ? highlightVoucherObj.title : 'GIẢM 50.000đ';
-const voucherCode = highlightVoucherObj ? highlightVoucherObj.code : 'INSIDE2026';
-const voucherDesc = highlightVoucherObj 
-    ? (highlightVoucherObj.desc || (highlightVoucherObj.minOrder > 0 ? `Đơn hàng từ ${highlightVoucherObj.minOrder.toLocaleString('vi-VN')}đ` : 'Áp dụng cho mọi đơn hàng'))
-    : 'Chương trình ưu đãi đặc biệt dành cho khách hàng mua sắm tại INSIDE+';
+    const voucherTitle = highlightVoucherObj ? highlightVoucherObj.title : 'GIẢM 50.000đ';
+    const voucherCode = highlightVoucherObj ? highlightVoucherObj.code : 'INSIDE2026';
+    const voucherDesc = highlightVoucherObj
+        ? (highlightVoucherObj.desc || (highlightVoucherObj.minOrder > 0 ? `Đơn hàng từ ${highlightVoucherObj.minOrder.toLocaleString('vi-VN')}đ` : 'Áp dụng cho mọi đơn hàng'))
+        : 'Chương trình ưu đãi đặc biệt dành cho khách hàng mua sắm tại INSIDE+';
 
-// Ảnh mẫu thời trang
-const fashionImg = (highlightVoucherObj && highlightVoucherObj.urlImg) 
-    ? highlightVoucherObj.urlImg 
-    : 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600';
+    // Ảnh mẫu thời trang
+    const fashionImg = (highlightVoucherObj && highlightVoucherObj.urlImg)
+        ? highlightVoucherObj.urlImg
+        : 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=600';
 
-const highlightBannerHtml = highlightVoucherObj ? `
+    const highlightBannerHtml = highlightVoucherObj ? `
     <div class="w-full my-5 select-none pointer-events-none font-['Montserrat'] shadow-md overflow-hidden border border-slate-200">
         <div class="grid grid-cols-12 min-h-[160px] sm:min-h-[180px]">
             
             <!-- BÊN TRÁI: NỀN SÁNG CHỨA THÔNG TIN CHI TIẾT (ĐÃ CĂN GIỮA NỘI DUNG) -->
             <div class="col-span-7 sm:col-span-7 bg-[#f8f6f0] text-slate-900 p-4 sm:p-6 flex flex-col justify-center gap-2">
                 <div>
-                    <span class="text-[8px] sm:text-[10px] font-extrabold uppercase tracking-[0.2em] text-slate-500 block">DAILY VOUCHER</span>
+                    <span class="text-[8px] sm:text-[10px] font-extrabold uppercase tracking-[0.2em] text-slate-500 block">SPECIAL VOUCHER</span>
                     <h3 class="text-base sm:text-2xl font-black uppercase tracking-tight text-[#ea580c] leading-none mt-1">
                         ${voucherTitle}
                     </h3>
                 </div>
 
                 <div>
-                    <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-[#ea580c] block mb-0.5">INSIDE+ DAILY OFFER</span>
+                    <span class="text-[8px] sm:text-[9px] font-bold uppercase tracking-wider text-[#ea580c] block mb-0.5">INSIDE+ SPECIAL OFFER</span>
                     <p class="text-[8px] sm:text-[10px] text-slate-500 font-medium leading-tight line-clamp-2">
                         ${voucherDesc}
                     </p>
