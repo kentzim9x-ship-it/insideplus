@@ -262,24 +262,10 @@ function formatProductCode(productId, category) {
     return String(productId || '').toUpperCase();
 }
 
-function parseProductIdFromCode(code) {
-    if (!code) return null;
-    const cleanCode = String(code).trim().toLowerCase();
-    const p = originalProducts.find(item => String(item.id).trim().toLowerCase() === cleanCode);
-    return p ? p.id : null;
-}
-
 function formatColorCode(colorIdx, category) {
     const prefix = getColorPrefix(category);
     const num = (typeof colorIdx === 'number' ? colorIdx : 0) + 1;
     return prefix + String(num).padStart(2, '0');
-}
-
-function parseColorIndexFromCode(colorCode) {
-    if (!colorCode) return 0;
-    const numMatch = colorCode.match(/\d+/);
-    if (!numMatch) return 0;
-    return Math.max(0, parseInt(numMatch[0], 10) - 1);
 }
 
 function addProductToViewed(product) {
@@ -1109,6 +1095,12 @@ document.addEventListener('touchend', function (e) {
 
     const deltaX = touchEndX - touchStartX;
     const deltaY = Math.abs(touchEndY - touchStartY);
+
+    const filterDrawer = document.getElementById('filter-drawer');
+    if (filterDrawer && !filterDrawer.classList.contains('hidden')) {
+        closeFilterDrawer();
+        return;
+    }
 
     const quickModal = document.getElementById('quick-add-cart-modal');
     if (quickModal && !quickModal.classList.contains('hidden')) {

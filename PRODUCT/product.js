@@ -646,10 +646,19 @@ function renderViewedProducts() {
     }
 
     container.innerHTML = viewed.map(p => {
-        return `<div class="group cursor-pointer" onclick="navigateToProduct('${p.id}', '${p.category || 'sock'}', 0)">
+        const cIdx = p.currentColorIdx || 0;
+        const prodCode = formatProductCode(p.id, p.category);
+        const colorCode = formatColorCode(cIdx, p.category);
+        const img1 = (p.images && p.images[0]) || '';
+
+        // Xác định prefix để gọi đúng product.html từ bất kỳ cấp thư mục nào
+        const isInSubFolder = window.location.pathname.includes('/PRODUCT/') || window.location.pathname.includes('/product/');
+        const prefix = isInSubFolder ? '' : 'PRODUCT/';
+
+        return `<div class="group cursor-pointer" onclick="window.location.href='${prefix}product.html?product=${encodeURIComponent(prodCode)}&color=${encodeURIComponent(colorCode)}'">
             <div class="relative aspect-[3/4] bg-slate-100 overflow-hidden border border-slate-100">
-                <img src="${p.images ? p.images[0] : ''}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
-                <span class="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-[9px] font-black uppercase tracking-widest text-slate-900 px-2 py-0.5">${p.category || ''}</span>
+                <img src="${img1}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                <span class="absolute top-2 left-2 bg-white/90 text-[9px] font-black uppercase text-slate-900 px-2 py-0.5">${p.category || ''}</span>
             </div>
         </div>`;
     }).join('');

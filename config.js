@@ -55,7 +55,7 @@ function processRawVouchersData(data) {
     availableVouchers = activeVouchers.map(item => {
         const isBadge = item.is_badge ?? item.IS_BADGE ?? false;
         const hasBadge = String(isBadge).trim().toUpperCase() === 'TRUE' || isBadge === true;
-        
+
         // Đọc link ảnh từ cột url_img trên Google Sheet
         let rawUrlImg = item.url_img || item.URL_IMG || item.urlImg || item.image || '';
         if (typeof cleanImageUrl === 'function') {
@@ -1670,8 +1670,19 @@ function openProductDrawerFromCart(productId, colorName, category) {
         }
 
         const cCode = formatColorCode(colorIdx, cat);
-        window.location.href = `${targetPage}?product=${pCode}&color=${cCode}`;
-        return;
+
+        // Xác định đường dẫn tương đối để trỏ đúng vào PRODUCT/product.html từ bất kỳ trang nào
+        const isInSubFolder = window.location.pathname.includes('/INSIDE/') ||
+            window.location.pathname.includes('/SOCK/') ||
+            window.location.pathname.includes('/TSHIRT/') ||
+            window.location.pathname.includes('/PRODUCT/') ||
+            window.location.pathname.includes('/inside/') ||
+            window.location.pathname.includes('/sock/') ||
+            window.location.pathname.includes('/tshirt/') ||
+            window.location.pathname.includes('/product/');
+
+        const prefix = isInSubFolder ? '../' : './';
+        window.location.href = prefix + `PRODUCT/product.html?product=${encodeURIComponent(pCode)}&color=${encodeURIComponent(cCode)}`;
     }
 
     if (typeof originalProducts !== 'undefined') {
