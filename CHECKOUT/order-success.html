@@ -45,8 +45,8 @@
             <!-- MINH HỌA GIAO HÀNG (SHIPPER CƯỠI XE MÁY) -->
             <div class="flex justify-center pt-2">
                 <div class="w-36 h-36 sm:w-44 sm:h-44 flex items-center justify-center">
-                    <<img src="https://res.cloudinary.com/puyb3jyd/image/upload/v1791566669/_.gif"
-                        alt="Delivery Courier" class="w-full h-full object-contain">
+                    <img src="https://res.cloudinary.com/puyb3jyd/image/upload/v1791566669/_.gif" alt="Delivery Courier"
+                        class="w-full h-full object-contain">
                 </div>
             </div>
 
@@ -113,9 +113,14 @@
                     Theo dõi đơn hàng / Tiếp tục mua sắm
                 </a>
 
-                <p class="text-[11px] sm:text-xs text-emerald-600 font-medium flex items-center justify-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block animate-ping"></span>
-                    Đơn hàng đã được xác nhận và đang trong quá trình vận chuyển
+                <p class="text-[11px] sm:text-xs text-emerald-600 font-medium flex items-center justify-center gap-2">
+                    <!-- Bọc nút ping trong 1 container shrink-0 có relative để giữ hiệu ứng ping chuẩn -->
+                    <span class="relative flex h-2 w-2 shrink-0">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    <span>Đơn hàng đã được xác nhận và đang trong quá trình vận chuyển</span>
                 </p>
             </div>
 
