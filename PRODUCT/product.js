@@ -6,6 +6,7 @@ let currentGalleryIndex = 0;
 let currentQuantity = 1;
 
 document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
     loadProductsData();
 });
 
@@ -417,6 +418,162 @@ function scrollRecentSlider(direction) {
     if (!container) return;
     const scrollAmount = container.clientWidth;
     container.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+}
+
+function updateRecentSliderArrows() {
+    const container = document.getElementById('recent-viewed-slider');
+    const prevBtn = document.getElementById('viewed-slider-prev');
+    const nextBtn = document.getElementById('viewed-slider-next');
+    if (!container || !prevBtn || !nextBtn) return;
+
+    const isScrollable = container.scrollWidth > container.clientWidth;
+    if (!isScrollable) {
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+        return;
+    }
+    prevBtn.disabled = container.scrollLeft <= 5;
+    nextBtn.disabled = container.scrollLeft + container.clientWidth >= container.scrollWidth - 5;
+}
+
+// 2. Các hàm Menu Mobile
+function clearAllBoldActiveStates() {
+    document.querySelectorAll('.btn-bold-active, .active-bold').forEach(el => el.classList.remove('btn-bold-active', 'active-bold'));
+}
+function handleMenuBtnClick(element) {
+    clearAllBoldActiveStates();
+    if (element) element.classList.add('btn-bold-active');
+    toggleMobileNavDrawer();
+}
+function handleCloseDrawerBtnClick(element) {
+    clearAllBoldActiveStates();
+    if (element) element.classList.add('btn-bold-active');
+    toggleMobileNavDrawer();
+}
+function handleDrawerNavItemClick(element) {
+    clearAllBoldActiveStates();
+    if (element) element.classList.add('btn-bold-active');
+    toggleMobileNavDrawer();
+}
+function handleLogoClick(element) {
+    clearAllBoldActiveStates();
+    if (element) element.classList.add('btn-bold-active');
+}
+function toggleMobileNavDrawer() {
+    const drawer = document.getElementById('mobile-nav-drawer');
+    const panel = document.getElementById('mobile-nav-panel');
+
+    if (drawer.classList.contains('hidden')) {
+        drawer.classList.remove('hidden');
+        setTimeout(() => panel.classList.remove('-translate-x-full'), 10);
+    } else {
+        panel.classList.add('-translate-x-full');
+        setTimeout(() => {
+            drawer.classList.add('hidden');
+            clearAllBoldActiveStates();
+        }, 300);
+    }
+}
+
+// 3. Các hàm Modal Tìm Kiếm
+let savedScrollPositionY = 0;
+function handleSearchBtnClick(element) {
+    clearAllBoldActiveStates();
+    if (element) element.classList.add('btn-bold-active');
+    openSearchModal();
+}
+function handleCloseSearchBtnClick(element) {
+    clearAllBoldActiveStates();
+    if (element) element.classList.add('btn-bold-active');
+    closeSearchModal();
+}
+function openSearchModal() {
+    const searchModal = document.getElementById('search-modal');
+    if (!searchModal) return;
+
+    savedScrollPositionY = window.scrollY;
+    searchModal.classList.remove('is-closing', 'hidden');
+    searchModal.scrollTop = 0;
+
+    document.body.classList.add('drawer-open');
+    document.body.style.top = `-${savedScrollPositionY}px`;
+
+    const input = document.getElementById('search-input');
+    if (input) {
+        input.value = '';
+        handleSearchInput('');
+        setTimeout(() => input.focus(), 250);
+    }
+    if (window.lucide) lucide.createIcons({ root: searchModal });
+}
+function closeSearchModal() {
+    const searchModal = document.getElementById('search-modal');
+    if (!searchModal || searchModal.classList.contains('hidden')) return;
+
+    searchModal.classList.add('is-closing');
+    setTimeout(() => {
+        searchModal.classList.add('hidden');
+        searchModal.classList.remove('is-closing');
+        document.body.classList.remove('drawer-open');
+        document.body.style.top = '';
+        window.scrollTo(0, savedScrollPositionY);
+        clearAllBoldActiveStates();
+    }, 280);
+}
+function handleSearchInput(query) {
+    const titleEl = document.getElementById('search-results-title');
+    const clearBtn = document.getElementById('btn-clear-history');
+    const container = document.getElementById('viewed-products-container');
+
+    if (!query.trim()) {
+        titleEl.innerHTML = '<i data-lucide="history" class="w-4 h-4 text-slate-400"></i> Sản phẩm đã xem';
+        clearBtn.classList.remove('hidden');
+        renderViewedProducts();
+        return;
+    }
+
+    titleEl.innerHTML = '<i data-lucide="search" class="w-4 h-4 text-slate-400"></i> Kết quả tìm kiếm cho "' + query + '"';
+    clearBtn.classList.add('hidden');
+
+    const matches = originalProducts.filter(p => p.name.toLowerCase().includes(query.toLowerCase()));
+    if (matches.length === 0) {
+        container.innerHTML = '<p class="col-span-full text-center text-xs text-slate-400 font-bold uppercase tracking-wider py-8">Không tìm thấy sản phẩm nào.</p>';
+        return;
+    }
+
+    container.innerHTML = matches.map(p => `
+        <div class="group cursor-pointer" onclick="window.location.href='product.html?product=${p.id.toUpperCase()}&color=CS01'">
+            <div class="relative aspect-[3/4] bg-slate-100 overflow-hidden border border-slate-100">
+                <img src="${p.colors && p.colors[0] && p.colors[0].images ? p.colors[0].images[0] : ''}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                <span class="absolute top-2 left-2 bg-white/90 text-[9px] font-black uppercase text-slate-900 px-2 py-0.5">${p.category || ''}</span>
+            </div>
+        </div>
+    `).join('');
+    if (window.lucide) lucide.createIcons({ root: container });
+}
+function renderViewedProducts() {
+    const viewed = JSON.parse(localStorage.getItem('viewed_products') || '[]');
+    const container = document.getElementById('viewed-products-container');
+    if (!container) return;
+
+    if (viewed.length === 0) {
+        container.innerHTML = '<p class="col-span-full text-center text-xs text-slate-400 font-bold uppercase tracking-wider py-8">Bạn chưa xem sản phẩm nào gần đây.</p>';
+        return;
+    }
+    container.innerHTML = viewed.map(p => `
+        <div class="group cursor-pointer" onclick="window.location.href='product.html?product=${p.id.toUpperCase()}&color=CS01'">
+            <div class="relative aspect-[3/4] bg-slate-100 overflow-hidden border border-slate-100">
+                <img src="${p.images ? p.images[0] : ''}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105">
+                <span class="absolute top-2 left-2 bg-white/90 text-[9px] font-black uppercase text-slate-900 px-2 py-0.5">${p.category || ''}</span>
+            </div>
+        </div>
+    `).join('');
+    if (window.lucide) lucide.createIcons({ root: container });
+}
+function clearViewedProducts() {
+    localStorage.removeItem('viewed_products');
+    renderViewedProducts();
+    renderRecentViewedSlider(currentProduct ? currentProduct.id : null);
 }
 
 // KHÔI PHỤC KEYDOWN (ESC ĐỂ THOÁT) VÀ TOUCH (VUỐT ĐỂ ĐÓNG)
