@@ -1,10 +1,1 @@
-[
-  { "hex": "#ffffff", "name": "Trắng", "id": "trang" },
-  { "hex": "#000000", "name": "Đen", "id": "den" },
-  { "hex": "#C0C0C0", "name": "Xám Nhạt", "id": "xam-nhat" },
-  { "hex": "#333399", "name": "Xanh Navy", "id": "xanh-navy" },
-  { "hex": "#333333", "name": "Ghi Đậm", "id": "ghi-dam" },
-  { "hex": "#9999CC", "name": "Tím Than", "id": "tim-than" },
-  { "hex": "#99CCFF", "name": "Xanh Nhạt", "id": "xanh-nhat" },
-  { "hex": "#808080", "name": "Xám", "id": "xam" }
-]
+[{"hex":"#ffffff","name":"Trắng","id":"trang"},{"hex":"#000000","name":"Đen","id":"den"},{"hex":"#C0C0C0","name":"Xám Nhạt","id":"xam-nhat"},{"hex":"#333399","name":"Xanh Navy","id":"xanh-navy"},{"hex":"#333333","name":"Ghi Đậm","id":"ghi-dam"},{"hex":"#9999CC","name":"Tím Than","id":"tim-than"},{"hex":"#99CCFF","name":"Xanh Nhạt","id":"xanh-nhat"},{"hex":"#808080","name":"Xám","id":"xam"}]
