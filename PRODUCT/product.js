@@ -1,4 +1,5 @@
 let originalProducts = [];
+let colorsDictionary = {}; // Lưu trữ bảng tra cứu màu: { "xam": { name: "Xám", hex: "#808080" } }
 let currentProduct = null;
 let currentSelectedSize = null;
 let currentGalleryImages = [];
@@ -11,6 +12,50 @@ document.addEventListener('DOMContentLoaded', () => {
     loadProductsData();
 });
 
+// Tải bảng tra cứu màu từ file JSON tĩnh (ưu tiên) hoặc Google Sheet COLORS
+function loadColorsDictionary() {
+    const colorsJsonUrl = '../data/colors.json';
+    const colorsApiUrl = 'https://script.google.com/macros/s/AKfycbxECsm7sqwkmmxcyt1Arw553FCOvjBaj8oqJxL-k6DLMUjklgyG736xCcV8SwRQd3nw/exec?sheet=COLORS';
+
+    const buildMap = (data) => {
+        const map = {};
+        if (Array.isArray(data)) {
+            data.forEach(row => {
+                const id = String(row.id || row.ID || '').trim().toLowerCase();
+                if (id) {
+                    map[id] = {
+                        name: String(row.name || row.NAME || 'Màu sắc').trim(),
+                        hex: String(row.hex || row.HEX || '#cccccc').trim()
+                    };
+                }
+            });
+        }
+        return map;
+    };
+
+    return fetch(colorsJsonUrl)
+        .then(res => {
+            if (!res.ok) throw new Error('Không tìm thấy colors.json, chuyển sang gọi API sheet COLORS');
+            return res.json();
+        })
+        .then(data => {
+            colorsDictionary = buildMap(data);
+            return colorsDictionary;
+        })
+        .catch(() => {
+            return fetch(colorsApiUrl)
+                .then(res => res.json())
+                .then(data => {
+                    colorsDictionary = buildMap(data);
+                    return colorsDictionary;
+                })
+                .catch(err => {
+                    console.error('Lỗi tải bảng màu COLORS:', err);
+                    return {};
+                });
+        });
+}
+
 function loadProductsData() {
     const urlParams = new URLSearchParams(window.location.search);
     const colorParam = urlParams.get('color') || '';
@@ -19,9 +64,15 @@ function loadProductsData() {
     if (colorParam.startsWith('CS')) jsonUrl = '../data/products_sock.json';
     else if (colorParam.startsWith('CT')) jsonUrl = '../data/products_tshirt.json';
 
-    fetch(jsonUrl)
-        .then(res => res.json())
-        .then(data => {
+    // Tải song song bảng màu COLORS và file sản phẩm trước khi xử lý dữ liệu
+    Promise.all([
+        loadColorsDictionary(),
+        fetch(jsonUrl).then(res => {
+            if (!res.ok) throw new Error('Không thể tải dữ liệu sản phẩm');
+            return res.json();
+        })
+    ])
+        .then(([_, data]) => {
             originalProducts = processRawProductsData(data);
             initProductPage();
             // KÍCH HOẠT LẠI BADGE GIỎ HÀNG VÀ VOUCHER TỪ CONFIG.JS
@@ -37,7 +88,19 @@ function processRawProductsData(data) {
     return (Array.isArray(data) ? data : []).map((item, index) => {
         let colors = [];
         try { colors = JSON.parse(item.colorsJSON || item.colors || "[]"); } catch (e) { if (Array.isArray(item.colors)) colors = item.colors; }
-        colors = colors.map(c => ({ ...c, images: (c.images || []).map(img => String(img).replace(/^["']|["']$/g, '').trim()) }));
+        
+        colors = colors.map(c => {
+            const colorId = String(c.id || '').trim().toLowerCase();
+            const mappedColor = colorsDictionary[colorId] || {};
+
+            return {
+                ...c,
+                id: colorId,
+                name: mappedColor.name || c.name || 'Màu sắc',
+                hex: mappedColor.hex || c.hex || '#cccccc',
+                images: (c.images || []).map(img => String(img).replace(/^["']|["']$/g, '').trim())
+            };
+        });
 
         let introImages = [];
         try { introImages = JSON.parse(item.introImages || "[]").map(img => String(img).replace(/^["']|["']$/g, '').trim()); } catch (e) { if (Array.isArray(item.introImages)) introImages = item.introImages; }

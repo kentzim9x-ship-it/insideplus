@@ -228,7 +228,7 @@ function processRawProductsData(data) {
 }
 
 function loadProductsData() {
-    const jsonUrl = '../data/products_inside.json';
+    const jsonUrl = '../data/products_tshirt.json';
 
     // Tải song song bảng màu COLORS và danh sách sản phẩm trước khi xử lý dữ liệu
     return Promise.all([
