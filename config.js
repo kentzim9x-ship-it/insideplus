@@ -569,13 +569,19 @@ function renderCartModalContent() {
     let hasStockError = false;
 
     container.innerHTML = cartItems.map((item, idx) => {
-        const itemOrigPrice = item.originalPrice || Math.round(item.price * 1.2);
+        const liveProduct = typeof findProductAnywhere === 'function' ? findProductAnywhere(item.productId) : null;
+        const actualPrice = liveProduct ? Number(liveProduct.price) : Number(item.price);
+        const actualOrigPrice = liveProduct ? Number(liveProduct.originalPrice || 0) : Number(item.originalPrice || 0);
+
+        const hasDiscount = actualOrigPrice > actualPrice;
+        const itemOrigPrice = hasDiscount ? actualOrigPrice : actualPrice;
+
         originalSubtotal += itemOrigPrice * item.quantity;
-        directDiscount += (itemOrigPrice - item.price) * item.quantity;
+        directDiscount += (itemOrigPrice - actualPrice) * item.quantity;
 
         const codePrefix = formatProductCode(item.productId, item.category);
         const origPriceFormatted = (itemOrigPrice * item.quantity).toLocaleString('vi-VN');
-        const discountPercent = item.originalPrice ? Math.round((1 - item.price / item.originalPrice) * 100) : 17;
+        const discountPercent = hasDiscount ? Math.round((1 - actualPrice / actualOrigPrice) * 100) : 0;
 
         const stockCheck = checkProductStock(item.productId, item.colorName, item.size, item.quantity);
         let stockWarningHtml = '';
@@ -593,13 +599,15 @@ function renderCartModalContent() {
                 <h4 class="font-bold text-xs sm:text-sm uppercase text-slate-900 cursor-pointer hover:underline truncate leading-snug" onclick="openProductDrawerFromCart('${item.productId}', '${item.colorName}', '${item.category}')">${item.name}</h4>
                 <p class="text-xs sm:text-sm text-slate-500 font-normal">${item.colorName} - ${codePrefix} &nbsp;|&nbsp; Size: ${item.size}</p>
                 
+                ${hasDiscount ? `
                 <div class="flex items-baseline gap-2 pt-1">
                     <span class="text-xs sm:text-sm text-slate-400 line-through font-normal">${origPriceFormatted} đ</span>
                     <span class="text-[11px] bg-slate-100 text-slate-600 font-bold px-1.5 py-0.5">-${discountPercent}%</span>
                 </div>
+                ` : ''}
 
                 <div class="flex items-center justify-between pt-3">
-                    <span class="text-base font-bold text-slate-900">${(item.price * item.quantity).toLocaleString('vi-VN')} đ</span>
+                    <span class="text-base font-bold text-slate-900">${(actualPrice * item.quantity).toLocaleString('vi-VN')} đ</span>
                     
                     <div class="flex items-center border border-slate-200 text-xs sm:text-sm">
                         <button onclick="updateCartItemQty(${idx}, -1)" class="px-3 py-1 text-slate-500 hover:bg-slate-100 font-bold cursor-pointer">-</button>
@@ -1248,8 +1256,9 @@ function renderQuickAddToCartModalContent() {
     if (quickAddImageIdx >= images.length) quickAddImageIdx = 0;
     const currentImg = images[quickAddImageIdx];
 
-    const origPriceFormatted = (p.originalPrice || Math.round(p.price * 1.2)).toLocaleString('vi-VN');
-    const discountPercent = p.originalPrice ? Math.round((1 - p.price / p.originalPrice) * 100) : 14;
+    const hasDiscount = p.originalPrice && p.originalPrice > p.price;
+    const origPriceFormatted = hasDiscount ? p.originalPrice.toLocaleString('vi-VN') : '';
+    const discountPercent = hasDiscount ? Math.round((1 - p.price / p.originalPrice) * 100) : 0;
 
     const colorsHtml = p.colors.map((c, idx) => {
         const isSelected = idx === quickAddToCartColorIdx;
@@ -1395,13 +1404,11 @@ function renderQuickAddToCartModalContent() {
                                     <p class="text-slate-400 text-[11px] mt-0.5">SKU: ${typeof formatProductCode === 'function' ? formatProductCode(p.id, p.category) : p.id}</p>
                                 </div>
 
-                               ${(p.originalPrice && p.originalPrice > p.price) ? `
-                                    <div class="flex items-baseline gap-2 pt-0.5">
-                                        <span class="text-slate-400 line-through text-[11px]">${p.originalPrice.toLocaleString('vi-VN')} đ</span>
-                                        <span class="bg-slate-100 text-slate-600 px-1 py-0.2 font-bold text-[9px]">
-                                            -${Math.round((1 - p.price / p.originalPrice) * 100)}%
-                                        </span>
-                                    </div>
+                               ${hasDiscount ? `
+                                <div class="flex items-baseline gap-2 pt-0.5">
+                                    <span class="text-slate-400 line-through text-[11px]">${origPriceFormatted} đ</span>
+                                    <span class="bg-slate-100 text-slate-600 px-1 py-0.2 font-bold text-[9px]">-${discountPercent}%</span>
+                                </div>
                                 ` : ''}
                                 <p class="text-lg font-bold text-slate-900">${p.price.toLocaleString('vi-VN')} đ</p>
 
@@ -1453,7 +1460,7 @@ function submitQuickAddToCart() {
             productId: quickAddToCartProduct.id,
             name: quickAddToCartProduct.name,
             price: quickAddToCartProduct.price,
-            originalPrice: quickAddToCartProduct.originalPrice || Math.round(quickAddToCartProduct.price * 1.2),
+            originalPrice: Number(quickAddToCartProduct.originalPrice) || 0,
             colorName: activeColor.name,
             image: activeColor.images[0],
             size: quickAddToCartSize,
@@ -1574,8 +1581,9 @@ function renderQuickEditDrawer() {
         ? quickEditSelectedSize
         : item.size;
 
-    const origPriceFormatted = (product.originalPrice || Math.round(product.price * 1.2)).toLocaleString('vi-VN');
-    const discountPercent = product.originalPrice ? Math.round((1 - product.price / product.originalPrice) * 100) : 14;
+    const hasDiscount = product.originalPrice && product.originalPrice > product.price;
+    const origPriceFormatted = hasDiscount ? product.originalPrice.toLocaleString('vi-VN') : '';
+    const discountPercent = hasDiscount ? Math.round((1 - product.price / product.originalPrice) * 100) : 0;
 
     const colorsHtml = product.colors.map((c, idx) => {
         const isSelected = idx === currentColorIdx;
@@ -1655,10 +1663,12 @@ function renderQuickEditDrawer() {
                             <h4 class="font-bold text-xs sm:text-sm text-slate-900 uppercase leading-snug line-clamp-2">${product.name}</h4>
                             <p class="text-slate-400 text-[11px]">SKU: ${typeof formatProductCode === 'function' ? formatProductCode(product.id, product.category) : product.id}</p>
 
+                            ${hasDiscount ? `
                             <div class="flex items-baseline gap-2 pt-1">
                                 <span class="text-slate-400 line-through text-xs">${origPriceFormatted} đ</span>
                                 <span class="bg-slate-100 text-slate-600 px-1 py-0.2 font-bold text-[10px]">-${discountPercent}%</span>
                             </div>
+                            ` : ''}
                             <p class="text-base font-bold text-slate-900">${product.price.toLocaleString('vi-VN')} đ</p>
                         </div>
                     </div>
