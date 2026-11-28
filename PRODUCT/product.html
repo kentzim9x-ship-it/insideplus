@@ -277,7 +277,8 @@
                     <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
                         <h4 id="search-results-title"
                             class="text-xs font-black uppercase text-slate-900 tracking-[0.2em] flex items-center gap-2">
-                            <i data-lucide="history" class="w-4 h-4 text-slate-400"></i> Sản phẩm đã xem</h4>
+                            <i data-lucide="history" class="w-4 h-4 text-slate-400"></i> Sản phẩm đã xem
+                        </h4>
                         <button id="btn-clear-history" onclick="clearViewedProducts()"
                             class="text-[11px] font-bold text-slate-400 hover:text-slate-900 uppercase tracking-wider transition">Xóa
                             lịch sử</button>
@@ -401,10 +402,25 @@
         </div>
     </div>
 
-    <!-- WIDGET CHAT CHUNG -->
+    <!-- WIDGETS -->
     <div class="fixed bottom-6 right-2 sm:right-2 z-50 flex flex-col items-end gap-3 mb-12 sm:mb-0">
-        <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})"
-            class="hidden md:flex floating-widget bg-slate-950 text-white items-center justify-center">
+        <div id="social-links-group" class="hidden flex flex-col gap-3">
+            <a href="https://m.me/yourpage" target="_blank" class="floating-widget">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="#222222">
+                    <path
+                        d="M12 2C6.477 2 2 6.145 2 11.243c0 2.91 1.455 5.488 3.733 7.152V22l3.411-1.872c.907.252 1.868.385 2.856.385 5.523 0 10-4.145 10-9.243C22 6.145 17.523 2 12 2zm1.045 12.37l-2.545-2.715-4.965 2.715 5.46-5.79 2.59 2.715 4.92-2.715-5.46 5.79z" />
+                </svg>
+            </a>
+            <a href="https://zalo.me/yourphonenumber" target="_blank" class="floating-widget">
+                <span class="font-bold text-[13px] text-[#111]">Zalo</span>
+            </a>
+        </div>
+        <button onclick="toggleChatMenu()" id="main-chat-btn"
+            class="floating-widget bg-[#222] text-white hover:bg-white hover:text-slate-900 translate-y-4 md:translate-y-0 transition-transform duration-300">
+            <i data-lucide="message-circle" id="chat-icon" class="w-5 h-5"></i>
+        </button>
+        <button onclick="scrollToTop()"
+            class="hidden md:flex floating-widget bg-white/90 border-slate-200 text-slate-700 bg-slate-950 text-black items-center justify-center">
             <i data-lucide="chevron-up" class="w-5 h-5"></i>
         </button>
     </div>

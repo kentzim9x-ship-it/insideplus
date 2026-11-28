@@ -88,7 +88,7 @@ function processRawProductsData(data) {
     return (Array.isArray(data) ? data : []).map((item, index) => {
         let colors = [];
         try { colors = JSON.parse(item.colorsJSON || item.colors || "[]"); } catch (e) { if (Array.isArray(item.colors)) colors = item.colors; }
-        
+
         colors = colors.map(c => {
             const colorId = String(c.id || '').trim().toLowerCase();
             const mappedColor = colorsDictionary[colorId] || {};
@@ -536,17 +536,21 @@ function openGalleryModal(index) {
     document.getElementById('gallery-modal').classList.remove('hidden');
     if (window.lucide) lucide.createIcons({ root: document.getElementById('gallery-modal') });
 }
+
 function closeGalleryModal() { document.getElementById('gallery-modal').classList.add('hidden'); }
+
 function updateGalleryModalView() {
     const imgEl = document.getElementById('gallery-modal-img');
     const counterEl = document.getElementById('gallery-counter');
     if (imgEl) imgEl.src = currentGalleryImages[currentGalleryIndex];
     if (counterEl) counterEl.innerText = `${currentGalleryIndex + 1}/${currentGalleryImages.length}`;
 }
+
 function prevGalleryImage() {
     currentGalleryIndex = (currentGalleryIndex > 0) ? currentGalleryIndex - 1 : currentGalleryImages.length - 1;
     updateGalleryModalView();
 }
+
 function nextGalleryImage() {
     currentGalleryIndex = (currentGalleryIndex < currentGalleryImages.length - 1) ? currentGalleryIndex + 1 : 0;
     updateGalleryModalView();
@@ -566,6 +570,7 @@ function openInfoDrawer() {
     document.getElementById('info-drawer').classList.remove('hidden');
     setTimeout(() => { document.getElementById('info-overlay').classList.remove('opacity-0'); document.getElementById('info-panel').classList.remove('translate-x-full'); }, 10);
 }
+
 function closeInfoDrawer() {
     document.getElementById('info-overlay').classList.add('opacity-0');
     document.getElementById('info-panel').classList.add('translate-x-full');
@@ -581,6 +586,7 @@ function openIntroDrawer() {
     document.getElementById('intro-drawer').classList.remove('hidden');
     setTimeout(() => { document.getElementById('intro-overlay').classList.remove('opacity-0'); document.getElementById('intro-panel').classList.remove('translate-x-full'); }, 10);
 }
+
 function closeIntroDrawer() {
     document.getElementById('intro-overlay').classList.add('opacity-0');
     document.getElementById('intro-panel').classList.add('translate-x-full');
@@ -588,7 +594,20 @@ function closeIntroDrawer() {
 }
 
 function openSizeModal() { document.getElementById('size-modal').classList.remove('hidden'); }
+
 function closeSizeModal() { document.getElementById('size-modal').classList.add('hidden'); }
+
+function toggleChatMenu() {
+    const group = document.getElementById('social-links-group');
+    const icon = document.getElementById('chat-icon');
+    group.classList.toggle('hidden');
+    icon.setAttribute('data-lucide', !group.classList.contains('hidden') ? 'x' : 'message-circle');
+    if (window.lucide) lucide.createIcons({ root: document.getElementById('main-chat-btn') });
+}
+
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
 // LỊCH SỬ ĐÃ XEM
 // 1. Xác định tiền tố màu dựa trên danh mục
@@ -750,25 +769,30 @@ function updateRecentSliderArrows() {
 function clearAllBoldActiveStates() {
     document.querySelectorAll('.btn-bold-active, .active-bold').forEach(el => el.classList.remove('btn-bold-active', 'active-bold'));
 }
+
 function handleMenuBtnClick(element) {
     clearAllBoldActiveStates();
     if (element) element.classList.add('btn-bold-active');
     toggleMobileNavDrawer();
 }
+
 function handleCloseDrawerBtnClick(element) {
     clearAllBoldActiveStates();
     if (element) element.classList.add('btn-bold-active');
     toggleMobileNavDrawer();
 }
+
 function handleDrawerNavItemClick(element) {
     clearAllBoldActiveStates();
     if (element) element.classList.add('btn-bold-active');
     toggleMobileNavDrawer();
 }
+
 function handleLogoClick(element) {
     clearAllBoldActiveStates();
     if (element) element.classList.add('btn-bold-active');
 }
+
 function toggleMobileNavDrawer() {
     const drawer = document.getElementById('mobile-nav-drawer');
     const panel = document.getElementById('mobile-nav-panel');
@@ -787,16 +811,19 @@ function toggleMobileNavDrawer() {
 
 // 3. Các hàm Modal Tìm Kiếm
 let savedScrollPositionY = 0;
+
 function handleSearchBtnClick(element) {
     clearAllBoldActiveStates();
     if (element) element.classList.add('btn-bold-active');
     openSearchModal();
 }
+
 function handleCloseSearchBtnClick(element) {
     clearAllBoldActiveStates();
     if (element) element.classList.add('btn-bold-active');
     closeSearchModal();
 }
+
 function openSearchModal() {
     const searchModal = document.getElementById('search-modal');
     if (!searchModal) return;
@@ -816,6 +843,7 @@ function openSearchModal() {
     }
     if (window.lucide) lucide.createIcons({ root: searchModal });
 }
+
 function closeSearchModal() {
     const searchModal = document.getElementById('search-modal');
     if (!searchModal || searchModal.classList.contains('hidden')) return;
@@ -830,6 +858,7 @@ function closeSearchModal() {
         clearAllBoldActiveStates();
     }, 280);
 }
+
 function handleSearchInput(query) {
     const titleEl = document.getElementById('search-results-title');
     const clearBtn = document.getElementById('btn-clear-history');
@@ -861,6 +890,7 @@ function handleSearchInput(query) {
     `).join('');
     if (window.lucide) lucide.createIcons({ root: container });
 }
+
 function renderViewedProducts() {
     const viewed = JSON.parse(localStorage.getItem('viewed_products') || '[]');
     const container = document.getElementById('viewed-products-container');
